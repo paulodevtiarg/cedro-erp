@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+    <div th:fragment="btnBuscar(titulo)">
+        <button type="submit"
+                class="btn btn-outline-sistema btn-sm w-100"
+                data-bs-toggle="tooltip"
+                th:title="${titulo}">
+            <i class="fa-duotone fa-solid fa-magnifying-glass"></i>
+            Buscar
+        </button>
+    </div>
+
+</body>
+</html>

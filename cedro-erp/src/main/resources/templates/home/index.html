@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+
+<head>
+    <title>Home</title>
+</head>
+
+<body>
+
+<div layout:fragment="content">
+    <div class="container-fluid">
+        <div class="row" style="margin-top: -15px;">
+            <div class="col-12">
+                <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item active"><a th:href="@{/home}">
+                            <i class="fa-duotone fa-solid fa-house fs-6"></i> Home
+                        </a></li>
+                    
+                    </ol>
+                </nav>
+            </div>
+            
+            
+            <div class="col-12" style="margin-top: -15px;">
+                <div class="card ">
+                    <div
+                            class="card-header card-header-clinisys d-flex justify-content-between align-items-center fs-6 fw-semibold ">
+                        
+                        <h5 class="mb-0">Dashboard</h5>
+                    <!--    <a th:href="@{/home}" class="btn btn-outline-sistema "
+                           data-bs-toggle="tooltip" data-bs-placement="top"
+                           title="Baixar relatório"><i
+                                class="fa-duotone fa-solid fa-print me-1"></i> Gerar Relatório </a> -->
+                        <button class="btn btn-outline-sistema"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalRelatorio">
+                            <i class="fa-duotone fa-solid fa-file-lines me-1"></i>Relatório
+                        </button>
+                    
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card border-left-primary shadow h-100 py-2">
+                                    <div class="card-body">
+
+                                    
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card border-left-success shadow h-100 py-2">
+                                    <div class="card-body">
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card border-left-warning shadow h-100 py-2">
+                                    <div class="card-body">
+
+                                    </div>
+                                </div>
+                            
+                            </div>
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card border-left-danger shadow h-100 py-2">
+                                    <div class="card-body">
+
+                                    </div>
+                                </div>
+                            
+                            </div>
+                        
+                        
+                        </div>
+
+                    
+                    
+                    
+                    </div>
+                
+                </div>
+                <!-- fim do card principal -->
+            </div>
+            <!-- fim da terceira col -->
+        
+        </div>
+        <!-- fim da row dentro do container -->
+    
+    
+    
+    </div>
+    <!-- fim do container-fluid -->
+    <!--modal -->
+    <div class="modal fade" id="modalRelatorio" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <form method="get" th:action="@{/home/relatorios/dashboard}">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Gerar Relatório da Dashboard</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <!-- TIPO DE PERÍODO -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Período</label>
+
+                            <select id="tipoPeriodo" name="tipoPeriodo" class="form-control">
+                                <option value="ANO_CORRENTE">Ano Corrente</option>
+                                <option value="ANO_ESPECIFICO">Ano Específico</option>
+                                <option value="INTERVALO">Ano X até Ano Y</option>
+                            </select>
+                        </div>
+
+                        <!-- ANO -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3" id="divAno">
+                                <label>Ano</label>
+                                <input type="number" name="ano" class="form-control">
+                            </div>
+
+                            <div class="col-md-6 mb-3 d-none" id="divAnoInicio">
+                                <label>Ano Inicial</label>
+                                <input type="number" name="anoInicio" class="form-control">
+                            </div>
+
+                            <div class="col-md-6 mb-3 d-none" id="divAnoFim">
+                                <label>Ano Final</label>
+                                <input type="number" name="anoFim" class="form-control">
+                            </div>
+                        </div>
+
+                        <!-- CIDADE -->
+                        <div class="mb-3">
+                            <label>Cidade</label>
+                            <select name="cidade" class="form-control">
+                                <option value="">Todas</option>
+                                <option th:each="cidade : ${listaCidades}"
+                                        th:value="${cidade}"
+                                        th:text="${cidade}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- VISUALIZAÇÃO -->
+                        <div class="mb-3">
+                            <label>Mostrar Dados</label>
+                            <select name="modoVisualizacao" class="form-control">
+                                <option value="UNIDADE">Somente minha unidade</option>
+                                <option value="TODAS">Somente todas as unidades</option>
+                                <option value="AMBAS" selected>Todas</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-outline-primary">
+                            <i class="fa-duotone fa-solid fa-gear"></i>  Gerar Relatório
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- fim do content do fragmento -->
+
+</body>
+</html>

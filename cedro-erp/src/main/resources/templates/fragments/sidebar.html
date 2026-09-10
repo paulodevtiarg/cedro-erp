@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:fragment="sidebar">
+
+	<ul		class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion"
+		id="accordionSidebar" th:fragment="sidebar">
+
+		<!-- Sidebar - Brand -->
+		<a
+			class="sidebar-brand d-flex align-items-center justify-content-center"
+			href="index.html">
+			<div class="sidebar-brand-icon mt-3">
+				<!--   <i class="fas fa-laugh-wink"></i> -->
+				<img th:src="@{/img/logo-white.png}" alt="Logo Cedro ERP"
+					class="img-fluid" style="max-height: 125px; max-width: 120px;">
+			</div>
+
+		</a>
+
+		<!-- Divider -->
+		<hr class="sidebar-divider my-3">
+
+		<!-- Nav Item - Dashboard -->
+		<li class="nav-item" th:classappend="${activeMenu == 'dashboard'} ? 'active' : ''">
+			<a class="nav-link" th:href="@{/home}"> <i
+				class="fas fa-fw fa-tachometer-alt"></i> <span>Dashboard</span>
+		</a>
+		</li>
+
+		<!-- Divider -->
+		<hr class="sidebar-divider">
+
+		<!-- Heading -->
+		<div class="sidebar-heading"> ADMINISTRAÇÃO</div>
+
+		<!-- Nav Item - Pages Collapse Menu -->
+		<li class="nav-item"  th:classappend="${activeMenu == 'cadastros' ? 'active' : ''}"><a class="nav-link collapsed" href="#"
+			data-toggle="collapse" data-target="#collapseTwo"
+			aria-expanded="true" aria-controls="collapseTwo"><i class="fa-duotone fa-solid fa-folders"></i> <span>Cadastros</span>
+		</a>
+   
+			<div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+				<div class="bg-white py-2 collapse-inner rounded">
+					
+					<a class="collapse-item" th:href="@{/clientes}">Clientes</a>
+					<a	class="collapse-item" th:href="@{/fornecedores}">Fornecedores</a>
+					<a	class="collapse-item" th:href="@{/transportadoras}">Transportadoras</a>
+
+				</div>
+			</div>
+
+		</li>
+
+		<!-- Nav Item - Pages Collapse Menu -->
+		<li class="nav-item"  th:classappend="${activeMenu == 'estoque' ? 'active' : ''}">
+			<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseEstoque"
+			   aria-expanded="true" aria-controls="collapseTwo"><i class="fa-sharp-duotone fa-solid fa-boxes-stacked"></i> <span>Gestão de Estoque</span>
+		</a>
+
+			<div id="collapseEstoque" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+				<div class="bg-white py-2 collapse-inner rounded">
+
+					<a class="collapse-item"  th:href="@{/produtos}">Produtos</a>
+					<a	class="collapse-item" th:href="@{/categorias}">Categorias</a>
+					<a	class="collapse-item" th:href="@{/estoque}">Estoque Atual</a>
+					<a	class="collapse-item" th:href="@{/estoque/entradas}">Entradas</a>
+					<a	class="collapse-item" th:href="@{/estoque/saidas}">Saídas</a>
+					<a	class="collapse-item" th:href="@{/estoque/movimentacoes}">Movimentações</a>
+
+
+				</div>
+			</div>
+
+		</li>
+
+		<li class="nav-item"  th:classappend="${activeMenu == 'estoque' ? 'active' : ''}">
+			<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseComercial"
+			   aria-expanded="true" aria-controls="collapseTwo"><i class="fa-sharp-duotone fa-solid fa-cart-shopping-fast"></i> <span>Comercial</span>
+			</a>
+
+			<div id="collapseComercial" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+				<div class="bg-white py-2 collapse-inner rounded">
+
+					<a class="collapse-item"  th:href="@{/orcamentos}">Orçamentos</a>
+					<a	class="collapse-item" th:href="@{/pedidos}">Pedidos</a>
+					<a	class="collapse-item" th:href="@{/vendas}">Vendas</a>
+					<a	class="collapse-item" th:href="@{/recibos}">Recibos</a>
+
+
+
+				</div>
+			</div>
+
+		</li>
+
+		<li class="nav-item"  th:classappend="${activeMenu == 'estoque' ? 'active' : ''}">
+			<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseFinanceiro"
+			   aria-expanded="true" aria-controls="collapseTwo"><i class="fa-duotone fa-solid fa-badge-dollar"></i> <span>Financeiro</span>
+			</a>
+
+			<div id="collapseFinanceiro" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+				<div class="bg-white py-2 collapse-inner rounded">
+
+					<a class="collapse-item"  th:href="@{/creceber}">Contas a Receber</a>
+					<a	class="collapse-item" th:href="@{/cpagar}"> Contas a Pagar</a>
+					<a	class="collapse-item" th:href="@{/pagamentos}">Pagamentos</a>
+					<a	class="collapse-item" th:href="@{/fluxocaixa}">Fluxo de Caixa</a>
+
+
+
+				</div>
+			</div>
+
+		</li>
+
+
+
+
+		<!-- Nav Item - Utilities Collapse Menu -->
+		<li class="nav-item"><a class="nav-link collapsed" href="#"
+			data-toggle="collapse" data-target="#collapseUtilities"
+			aria-expanded="true" aria-controls="collapseUtilities"> <i
+				class="fa-duotone fa-light fa-people-group"></i> <span>Gestão de Pessoal</span>
+		</a>
+			<div id="collapseUtilities" class="collapse"
+				aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+				<div class="bg-white py-2 collapse-inner rounded">
+					
+					<a class="collapse-item" th:href="@{/usuarios}">Usuários</a>
+					<a class="collapse-item" th:href="@{/departamentos}" >Departamentos</a>
+
+				</div>
+			</div></li>
+
+		<li class="nav-item"><a class="nav-link collapsed" href="#"
+		                        data-toggle="collapse" data-target="#collapseRelatorios"
+		                        aria-expanded="true" aria-controls="collapseUtilities"><i class="fa-duotone fa-solid fa-square-poll-horizontal"></i> <span>Relatórios</span>
+		</a>
+			<div id="collapseRelatorios" class="collapse"
+			     aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+				<div class="bg-white py-2 collapse-inner rounded">
+
+					<a class="collapse-item" th:href="@{/relvendas}">Vendas</a>
+					<a class="collapse-item" th:href="@{/relestoques}" >Estoque</a>
+					<a class="collapse-item" th:href="@{/relfinanceiros}" >Financeiro</a>
+					<a class="collapse-item" th:href="@{/relclientes}" >Clientes</a>
+
+
+				</div>
+			</div></li>
+
+		<!-- Divider -->
+		<hr class="sidebar-divider">
+
+		<!-- Heading -->
+		<div class="sidebar-heading">Configurações</div>
+
+		<!-- Nav Item - Pages Collapse Menu -->
+		<li class="nav-item"><a class="nav-link collapsed" href="#"
+			data-toggle="collapse" data-target="#collapsePages"
+			aria-expanded="true" aria-controls="collapsePages"> <i
+				class="fa-duotone fa-regular fa-building-shield"></i> <span>Interno</span>
+		</a>
+			<div id="collapsePages" class="collapse"
+				aria-labelledby="headingPages" data-parent="#accordionSidebar">
+				<div class="bg-white py-2 collapse-inner rounded">
+					
+					<a class="collapse-item" th:href="@{/home}">Dados da Empresa</a> <a
+						class="collapse-item" th:href="@{/home}">Configurações</a>
+						</a>
+					
+					
+				</div>
+			</div></li>
+
+
+
+		<!-- Nav Item - Tables -->
+		<li class="nav-item"><a class="nav-link" th:href="@{/home}">
+				<i class="fa-duotone fa-solid fa-siren-on"></i> <span>AVisos</span>
+		</a></li>
+
+		<!-- Divider -->
+		<hr class="sidebar-divider d-none d-md-block">
+
+		<!-- Sidebar Toggler (Sidebar) -->
+		<div class="text-center d-none d-md-inline">
+			<button class="rounded-circle border-0" id="sidebarToggle"></button>
+		</div>
+
+		<!-- Sidebar Message -->
+		<div class="sidebar-card d-none d-lg-flex">
+			<img class="sidebar-card-illustration mb-2"
+				th:src="@{/img/logo-sistema.png}" alt="...">
+			<p class="text-center mb-2">
+				<strong>Cedro-ERP - Versão: 01.AAA2026</strong>, Sistema de Gestão, 2026. Todos os Direitos Rservados <br/>
+			<a class="btn btn-success btn-sm mt-2"
+				th:href="@{/logout-landing}">Saiba Mais</a>
+		</div>
+
+	</ul>
+
+</th:block>
+
+
+</html>
