@@ -2,7 +2,7 @@ FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /build
 
 # Copiar tudo
-COPY cedro-erp/ .
+COPY . .
 
 # DEBUG 1: Listar arquivos fonte
 RUN echo "=== CONTEÚDO DO SRC MAIN ===" && \
