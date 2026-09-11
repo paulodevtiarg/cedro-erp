@@ -174,18 +174,14 @@
 							th:text="${usuarioLogado != null ? usuarioLogado.nome : 'Visitante'}">
 							USUÁRIO</div>
 						<!-- Unidade do usuário (em baixo, menor e mais clara) -->
-						<div class="text-gray-500 small"
-							style="font-size: 0.7rem; line-height: 1.2;"
-							th:text="${usuarioLogado != null and usuarioLogado.nomeEmpresa != null ? usuarioLogado.nomeEmpresa : ''}">
-							EMPRESA</div>
+						<div class="text-gray-500 small" style="font-size: 0.7rem; line-height: 1.2;">
+							<span class="fw-bold">Empresa: </span>
+							<span th:text="${usuarioLogado != null and usuarioLogado.nomeEmpresa != null ? usuarioLogado.nomeEmpresa : ''}"></span>
+						</div>
 							<div class="text-gray-500 small"
-							style="font-size: 0.7rem; line-height: 1.2;"
-							th:text="${usuarioLogado.nomeDepartamento != null ? usuarioLogado.nomeDepartamento : ''}">
-							DEPARTAMENTO
-							
-							
-							
-							
+							style="font-size: 0.7rem; line-height: 1.2;"	>
+								<span class="fw-bold">Depto: </span>
+							    <span th:text="${usuarioLogado.nomeDepartamento != null ? usuarioLogado.nomeDepartamento : ''}"></span>
 							</div>
 					</div> <img class="img-profile rounded-circle"
      th:src="${usuarioLogado.foto != null and usuarioLogado.foto != ''} 

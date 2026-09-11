@@ -1,6 +1,7 @@
 package br.com.dpsistemas.cedroerp.models;
 
 
+import br.com.dpsistemas.cedroerp.utils.UppercaseTrimConverter;
 import jakarta.persistence.*;
 
 @Entity
@@ -15,9 +16,11 @@ public class Departamento extends BaseEntity {
     @JoinColumn(name = "ID_EMPRESA", nullable = false)
     private Empresa empresa;
 
+    @Convert(converter = UppercaseTrimConverter.class)
     @Column(name = "NOME", nullable = false, length = 255)
     private String nome;
 
+    @Convert(converter = UppercaseTrimConverter.class)
     @Column(name = "DESCRICAO", nullable = false, length = 255)
     private String descricao;
 

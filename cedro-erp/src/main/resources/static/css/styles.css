@@ -46,8 +46,8 @@
 
 
 .btn-outline-sistema {
-    color: #031a10  !important;
-    border-color: #031a10  !important;
+    color: #247653  !important;
+    border-color: #247653   !important;
 }
 
 .btn-outline-sistema:hover {
@@ -113,6 +113,10 @@
             text-align: center;
             margin-top: 5px;
             word-break: break-all;
+        }
+
+        .fs-7{
+            font-size:0.8rem !important;;
         }
         
         

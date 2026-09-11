@@ -1,14 +1,14 @@
 package br.com.dpsistemas.cedroerp.services;
 
-
 import br.com.dpsistemas.cedroerp.dtos.DepartamentoDTO;
 import br.com.dpsistemas.cedroerp.mappers.DepartamentoMapper;
 import br.com.dpsistemas.cedroerp.models.Departamento;
 import br.com.dpsistemas.cedroerp.models.Empresa;
 import br.com.dpsistemas.cedroerp.repositorys.DepartamentoRepository;
+import java.util.Locale;
 
+import br.com.dpsistemas.cedroerp.repositorys.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +27,7 @@ public class DepartamentoService {
     private final DepartamentoMapper departamentoMapper;
 
     private final EmpresaService empresaService;
-
+    private final UsuarioRepository usuarioRepository;
 
     /*
      * Valores permitidos no select
@@ -40,69 +40,60 @@ public class DepartamentoService {
     public DepartamentoService(
             DepartamentoRepository departamentoRepository,
             DepartamentoMapper departamentoMapper,
-            EmpresaService empresaService) {
+            EmpresaService empresaService,
+            UsuarioRepository usuarioRepository) {
 
-        this.departamentoRepository =
-                departamentoRepository;
-
-        this.departamentoMapper =
-                departamentoMapper;
-
-        this.empresaService =
-                empresaService;
+        this.departamentoRepository =  departamentoRepository;
+        this.departamentoMapper = departamentoMapper;
+        this.empresaService = empresaService;
+        this.usuarioRepository = usuarioRepository;
     }
 
+    @Transactional(readOnly = true)
+    public boolean departamentoEstaEmUso(
+            Long idDepartamento,
+            Long idEmpresa) {
 
-    /*
-     * ======================================
-     * LISTAGEM COM FILTROS E PAGINAÇÃO
-     * ======================================
-     */
+        buscarEntidadePorId(
+                idDepartamento,
+                idEmpresa
+        );
+
+        return usuarioRepository
+                .existsByDepartamento_IdAndEmpresa_Id(
+                        idDepartamento,
+                        idEmpresa
+                );
+    }
 
     @Transactional(readOnly = true)
     public Page<DepartamentoDTO> listar(
             DepartamentoDTO filtro,
             Long idEmpresa) {
 
-        if (idEmpresa == null) {
-            throw new IllegalArgumentException(
-                    "Empresa não informada."
-            );
-        }
+        validarEmpresa(idEmpresa);
 
         if (filtro == null) {
             filtro = new DepartamentoDTO();
         }
 
-        String nome = normalizarFiltroNome(
-                filtro.getFiltroNome()
-        );
+        String nome =  filtro.getFiltroNome();
+        Boolean status = converterStatus(filtro.getFiltroStatus());
+        int page = normalizarPagina(filtro.getPage());
+        int size = normalizarTamanhoPagina(filtro.getSize());
 
-        Boolean status = converterStatus(
-                filtro.getFiltroStatus()
-        );
-
-        int page = normalizarPagina(
-                filtro.getPage()
-        );
-
-        int size = normalizarTamanhoPagina(
-                filtro.getSize()
-        );
-
-
-        Pageable pageable = PageRequest.of(
-                page,
-                size,
-                Sort.by(
-                        Sort.Direction.ASC,
-                        "nome"
-                )
-        );
-
+        Pageable pageable =
+                PageRequest.of(
+                        page,
+                        size,
+                        Sort.by(
+                                Sort.Direction.ASC,
+                                "nome"
+                        )
+                );
 
         Page<Departamento> departamentos =
-                departamentoRepository.filtrar(
+                buscarDepartamentos(
                         idEmpresa,
                         nome,
                         status,
@@ -115,13 +106,6 @@ public class DepartamentoService {
         );
     }
 
-
-    /*
-     * ======================================
-     * BUSCAR POR ID
-     * ======================================
-     */
-
     @Transactional(readOnly = true)
     public DepartamentoDTO buscarPorId(
             Long id,
@@ -133,17 +117,11 @@ public class DepartamentoService {
                         idEmpresa
                 );
 
+
         return departamentoMapper.toDTO(
                 departamento
         );
     }
-
-
-    /*
-     * ======================================
-     * BUSCAR ENTIDADE
-     * ======================================
-     */
 
     @Transactional(readOnly = true)
     public Departamento buscarEntidadePorId(
@@ -151,16 +129,14 @@ public class DepartamentoService {
             Long idEmpresa) {
 
         if (id == null) {
+
             throw new IllegalArgumentException(
                     "ID do departamento não informado."
             );
         }
 
-        if (idEmpresa == null) {
-            throw new IllegalArgumentException(
-                    "Empresa não informada."
-            );
-        }
+
+        validarEmpresa(idEmpresa);
 
 
         return departamentoRepository
@@ -188,15 +164,18 @@ public class DepartamentoService {
             Long idEmpresa) {
 
         if (dto == null) {
+
             throw new IllegalArgumentException(
                     "Dados do departamento não informados."
             );
         }
 
+
         validarEmpresa(idEmpresa);
 
-        String nome =
-                normalizarNome(dto.getNome());
+
+        String nome = dto.getNome();
+
 
         dto.setNome(nome);
 
@@ -257,6 +236,7 @@ public class DepartamentoService {
             Long idEmpresa) {
 
         if (dto == null) {
+
             throw new IllegalArgumentException(
                     "Dados do departamento não informados."
             );
@@ -269,13 +249,8 @@ public class DepartamentoService {
                         idEmpresa
                 );
 
-
-        String nome =
-                normalizarNome(dto.getNome());
-
+        String nome =  dto.getNome();
         dto.setNome(nome);
-
-
         /*
          * Verifica duplicidade,
          * ignorando o próprio registro.
@@ -337,7 +312,9 @@ public class DepartamentoService {
                         idEmpresa
                 );
 
+
         departamento.ativar();
+
 
         departamentoRepository.save(
                 departamento
@@ -362,7 +339,9 @@ public class DepartamentoService {
                         idEmpresa
                 );
 
+
         departamento.inativar();
+
 
         departamentoRepository.save(
                 departamento
@@ -383,10 +362,12 @@ public class DepartamentoService {
             Boolean status) {
 
         if (status == null) {
+
             throw new IllegalArgumentException(
                     "Status não informado."
             );
         }
+
 
         Departamento departamento =
                 buscarEntidadePorId(
@@ -394,7 +375,11 @@ public class DepartamentoService {
                         idEmpresa
                 );
 
-        departamento.setStatus(status);
+
+        departamento.setStatus(
+                status
+        );
+
 
         departamentoRepository.save(
                 departamento
@@ -404,11 +389,83 @@ public class DepartamentoService {
 
     /*
      * ======================================
+     * BUSCAR DEPARTAMENTOS
+     * ======================================
+     *
+     * Escolhe automaticamente o método
+     * do repository de acordo com os
+     * filtros informados.
+     *
+     * Não utiliza @Query.
+     * ======================================
+     */
+
+    private Page<Departamento> buscarDepartamentos(
+            Long idEmpresa,
+            String nome,
+            Boolean status,
+            Pageable pageable) {
+
+        /*
+         * Nome + Status
+         */
+        if (nome != null && status != null) {
+
+            return departamentoRepository
+                    .findByEmpresa_IdAndNomeContainingIgnoreCaseAndStatus(
+                            idEmpresa,
+                            nome,
+                            status,
+                            pageable
+                    );
+        }
+
+        /*
+         * Somente Nome
+         * Status null = TODOS
+         */
+        if (nome != null) {
+
+            return departamentoRepository
+                    .findByEmpresa_IdAndNomeContainingIgnoreCase(
+                            idEmpresa,
+                            nome,
+                            pageable
+                    );
+        }
+
+        /*
+         * Somente Status
+         */
+        if (status != null) {
+
+            return departamentoRepository
+                    .findByEmpresa_IdAndStatus(
+                            idEmpresa,
+                            status,
+                            pageable
+                    );
+        }
+
+        /*
+         * Sem nome e sem status = TODOS
+         */
+        return departamentoRepository
+                .findByEmpresa_Id(
+                        idEmpresa,
+                        pageable
+                );
+    }
+
+
+    /*
+     * ======================================
      * MÉTODOS AUXILIARES
      * ======================================
      */
 
-    private void validarEmpresa(Long idEmpresa) {
+    private void validarEmpresa(
+            Long idEmpresa) {
 
         if (idEmpresa == null) {
 
@@ -419,39 +476,39 @@ public class DepartamentoService {
     }
 
 
-    private String normalizarNome(
-            String nome) {
 
-        if (nome == null ||
-                nome.isBlank()) {
+    @Transactional
+    public void excluir(
+            Long id,
+            Long idEmpresa) {
+        Departamento departamento = buscarEntidadePorId( id, idEmpresa );
+
+        boolean emUso = usuarioRepository.existsByDepartamento_IdAndEmpresa_Id(id,idEmpresa);
+
+        if (emUso) {
 
             throw new IllegalArgumentException(
-                    "O nome do departamento é obrigatório."
+                    "Este departamento está vinculado a usuários e não pode ser excluído."
             );
         }
 
-        return nome.trim();
+        departamentoRepository.delete(departamento);
     }
+    private int normalizarPagina(
+            Integer page) {
 
+        if (
+                page == null ||
+                        page < 0
+        ) {
 
-    private String normalizarFiltroNome(
-            String nome) {
-
-        if (nome == null ||
-                nome.isBlank()) {
-
-            return null;
+            return 0;
         }
 
-        return nome.trim();
+
+        return page;
     }
 
-
-    /*
-     * null → todos
-     * 0    → false
-     * 1    → true
-     */
     private Boolean converterStatus(
             Integer status) {
 
@@ -471,29 +528,19 @@ public class DepartamentoService {
     }
 
 
-    private int normalizarPagina(
-            Integer page) {
-
-        if (page == null ||
-                page < 0) {
-
-            return 0;
-        }
-
-        return page;
-    }
-
-
     private int normalizarTamanhoPagina(
             Integer size) {
 
         if (
                 size == null ||
-                        !TAMANHOS_PERMITIDOS.contains(size)
+                        !TAMANHOS_PERMITIDOS.contains(
+                                size
+                        )
         ) {
 
             return 10;
         }
+
 
         return size;
     }

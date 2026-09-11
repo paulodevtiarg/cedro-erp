@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/base}">
+
+<head>
+<title>Departamentos</title>
+</head>
+
+<body>
+	<div layout:fragment="content">
+
+
+		<div class="container-fluid p-2">
+			<div class="row">
+				<div class="col-12">
+					<nav aria-label="breadcrumb card"
+						style="margin-top: -25px; font-size: 0.8rem;">
+						<ol class="breadcrumb">
+							<li class="breadcrumb-item"><a th:href="@{/home}"> <i
+									class="fa-duotone fa-solid fa-house fs-7"></i> Home
+							</a></li>
+							<li class="breadcrumb-item"><span class="text-muted">
+									<i class="fa-duotone fa-solid fa-sitemap"></i> Departamentos - Lista
+							</span></li>
+
+						</ol>
+					</nav>
+				</div>
+				<div class="col-12">
+					<!-- Mensagens de erro e de ok -->
+					<div th:if="${msgOk}"
+						class="alert alert-success alert-dismissible fade show auto-close mb-4"
+						role="alert" id="successAlert">
+						<i class="fa-duotone fa-solid fa-thumbs-up me-2"></i> <span
+							th:text="${msgOk}"></span>
+						<button type="button" class="btn-close" data-bs-dismiss="alert"
+							aria-label="Close"></button>
+					</div>
+
+					<!-- Mensagem de Erro -->
+					<div th:if="${msgErro}"
+						class="alert alert-danger alert-dismissible fade show auto-close mb-4"
+						role="alert" id="errorAlert">
+						<i class="fa-duotone fa-solid fa-triangle-exclamation me-2"></i> <span
+							th:text="${msgErro}"></span>
+						<button type="button" class="btn-close" data-bs-dismiss="alert"
+							aria-label="Close"></button>
+					</div>
+				</div>
+				<div class="col-12" style="margin-top: -15px;">
+					<div class="card">
+						<div
+							class="card-header d-flex justify-content-between align-items-center fs-6 fw-semibold text-uppercase">
+
+							<h6 class="mb-0 text-secondary">Departamentos</h6>
+
+							<a	th:if="${podeGerenciarCadastros and queryParams != null and queryParams != ''}"
+								th:href="@{'/departamentos/novo?' + ${queryParams}}"
+								class="btn btn-outline-sistema"
+								th:classappend="${!podeGerenciarCadastros} ? ' disabled opacity-50'"
+								data-bs-toggle="tooltip"
+								th:title="${podeGerenciarCadastros} ? 'Novo Registro' : 'Sem Permissão para incluir novo Registro'">
+								<i class="fa-duotone fa-plus"></i> Novo
+							</a>
+							<a
+								th:if="${podeGerenciarCadastros and (queryParams == null or queryParams == '')}"
+								th:href="@{/departamentos/novo}" class="btn btn-outline-sistema"
+								th:classappend="${!podeGerenciarCadastros} ? ' disabled opacity-50'"
+								data-bs-toggle="tooltip" th:title="${podeGerenciarCadastros} ? 'Novo
+								Registro' : 'Sem Permissão para incluir novo Registro'"> <i
+								class="fa-duotone fa-plus"></i> Novo
+							</a> <a th:if="${!podeGerenciarCadastros}" href="#"
+								class="btn btn-outline-sistema disabled"> <i
+								class="fa-duotone fa-plus"></i> Novo
+							</a>
+
+
+
+						</div>
+						<div class="card-body">
+							<div class="row">
+								<div class="col-12">
+									<form th:action="@{/departamentos}" method="get" class="mb-3">
+										<input type="hidden" name="idEmpresa" th:value="${idEmpresa}">
+										<div class="row g-1">
+											<div class="col-md-8 input-group-sm">
+												<label for="filtroNome" class="form-label text-secondary fw-semibold">Nome do Departamento</label>
+												<input type="text" name="filtroNome" id="filtroNome" th:value="${filtro.filtroNome}"
+													   class="form-control" placeholder="Digite para buscar">
+											</div>
+											<div class="col-md-1 input-group-sm">
+												<label class="form-label text-secondary fw-semibold">Status</label>
+												<select	name="filtroStatus" class="form-select">
+												<option value="1" th:selected="${filtro.filtroStatus == 1}">Ativos</option>
+												<option value="0" th:selected="${filtro.filtroStatus == 0}">Inativos</option>
+												<option value=""  th:selected="${filtro.filtroStatus == null}">Todos</option>
+											</select>
+											</div>
+											<div class="col-md-1 input-group-sm">
+												<label class="form-label  text-secondary fw-semibold">Linhas</label> <select
+													name="size" class="form-select">
+												<option value="10" th:selected="${filtro.size == 10}">10</option>
+												<option value="15" th:selected="${filtro.size == 15}">15</option>
+												<option value="20" th:selected="${filtro.size == 20}">20</option>
+												<option value="25" th:selected="${filtro.size == 25}">25</option>
+												<option value="30" th:selected="${filtro.size == 30}">30</option>
+											</select>
+											</div>
+											<div class="col-md-2 d-flex justify-content-end align-items-end  gap-1 input-group-sm">
+												<div th:replace="fragments/botoesBusca :: btnLimpar(@{/departamentos}, 'Limpar Filtros')"></div>
+												<div th:replace="fragments/botoesBusca :: btnBuscar('Aplicar Filtros')"></div>
+
+
+
+											</div>
+
+										</div>
+
+									</form>
+								</div>
+								<div class="col-12">
+									<div class="d-none d-md-block">
+										<table class="table table-striped table-bordered align-middle table-hover table-sm">
+											<thead class="table-dark"	style="--bs-table-bg: #0c4a31; --bs-table-border-color: #4e9f73;">
+											<tr>
+												<th style="width: 7%;" class="text-center">Código</th>
+												<th>Nome Depto.</th>
+												<th>Descrição</th>
+												<th class="text-center" style="width: 120px;">Status</th>
+												<th class="text-center" style="width: 140px;">Ações</th>
+											</tr>
+											</thead>
+											<tbody>
+											<tr th:each="departamento : ${departamentos}">
+												<td  class="text-center" th:text="${departamento.id}">	</td>
+												<td th:text="${departamento.nome}">	</td>
+												<td th:text="${departamento.descricao}"></td>
+												<td class="text-center">
+
+													<form th:action="@{'/departamentos/alterar-status/'+ ${departamento.id}+ '?'+ ${queryParams}}"
+													      method="post"
+													      class="d-inline">
+
+														<button type="submit"
+														        class="btn btn-link p-0 border-0 text-decoration-none"
+														        data-bs-toggle="tooltip"
+														        th:title="${departamento.status ? 'Inativar' : 'Ativar'}">
+
+															<i th:if="${departamento.status}"
+															   class="fa-duotone fa-solid fa-circle-check text-success fs-5">
+															</i>
+
+															<i th:unless="${departamento.status}"
+															   class="fa-duotone fa-solid fa-circle-xmark text-danger fs-5">
+															</i>
+
+														</button>
+
+													</form>
+
+
+													<!-- Se não tiver permissão, mostra apenas o status -->
+													<span th:unless="${podeGerenciarCadastros}"
+													      th:classappend="${departamento.status} ? 'text-success' : 'text-danger'" class="fw-semibold fs-5">
+
+															<i th:class="${departamento.status}
+																	? 'fa-duotone fa-solid fa-circle-check'
+																	: 'fa-duotone fa-solid fa-circle-xmark'">
+															</i>
+
+   															 </span>
+
+												</td>
+
+												<td class="text-center text-nowrap">
+													<a	th:href="@{'/departamentos/detalhes/' + ${departamento.id} + '?'+ ${queryParams}}"
+															class="btn btn-outline-sistema btn-sm px-2"
+															data-bs-toggle="tooltip" title="Detalhes"> <i
+															class="fa-duotone fa-eye"></i>
+													</a>
+													<a th:href="${podeGerenciarCadastros}? @{'/departamentos/editar/' + ${departamento.id} + '?' + ${queryParams}} : '#'"
+													   th:classappend="${!podeGerenciarCadastros} ? ' disabled opacity-50'"
+													   class="btn btn-outline-sistema btn-sm px-2"
+													   data-bs-toggle="tooltip"
+													   th:title="${podeGerenciarCadastros} ? 'Editar' : 'Sem permissão para editar'">
+														<i class="fa-duotone fa-pen-to-square"></i>
+													</a>
+
+													<a th:href="${podeGerenciarCadastros}? @{'/departamentos/detalhes/'+ ${departamento.id}+ '?acao=excluir&'
+                                                       + ${queryParams}}: '#'" th:classappend="${!podeGerenciarCadastros} ? ' disabled opacity-50'"
+													   class="btn btn-outline-sistema btn-sm px-2"
+													   data-bs-toggle="tooltip"
+													   title="Excluir">
+
+														<i class="fa-duotone fa-trash"></i>
+													</a>
+
+
+												</td>
+
+											</tr>
+											</tbody>
+										</table>
+									</div>
+									<div class="d-block d-md-none">
+
+
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<div class="card-footer d-flex justify-content-end">
+
+							<nav aria-label="Paginação">
+								<ul class="pagination mb-0">
+
+									<!-- Anterior -->
+									<li class="page-item" th:classappend="${departamentos.first} ? 'disabled'">
+										<a	class="page-link fs-7" th:href="@{/departamentos(page=${departamentos.number - 1},
+										filtroNome=${filtro.filtroNome},
+										size=${filtro.size})}">
+										Anterior </a></li>
+
+									<!-- Números -->
+									<li
+											th:each="i : ${#numbers.sequence(0, departamentos.totalPages-1)}"
+											class="page-item"
+											th:classappend="${i == departamentos.number} ? 'active'"><a
+											class="page-link fs-7"
+											th:href="@{/departamentos(page=${i},
+										filtroNome=${filtro.filtroNome},
+										iltroStatus=${filtro.filtroStatus},
+										size=${filtro.size})}"
+											th:text="${i + 1}"> </a></li>
+
+									<!-- Próxima -->
+									<li class="page-item"
+									    th:classappend="${departamentos.last} ? 'disabled'"><a
+											class="page-link fs-7"
+											th:href="@{/departamentos(page=${departamentos.number + 1},
+										filtroNome=${filtro.filtroNome},
+										filtroStatus=${filtro.filtroStatus},
+										size=${filtro.size})}">
+										Próxima </a></li>
+
+								</ul>
+							</nav>
+
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+
+</body>
+</html>

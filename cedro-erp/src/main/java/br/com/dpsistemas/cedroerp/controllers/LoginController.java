@@ -3,6 +3,7 @@ package br.com.dpsistemas.cedroerp.controllers;
 import java.util.Set;
 
 import br.com.dpsistemas.cedroerp.dtos.UsuarioSessaoDTO;
+import br.com.dpsistemas.cedroerp.mappers.UsuarioSessaoMapper;
 import br.com.dpsistemas.cedroerp.models.Usuario;
 import br.com.dpsistemas.cedroerp.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,14 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class LoginController {
 	private final UsuarioService usuarioService;
+	private final UsuarioSessaoMapper usuarioSessaoMapper;
 
 	public LoginController(
-			UsuarioService usuarioService) {
+			UsuarioService usuarioService,
+			UsuarioSessaoMapper usuarioSessaoMapper) {
 
 		this.usuarioService = usuarioService;
+		this.usuarioSessaoMapper =	usuarioSessaoMapper;
 	}
 	
 	@GetMapping("/login")
@@ -40,67 +44,20 @@ public class LoginController {
 	public String login(
 			@RequestParam String username,
 			@RequestParam String password,
-			@RequestParam(
-					defaultValue = "login"
-			) String loginType,
+			@RequestParam(defaultValue = "login") String loginType,
 			HttpSession session,
 			RedirectAttributes redirectAttributes) {
 
 		try {
-
-			Usuario usuario =
-					usuarioService.autenticar(
-							username,
-							password,
-							loginType
-					);
-
-			UsuarioSessaoDTO usuarioSessao =
-					new UsuarioSessaoDTO();
-
-			usuarioSessao.setIdUsuario(usuario.getId());
-			usuarioSessao.setIdEmpresa(usuario.getEmpresa().getId());
-			usuarioSessao.setIdDepartamento(
-					usuario.getDepartamento().getId()
-			);
-
-			usuarioSessao.setNome(usuario.getNome());
-
-			usuarioSessao.setNomeEmpresa(
-					usuario.getEmpresa().getNomeFantasia()
-			);
-
-			usuarioSessao.setNomeDepartamento(
-					usuario.getDepartamento().getNome()
-			);
-
-			usuarioSessao.setPerfil(usuario.getPerfil());
-			usuarioSessao.setFoto(usuario.getFoto());
-
-			session.setAttribute(
-					"usuarioLogado",
-					usuarioSessao
-			);
-
+			Usuario usuario =	usuarioService.autenticar(username,	password,loginType);
+			UsuarioSessaoDTO usuarioSessao = usuarioSessaoMapper.toDTO(usuario);
+			session.setAttribute("usuarioLogado",	usuarioSessao); //aqui a sessao é atribuida
 			return "redirect:/home";
 
 		} catch (IllegalArgumentException e) {
-
-			redirectAttributes.addFlashAttribute(
-					"erro",
-					e.getMessage()
-			);
-
-			redirectAttributes.addAttribute(
-					"login",
-					username
-			);
-
-			redirectAttributes.addAttribute(
-					"modo",
-					"login"
-			);
-
+			redirectAttributes.addFlashAttribute("erro",e.getMessage());
+			redirectAttributes.addAttribute("login",username);
+			redirectAttributes.addAttribute("modo",	"login");
 			return "redirect:/login";
 		}
 	}
