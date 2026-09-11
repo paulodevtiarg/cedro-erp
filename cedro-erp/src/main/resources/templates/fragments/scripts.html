@@ -1206,4 +1206,48 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		});
 	</script>
+
+	<!--Ativa Maiusculo -->
+	<script>
+		document.addEventListener("input", function (event) {
+
+			const campo = event.target;
+
+			if (!(campo instanceof HTMLInputElement)) {
+				return;
+			}
+
+			// Tipos nos quais NÃO devemos transformar o valor
+			const tiposIgnorados = [
+				"password",
+				"email",
+				"number",
+				"date",
+				"time",
+				"file",
+				"checkbox",
+				"radio",
+				"hidden"
+			];
+
+			if (tiposIgnorados.includes(campo.type)) {
+				return;
+			}
+
+			// Permite desativar em algum campo específico
+			if (campo.hasAttribute("data-no-uppercase")) {
+				return;
+			}
+
+			const inicio = campo.selectionStart;
+			const fim = campo.selectionEnd;
+
+			campo.value = campo.value.toUpperCase();
+
+			// Mantém o cursor na posição correta
+			if (inicio !== null && fim !== null) {
+				campo.setSelectionRange(inicio, fim);
+			}
+		});
+	</script>
 </th:block>

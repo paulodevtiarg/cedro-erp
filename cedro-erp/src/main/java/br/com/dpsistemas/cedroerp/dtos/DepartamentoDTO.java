@@ -6,20 +6,20 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class DepartamentoDTO {
 
     private Long id;
 
-    @NotNull(message = "A empresa é obrigatória.")
+
     private Long idEmpresa;
 
     @NotBlank(message = "O nome do departamento é obrigatório.")
     @Size(max = 255, message = "O nome deve possuir no máximo 255 caracteres.")
     private String nome;
 
-    @NotBlank(message = "A descrição é obrigatória.")
-    @Size(max = 255, message = "A descrição deve possuir no máximo 255 caracteres.")
+
     private String descricao;
 
     private Boolean status;
@@ -29,25 +29,12 @@ public class DepartamentoDTO {
     private LocalDateTime dataAlteracao;
 
     private String filtroNome;
-
-    /*
-     * null = Todos
-     * 0    = Inativos
-     * 1    = Ativos
-     */
-    private Integer filtroStatus;
-
-    /*
-     * Página atual.
-     * Spring Data começa em zero.
-     */
+    private Integer filtroStatus = 1;
     private Integer page = 0;
-
-    /*
-     * Quantidade de registros:
-     * 5, 10, 20 ou 30
-     */
     private Integer size = 10;
+
+
+
     public Long getId() {
         return id;
     }
@@ -134,5 +121,25 @@ public class DepartamentoDTO {
 
     public void setSize(Integer size) {
         this.size = size;
+    }
+
+    public String getDataAlteracaoFormatada() {
+        if (dataAlteracao == null) {
+            return "";
+        }
+
+        return dataAlteracao.format(
+                DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        );
+    }
+
+    public String getDataCadastroFormatada() {
+        if (dataCadastro == null) {
+            return "";
+        }
+
+        return dataCadastro.format(
+                DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        );
     }
 }

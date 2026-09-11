@@ -11,6 +11,15 @@
             Buscar
         </button>
     </div>
+    <div th:fragment="btnLimpar(url, titulo)">
+        <a th:href="${url}"
+           class="btn btn-outline-sistema btn-sm w-100"
+           data-bs-toggle="tooltip"
+           th:title="${titulo}">
+            <i class="fa-duotone fa-solid fa-broom"></i>
+            Limpar
+        </a>
+    </div>
 
 </body>
 </html>

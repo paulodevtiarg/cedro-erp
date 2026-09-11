@@ -34,16 +34,10 @@ public interface UsuarioRepository
             Long idEmpresa
     );
 
-
-    /*
-     * ==================================================
-     * INDEX - FILTROS
-     * ==================================================
-     *
-     * nome   = null → todos
-     * cpf    = null → todos
-     * status = null → todos
-     */
+    boolean existsByDepartamento_IdAndEmpresa_Id(
+            Long idDepartamento,
+            Long idEmpresa
+    );
 
     @EntityGraph(attributePaths = {
             "empresa",
