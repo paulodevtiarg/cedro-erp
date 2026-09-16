@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -338,5 +339,25 @@ public class UsuarioDTO {
 
     public void setCodigoSeguranca(String codigoSeguranca) {
         this.codigoSeguranca = codigoSeguranca;
+    }
+
+    public String getDataAlteracaoFormatada() {
+        if (dataAlteracao == null) {
+            return "";
+        }
+
+        return dataAlteracao.format(
+                DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        );
+    }
+
+    public String getDataCadastroFormatada() {
+        if (dataCadastro == null) {
+            return "";
+        }
+
+        return dataCadastro.format(
+                DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        );
     }
 }

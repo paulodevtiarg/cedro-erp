@@ -305,6 +305,7 @@ public class UsuarioService {
      * ==================================================
      */
 
+
     @Transactional
     public void ativar(
             Long id,

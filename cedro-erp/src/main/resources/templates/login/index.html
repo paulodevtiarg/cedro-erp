@@ -994,10 +994,22 @@ to {
 				const config = tiposLogin[tipoAtual];
 				const valor = $username.val().trim();
 
+				// valida ainda com a máscara visível
 				if (!config.validation(valor)) {
 					alert(config.errorMessage);
 					e.preventDefault();
 					return false;
+				}
+				/*
+         * Se for CPF, remove a máscara ANTES
+         * de enviar para o Controller.
+         */
+				if (tipoAtual === 'cpf') {
+
+					const cpfSemMascara =
+							valor.replace(/\D/g, '');
+
+					$username.val(cpfSemMascara);
 				}
 
 				return true;

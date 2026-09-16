@@ -62,11 +62,13 @@ public class LoginController {
 			@RequestParam(defaultValue = "login") String loginType,
 			HttpSession session,
 			RedirectAttributes redirectAttributes) {
+		if ("cpf".equalsIgnoreCase(loginType)) {
+			username = username.replaceAll("\\D", "");
+		}
 
 		try {
 			Usuario usuario =	usuarioService.autenticar(username,	password,loginType);
 			UsuarioSessaoDTO usuarioSessao = usuarioSessaoMapper.toDTO(usuario);
-
 
 			/*
 			 * PRIMEIRO ACESSO
@@ -77,11 +79,8 @@ public class LoginController {
 			if (Boolean.TRUE.equals(usuario.getPrimeiroAcesso())) {
 				session.removeAttribute("usuarioLogado");
 				session.setAttribute("usuarioPrimeiroAcesso",usuarioSessao);
-
 				return "redirect:/login?modo=primeiro-acesso";
 			}
-
-
 
 			session.setAttribute("usuarioLogado",	usuarioSessao); //aqui a sessao é atribuida
 			session.removeAttribute("usuarioPrimeiroAcesso");
@@ -98,18 +97,9 @@ public class LoginController {
 	private String autenticarNovaSessao(
 			Usuario usuario,
 			HttpSession session) {
-
-		UsuarioSessaoDTO usuarioSessao =
-				usuarioSessaoMapper.toDTO(usuario);
-
-		session.removeAttribute(
-				"usuarioPrimeiroAcesso"
-		);
-
-		session.setAttribute(
-				"usuarioLogado",
-				usuarioSessao
-		);
+		UsuarioSessaoDTO usuarioSessao =usuarioSessaoMapper.toDTO(usuario);
+		session.removeAttribute("usuarioPrimeiroAcesso");
+		session.setAttribute("usuarioLogado",	usuarioSessao);
 
 		return "redirect:/home";
 	}

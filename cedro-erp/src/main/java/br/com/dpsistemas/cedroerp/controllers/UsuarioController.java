@@ -153,4 +153,27 @@ public class UsuarioController {
 
         return "redirect:/usuarios";
     }
+
+    @GetMapping("/detalhes/{id}")
+    public String detalhes(
+            @PathVariable Long id,
+            @ModelAttribute("filtro") UsuarioDTO filtro,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String acao,
+            Model model) {
+        Long idEmpresa = usuarioLogadoService.getEmpresaId();
+        UsuarioDTO dto = usuarioService.buscarPorId(id,idEmpresa );
+
+        model.addAttribute("usuario", dto);
+
+
+        model.addAttribute("pageTitle", "Usuarios:Detalhes - Cedro ERP");
+        model.addAttribute("activeMenu","pessoal");
+
+        String queryParams = urlUtils.usuarioQuery(filtro, page);
+        model.addAttribute("queryParams", queryParams);
+
+        return "usuarios/detalhes";
+    }
+
 }
