@@ -123,7 +123,7 @@
 											<tr th:each="usuario : ${usuarios}">
 												<td style="width: 5%;" class="text-center">
 													<img th:if="${usuario.foto != null}" th:src="${usuario.foto}" class="foto-tabela">
-													<img th:if="${usuario.foto == null}" src="https://res.cloudinary.com/dyl8tkovm/image/upload/v1719921242/drpjakqpsuo1lf8jh3no.png" class="foto-tabela" alt="Foto Usuário">
+													<img th:if="${usuario.foto == null}" src="/img/user.png" class="foto-tabela" alt="Foto Usuário">
 												</td>
 												<td class="align-middle" th:text="${usuario.nome}">	</td>
 												<td class="align-middle" th:text="${usuario.getCpfFormatado}"></td>
