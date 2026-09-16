@@ -2,6 +2,7 @@ package br.com.dpsistemas.cedroerp.models;
 
 import br.com.dpsistemas.cedroerp.enumerators.EstadosEnum;
 import br.com.dpsistemas.cedroerp.enumerators.PerfilEnum;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -49,11 +50,15 @@ public class Usuario extends BaseEntity {
     @Column(name = "FOTO", nullable = true, length = 255)
     private String foto;
 
+    @Column(name="PRIMEIRO_ACESSO", nullable = true, length = 255)
+    private Boolean primeiroAcesso;
+
+
     @Column(name = "CODIGO_SEGURANCA", nullable = true, length = 255)
     private String codSeguranca;
 
-    @Column(name = "CODIGO_EXPIRACAO")
-    private LocalDateTime codigoExpiracao;
+    @Column(name = "DATA_EXPIRACAO")
+    private LocalDateTime dataExpiracao;
 
     public Long getId() {
         return id;
@@ -151,11 +156,19 @@ public class Usuario extends BaseEntity {
         this.codSeguranca = codSeguranca;
     }
 
-    public LocalDateTime getCodigoExpiracao() {
-        return codigoExpiracao;
+    public LocalDateTime getDataExpiracao() {
+        return dataExpiracao;
     }
 
-    public void setCodigoExpiracao(LocalDateTime codigoExpiracao) {
-        this.codigoExpiracao = codigoExpiracao;
+    public void setDataExpiracao(LocalDateTime dataExpiracao) {
+        this.dataExpiracao = dataExpiracao;
+    }
+
+    public Boolean getPrimeiroAcesso() {
+        return primeiroAcesso;
+    }
+
+    public void setPrimeiroAcesso(Boolean primeiroAcesso) {
+        this.primeiroAcesso = primeiroAcesso;
     }
 }

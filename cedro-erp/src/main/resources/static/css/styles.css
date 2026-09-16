@@ -103,8 +103,8 @@
         
         .btn-foto {
             width: 100%;
-            margin-top: 10px;
-            font-size: 0.9rem;
+            margin-top: 5px;
+            font-size: 0.8rem;
         }
         
         .nome-foto {
@@ -213,12 +213,10 @@
 }
 
 .foto-tabela {
-    width: 120px;
-    height: 120px;
+    width: 60px;
+    height: 60px;
     object-fit: cover;
-
-    object-position: center top; /* 🔥 ESSA LINHA RESOLVE */
-
+    object-position: center center; /* 🔥 ESSA LINHA RESOLVE */
     border-radius: 8px;
     padding: 3px;
     background-color: #fff;
@@ -405,4 +403,38 @@
 
 .foto-adolescente-card:hover {
     transform: scale(1.02);
+}
+
+
+    .small-pr{
+        font-size: 55% !important;
+        font-weight: 400  !important;
+    }
+.foto-3x4-container-2 {
+    width: 100%;
+    max-width: 190px;
+    margin: 0 auto;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.btn-formulario {
+    min-width: 110px;
+}
+@media (max-width: 576px) {
+
+    .btn-formulario {
+        min-width: 70px;
+        padding: 5px 7px;
+        font-size: 0.5rem;
+        line-height: 1.2;
+    }
+
+    .btn-formulario i {
+        display: block;
+        font-size: 0.8rem;
+        margin-bottom: 2px;
+    }
 }

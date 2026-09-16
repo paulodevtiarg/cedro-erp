@@ -36,6 +36,10 @@ public class UsuarioSessaoMapper {
                 usuario.getFoto()
         );
 
+        dto.setPrimeiroAcesso(
+                usuario.getPrimeiroAcesso()
+        );
+
         /*
          * Departamento pode ser nulo?
          * Se puder, já deixamos protegido.

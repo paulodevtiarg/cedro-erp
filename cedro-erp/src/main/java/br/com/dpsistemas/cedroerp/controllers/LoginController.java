@@ -33,9 +33,24 @@ public class LoginController {
 	@GetMapping("/login")
 	public String loginPage(@RequestParam(required = false) String modo,
 	                        @RequestParam(required = false) String login,
+	                        HttpSession session,
 	                        Model model) {
 
-	    model.addAttribute("modo", modo == null ? "login" : modo);
+		String modoAtual =	modo == null? "login": modo;
+
+		/*
+		 * Não permite abrir manualmente
+		 * /login?modo=primeiro-acesso
+		 * sem ter autenticado antes.
+		 */
+		if (
+				"primeiro-acesso".equals(modoAtual) &&	session.getAttribute("usuarioPrimeiroAcesso") == null
+		) {
+
+			modoAtual = "login";
+		}
+
+		model.addAttribute("modo",modoAtual);
 	    model.addAttribute("login", login);
 
 	    return "login/index";
@@ -51,7 +66,25 @@ public class LoginController {
 		try {
 			Usuario usuario =	usuarioService.autenticar(username,	password,loginType);
 			UsuarioSessaoDTO usuarioSessao = usuarioSessaoMapper.toDTO(usuario);
+
+
+			/*
+			 * PRIMEIRO ACESSO
+			 *
+			 * A senha já foi validada,
+			 * mas ainda NÃO liberamos acesso ao sistema.
+			 */
+			if (Boolean.TRUE.equals(usuario.getPrimeiroAcesso())) {
+				session.removeAttribute("usuarioLogado");
+				session.setAttribute("usuarioPrimeiroAcesso",usuarioSessao);
+
+				return "redirect:/login?modo=primeiro-acesso";
+			}
+
+
+
 			session.setAttribute("usuarioLogado",	usuarioSessao); //aqui a sessao é atribuida
+			session.removeAttribute("usuarioPrimeiroAcesso");
 			return "redirect:/home";
 
 		} catch (IllegalArgumentException e) {
@@ -64,12 +97,19 @@ public class LoginController {
 
 	private String autenticarNovaSessao(
 			Usuario usuario,
-			RedirectAttributes redirectAttributes) {
+			HttpSession session) {
 
-		/*
-		 * Vamos ajustar esta parte abaixo,
-		 * porque precisamos da nova HttpSession.
-		 */
+		UsuarioSessaoDTO usuarioSessao =
+				usuarioSessaoMapper.toDTO(usuario);
+
+		session.removeAttribute(
+				"usuarioPrimeiroAcesso"
+		);
+
+		session.setAttribute(
+				"usuarioLogado",
+				usuarioSessao
+		);
 
 		return "redirect:/home";
 	}
@@ -79,7 +119,77 @@ public class LoginController {
         session.invalidate();
         return "redirect:/login";
     }
-    
+	@PostMapping("/primeiro-acesso/manter-senha")
+	public String manterSenhaPrimeiroAcesso(
+			HttpSession session,
+			RedirectAttributes ra) {
+
+		UsuarioSessaoDTO usuarioPendente =
+				(UsuarioSessaoDTO)
+						session.getAttribute(
+								"usuarioPrimeiroAcesso"
+						);
+
+		if (usuarioPendente == null) {
+
+			return "redirect:/login";
+		}
+
+		Usuario usuario =
+				usuarioService.finalizarPrimeiroAcesso(
+						usuarioPendente.getIdUsuario(),
+						usuarioPendente.getIdEmpresa()
+				);
+
+		/*
+		 * Agora sim vira usuário logado.
+		 */
+		return autenticarNovaSessao(usuario,session	);
+	}
+
+	@PostMapping("/primeiro-acesso/alterar-senha")
+	public String alterarSenhaPrimeiroAcesso(
+			@RequestParam String senha,
+			@RequestParam String confirmarSenha,
+			HttpSession session,
+			RedirectAttributes ra) {
+
+		UsuarioSessaoDTO usuarioPendente =
+				(UsuarioSessaoDTO)
+						session.getAttribute(
+								"usuarioPrimeiroAcesso"
+						);
+
+		if (usuarioPendente == null) {
+
+			return "redirect:/login";
+		}
+
+		try {
+
+			Usuario usuario =
+					usuarioService.alterarSenhaPrimeiroAcesso(
+							usuarioPendente.getIdUsuario(),
+							usuarioPendente.getIdEmpresa(),
+							senha,
+							confirmarSenha
+					);
+
+			return autenticarNovaSessao(
+					usuario,
+					session
+			);
+
+		} catch (IllegalArgumentException e) {
+
+			ra.addFlashAttribute(
+					"erro",
+					e.getMessage()
+			);
+
+			return "redirect:/login?modo=primeiro-acesso";
+		}
+	}
 
 	
 }

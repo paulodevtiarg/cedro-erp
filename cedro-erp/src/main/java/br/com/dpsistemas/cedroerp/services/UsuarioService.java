@@ -9,6 +9,8 @@ import br.com.dpsistemas.cedroerp.repositorys.UsuarioRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Set;
 
@@ -43,65 +46,27 @@ public class UsuarioService {
             DepartamentoService departamentoService,
             PasswordEncoder passwordEncoder) {
 
-        this.usuarioRepository =
-                usuarioRepository;
-
-        this.usuarioMapper =
-                usuarioMapper;
-
-        this.empresaService =
-                empresaService;
-
-        this.departamentoService =
-                departamentoService;
-
-        this.passwordEncoder =
-                passwordEncoder;
+        this.usuarioRepository = usuarioRepository;
+        this.usuarioMapper = usuarioMapper;
+        this.empresaService = empresaService;
+        this.departamentoService = departamentoService;
+        this.passwordEncoder = passwordEncoder;
     }
-
-
-    /*
-     * ==================================================
-     * INDEX
-     * ==================================================
-     */
 
     @Transactional(readOnly = true)
     public Page<UsuarioDTO> listar(
             UsuarioDTO filtro,
             Long idEmpresa) {
 
-        validarEmpresa(idEmpresa);
-
         if (filtro == null) {
             filtro = new UsuarioDTO();
         }
 
-        String nome =
-                normalizarFiltro(
-                        filtro.getFiltroNome()
-                );
-
-        String cpf =
-                normalizarCpfFiltro(
-                        filtro.getFiltroCpf()
-                );
-
-        Boolean status =
-                converterStatus(
-                        filtro.getFiltroStatus()
-                );
-
-        int page =
-                normalizarPagina(
-                        filtro.getPage()
-                );
-
-        int size =
-                normalizarTamanhoPagina(
-                        filtro.getSize()
-                );
-
+        String nome =  filtro.getFiltroNome();
+        String cpf = filtro.getFiltroCpf();
+        Boolean status = converterStatus(filtro.getFiltroStatus());
+        int page = normalizarPagina(filtro.getPage());
+        int size = normalizarTamanhoPagina(filtro.getSize());
 
         Pageable pageable =
                 PageRequest.of(
@@ -113,28 +78,17 @@ public class UsuarioService {
                         )
                 );
 
-
-        Page<Usuario> usuarios =
-                usuarioRepository.filtrar(
+        return usuarioRepository
+                .filtrar(
                         idEmpresa,
                         nome,
                         cpf,
                         status,
                         pageable
-                );
-
-
-        return usuarios.map(
-                usuarioMapper::toDTO
-        );
+                )
+                .map(usuarioMapper::toDTO);
     }
 
-
-    /*
-     * ==================================================
-     * BUSCAR DTO
-     * ==================================================
-     */
 
     @Transactional(readOnly = true)
     public UsuarioDTO buscarPorId(
@@ -152,12 +106,6 @@ public class UsuarioService {
         );
     }
 
-
-    /*
-     * ==================================================
-     * BUSCAR ENTIDADE
-     * ==================================================
-     */
 
     @Transactional(readOnly = true)
     public Usuario buscarEntidadePorId(
@@ -186,79 +134,22 @@ public class UsuarioService {
     }
 
 
-    /*
-     * ==================================================
-     * CADASTRAR
-     * ==================================================
-     */
-
     @Transactional
     public UsuarioDTO salvar(
             UsuarioDTO dto,
             Long idEmpresa) {
 
         if (dto == null) {
-            throw new IllegalArgumentException(
-                    "Dados do usuário não informados."
-            );
+            throw new IllegalArgumentException("Dados do usuário não informados.");
         }
 
-        validarEmpresa(idEmpresa);
-
         normalizarDados(dto);
-
-        validarDadosObrigatorios(dto);
-
-        validarSenhaCadastro(dto);
-
-        validarDuplicidadeCadastro(dto);
-
-
-        Empresa empresa =
-                empresaService.buscarPorId(
-                        idEmpresa
-                );
-
-
-        /*
-         * Esse método garante que o departamento
-         * pertence à mesma empresa.
-         */
-        Departamento departamento =
-                departamentoService
-                        .buscarEntidadePorId(
-                                dto.getIdDepartamento(),
-                                idEmpresa
-                        );
-
-
-        Usuario usuario =
-                usuarioMapper.toEntity(
-                        dto,
-                        empresa,
-                        departamento
-                );
-
-
-        /*
-         * O texto puro nunca é salvo.
-         */
-        usuario.setSenha(
-                passwordEncoder.encode(
-                        dto.getSenha()
-                )
-        );
-
-
-        Usuario salvo =
-                usuarioRepository.save(
-                        usuario
-                );
-
-
-        return usuarioMapper.toDTO(
-                salvo
-        );
+        Empresa empresa = empresaService.buscarPorId(idEmpresa);
+        Departamento departamento = departamentoService.buscarEntidadePorId(dto.getIdDepartamento(),idEmpresa);
+        Usuario usuario = usuarioMapper.toEntity(dto,empresa,departamento);
+        usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
+        Usuario salvo = usuarioRepository.save(usuario);
+        return usuarioMapper.toDTO(salvo);
     }
 
 
@@ -280,77 +171,20 @@ public class UsuarioService {
             );
         }
 
-
-        Usuario usuario =
-                buscarEntidadePorId(
-                        id,
-                        idEmpresa
-                );
-
-
+        Usuario usuario = buscarEntidadePorId(id,idEmpresa);
         normalizarDados(dto);
-
-        validarDadosObrigatorios(dto);
-
-        validarDuplicidadeAlteracao(
-                dto,
-                id
-        );
-
-
-        Empresa empresa =
-                empresaService.buscarPorId(
-                        idEmpresa
-                );
-
-
-        Departamento departamento =
-                departamentoService
-                        .buscarEntidadePorId(
-                                dto.getIdDepartamento(),
-                                idEmpresa
-                        );
-
-
-        usuarioMapper.updateEntity(
-                dto,
-                usuario,
-                empresa,
-                departamento
-        );
-
-
-        /*
-         * Se informar uma nova senha,
-         * altera.
-         *
-         * Se deixar vazio,
-         * mantém a senha atual.
-         */
+        validarDuplicidadeAlteracao(dto,id);
+        Empresa empresa = empresaService.buscarPorId(idEmpresa);
+        Departamento departamento = departamentoService.buscarEntidadePorId(dto.getIdDepartamento(),idEmpresa);
+        usuarioMapper.updateEntity(dto,usuario,empresa,departamento);
         if (
-                dto.getSenha() != null &&
-                        !dto.getSenha().isBlank()
+                dto.getSenha() != null && !dto.getSenha().isBlank()
         ) {
-
-            validarNovaSenha(dto);
-
-            usuario.setSenha(
-                    passwordEncoder.encode(
-                            dto.getSenha()
-                    )
+              usuario.setSenha(passwordEncoder.encode(dto.getSenha())
             );
         }
-
-
-        Usuario atualizado =
-                usuarioRepository.save(
-                        usuario
-                );
-
-
-        return usuarioMapper.toDTO(
-                atualizado
-        );
+        Usuario atualizado = usuarioRepository.save(usuario);
+        return usuarioMapper.toDTO(atualizado);
     }
 
 
@@ -401,10 +235,7 @@ public class UsuarioService {
 
             case "cpf" -> {
 
-                String cpf =
-                        somenteNumeros(
-                                identificador
-                        );
+                String cpf = identificador;
 
                 usuario = usuarioRepository
                         .findByCpf(cpf)
@@ -546,191 +377,68 @@ public class UsuarioService {
     }
 
 
-    /*
-     * ==================================================
-     * NORMALIZAÇÃO
-     * ==================================================
-     */
+    @Transactional
+    public void atualizarFoto(
+            Long idUsuario,
+            Long idEmpresa,
+            String foto) {
 
+        Usuario usuario =
+                buscarEntidadePorId(
+                        idUsuario,
+                        idEmpresa
+                );
+
+        usuario.setFoto(foto);
+
+        usuarioRepository.save(usuario);
+    }
     private void normalizarDados(
             UsuarioDTO dto) {
 
         if (dto.getLogin() != null) {
-
-            dto.setLogin(
-                    dto.getLogin()
-                            .trim()
-                            .toLowerCase(Locale.ROOT)
-            );
+            dto.setLogin(dto.getLogin().trim().toLowerCase(Locale.ROOT));
         }
-
 
         if (dto.getEmail() != null) {
-
-            dto.setEmail(
-                    dto.getEmail()
-                            .trim()
-                            .toLowerCase(Locale.ROOT)
+            dto.setEmail(dto.getEmail().trim().toLowerCase(Locale.ROOT)
             );
         }
-
 
         if (dto.getCpf() != null) {
-
-            dto.setCpf(
-                    somenteNumeros(
-                            dto.getCpf()
-                    )
-            );
+            dto.setCpf(dto.getCpf());
         }
-
-
         if (dto.getTelefone() != null) {
-
-            dto.setTelefone(
-                    somenteNumeros(
-                            dto.getTelefone()
-                    )
-            );
+            dto.setTelefone(dto.getTelefone());
         }
-
-
         if (dto.getNome() != null) {
-
-            dto.setNome(
-                    dto.getNome().trim()
-            );
+            dto.setNome(dto.getNome().trim());
         }
     }
 
 
-    /*
-     * ==================================================
-     * VALIDAÇÕES
-     * ==================================================
-     */
+    @Transactional
+    public Usuario finalizarPrimeiroAcesso(
+            Long idUsuario,
+            Long idEmpresa) {
 
-    private void validarDadosObrigatorios(
-            UsuarioDTO dto) {
+        Usuario usuario =
+                buscarEntidadePorId(
+                        idUsuario,
+                        idEmpresa
+                );
 
-        if (
-                dto.getLogin() == null ||
-                        dto.getLogin().isBlank()
-        ) {
+        usuario.setPrimeiroAcesso(false);
 
-            throw new IllegalArgumentException(
-                    "O login é obrigatório."
-            );
-        }
-
-
-        if (
-                dto.getNome() == null ||
-                        dto.getNome().isBlank()
-        ) {
-
-            throw new IllegalArgumentException(
-                    "O nome é obrigatório."
-            );
-        }
-
-
-        if (
-                dto.getEmail() == null ||
-                        dto.getEmail().isBlank()
-        ) {
-
-            throw new IllegalArgumentException(
-                    "O e-mail é obrigatório."
-            );
-        }
-
-
-        if (
-                dto.getCpf() == null ||
-                        dto.getCpf().length() != 11
-        ) {
-
-            throw new IllegalArgumentException(
-                    "CPF inválido."
-            );
-        }
-
-
-        if (dto.getIdDepartamento() == null) {
-
-            throw new IllegalArgumentException(
-                    "O departamento é obrigatório."
-            );
-        }
-
-
-        if (dto.getPerfil() == null) {
-
-            throw new IllegalArgumentException(
-                    "O perfil é obrigatório."
-            );
-        }
+        return usuarioRepository.save(usuario);
     }
-
-
-    private void validarSenhaCadastro(
-            UsuarioDTO dto) {
-
-        if (
-                dto.getSenha() == null ||
-                        dto.getSenha().isBlank()
-        ) {
-
-            throw new IllegalArgumentException(
-                    "A senha é obrigatória."
-            );
-        }
-
-        validarNovaSenha(dto);
-    }
-
-
-    private void validarNovaSenha(
-            UsuarioDTO dto) {
-
-        if (dto.getSenha().length() < 6) {
-
-            throw new IllegalArgumentException(
-                    "A senha deve possuir no mínimo 6 caracteres."
-            );
-        }
-
-
-        if (
-                dto.getConfirmarSenha() == null ||
-                        !dto.getSenha().equals(
-                                dto.getConfirmarSenha()
-                        )
-        ) {
-
-            throw new IllegalArgumentException(
-                    "As senhas informadas não conferem."
-            );
-        }
-    }
-
-
-    /*
-     * ==================================================
-     * DUPLICIDADES
-     * ==================================================
-     */
-
     private void validarDuplicidadeCadastro(
-            UsuarioDTO dto) {
+            UsuarioDTO dto,
+            Long idEmpresa) {
 
-        if (
-                usuarioRepository
-                        .existsByLoginIgnoreCase(
-                                dto.getLogin()
-                        )
-        ) {
+        // Login único
+        if (usuarioRepository.existsByLoginIgnoreCase(
+                dto.getLogin())) {
 
             throw new IllegalArgumentException(
                     "Já existe um usuário com esse login."
@@ -738,32 +446,140 @@ public class UsuarioService {
         }
 
 
-        if (
-                usuarioRepository
-                        .existsByEmailIgnoreCase(
-                                dto.getEmail()
-                        )
-        ) {
-
-            throw new IllegalArgumentException(
-                    "Já existe um usuário com esse e-mail."
-            );
-        }
-
-
-        if (
-                usuarioRepository
-                        .existsByCpf(
-                                dto.getCpf()
-                        )
-        ) {
-
-            throw new IllegalArgumentException(
-                    "Já existe um usuário com esse CPF."
-            );
-        }
     }
 
+    @Transactional
+    public Usuario alterarSenhaPrimeiroAcesso(
+            Long idUsuario,
+            Long idEmpresa,
+            String senha,
+            String confirmarSenha) {
+
+        if (
+                senha == null ||
+                        senha.isBlank()
+        ) {
+
+            throw new IllegalArgumentException(
+                    "Informe a nova senha."
+            );
+        }
+
+        if (senha.length() < 6) {
+
+            throw new IllegalArgumentException(
+                    "A senha deve possuir no mínimo 6 caracteres."
+            );
+        }
+
+        if (
+                confirmarSenha == null ||
+                        !senha.equals(confirmarSenha)
+        ) {
+
+            throw new IllegalArgumentException(
+                    "As senhas informadas não conferem."
+            );
+        }
+
+        Usuario usuario =
+                buscarEntidadePorId(
+                        idUsuario,
+                        idEmpresa
+                );
+
+        usuario.setSenha(
+                passwordEncoder.encode(
+                        senha
+                )
+        );
+
+        usuario.setPrimeiroAcesso(false);
+
+        return usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public void salvarCodigoRecuperacao(
+            Long idUsuario,
+            String codigo,
+            LocalDateTime dataExpiracao) {
+
+        Usuario usuario =  usuarioRepository.findById(idUsuario)
+                        .orElseThrow(() ->
+                                new EntityNotFoundException(
+                                        "Usuário não encontrado."
+                                )
+                        );
+
+        usuario.setCodSeguranca(codigo);
+        usuario.setDataExpiracao(dataExpiracao);
+        usuarioRepository.save(usuario);
+    }
+
+
+    public Usuario buscarPorLoginCpfOuEmail(String valor) {
+        return usuarioRepository
+                .findByLoginOrCpfOrEmail(valor, valor, valor)
+                .orElse(null);
+    }
+    @Transactional(readOnly = true)
+    public boolean existeLoginOutroUsuario(
+            String login,
+            Long idEmpresa,
+            Long idUsuario) {
+
+        if (login == null || login.isBlank()) {
+            return false;
+        }
+
+        return usuarioRepository
+                .existsByEmpresa_IdAndLoginIgnoreCaseAndIdNot(
+                        idEmpresa,
+                        login.trim(),
+                        idUsuario
+                );
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existeLogin(
+            String login,
+            Long idEmpresa) {
+
+        if (login == null || login.isBlank()) {
+            return false;
+        }
+
+        return usuarioRepository
+                .existsByEmpresa_IdAndLoginIgnoreCase(
+                        idEmpresa,
+                        login.trim()
+                );
+    }
+    @Transactional(readOnly = true)
+    public boolean existeCpf(
+            String cpf,
+            Long idEmpresa) {
+
+        return usuarioRepository
+                .existsByEmpresa_IdAndCpf(
+                        idEmpresa,
+                        cpf
+                );
+    }
+    @Transactional(readOnly = true)
+    public boolean existeCpfOutroUsuario(
+            String cpf,
+            Long idEmpresa,
+            Long idUsuario) {
+
+        return usuarioRepository
+                .existsByEmpresa_IdAndCpfAndIdNot(
+                        idEmpresa,
+                        cpf,
+                        idUsuario
+                );
+    }
 
     private void validarDuplicidadeAlteracao(
             UsuarioDTO dto,
@@ -818,14 +634,11 @@ public class UsuarioService {
      * ==================================================
      */
 
-    private String normalizarFiltro(
-            String valor) {
-
+    private String normalizarFiltro(String valor)
+    {
         if (
-                valor == null ||
-                        valor.isBlank()
+                valor == null ||  valor.isBlank()
         ) {
-
             return null;
         }
 
@@ -833,19 +646,6 @@ public class UsuarioService {
     }
 
 
-    private String normalizarCpfFiltro(
-            String cpf) {
-
-        if (
-                cpf == null ||
-                        cpf.isBlank()
-        ) {
-
-            return null;
-        }
-
-        return somenteNumeros(cpf);
-    }
 
 
     /*
@@ -904,26 +704,6 @@ public class UsuarioService {
     }
 
 
-    /*
-     * ==================================================
-     * UTILITÁRIOS
-     * ==================================================
-     */
-
-    private String somenteNumeros(
-            String valor) {
-
-        if (valor == null) {
-            return null;
-        }
-
-        return valor.replaceAll(
-                "\\D",
-                ""
-        );
-    }
-
-
     private void validarEmpresa(
             Long idEmpresa) {
 
@@ -945,5 +725,29 @@ public class UsuarioService {
         return new IllegalArgumentException(
                 "Login ou senha inválidos."
         );
+    }
+
+    @Transactional
+    public void concluirResetSenha(
+            Long idUsuario,
+            String novaSenha) {
+
+        Usuario usuario =
+                usuarioRepository.findById(idUsuario)
+                        .orElseThrow(() ->
+                                new EntityNotFoundException(
+                                        "Usuário não encontrado."
+                                )
+                        );
+
+        usuario.setSenha(
+                passwordEncoder.encode(novaSenha)
+        );
+
+        usuario.setPrimeiroAcesso(false);
+        usuario.setCodSeguranca(null);
+        usuario.setDataExpiracao(null);
+
+        usuarioRepository.save(usuario);
     }
 }

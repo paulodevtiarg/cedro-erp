@@ -57,7 +57,7 @@
 
 							<a	th:if="${podeGerenciarCadastros and queryParams != null and queryParams != ''}"
 								th:href="@{'/departamentos/novo?' + ${queryParams}}"
-								class="btn btn-outline-sistema"
+								class="btn btn-outline-sistema btn-sm"
 								th:classappend="${!podeGerenciarCadastros} ? ' disabled opacity-50'"
 								data-bs-toggle="tooltip"
 								th:title="${podeGerenciarCadastros} ? 'Novo Registro' : 'Sem Permissão para incluir novo Registro'">
@@ -65,7 +65,7 @@
 							</a>
 							<a
 								th:if="${podeGerenciarCadastros and (queryParams == null or queryParams == '')}"
-								th:href="@{/departamentos/novo}" class="btn btn-outline-sistema"
+								th:href="@{/departamentos/novo}" class="btn btn-outline-sistema btn-sm"
 								th:classappend="${!podeGerenciarCadastros} ? ' disabled opacity-50'"
 								data-bs-toggle="tooltip" th:title="${podeGerenciarCadastros} ? 'Novo
 								Registro' : 'Sem Permissão para incluir novo Registro'"> <i
@@ -89,30 +89,13 @@
 												<input type="text" name="filtroNome" id="filtroNome" th:value="${filtro.filtroNome}"
 													   class="form-control" placeholder="Digite para buscar">
 											</div>
-											<div class="col-md-1 input-group-sm">
-												<label class="form-label text-secondary fw-semibold">Status</label>
-												<select	name="filtroStatus" class="form-select">
-												<option value="1" th:selected="${filtro.filtroStatus == 1}">Ativos</option>
-												<option value="0" th:selected="${filtro.filtroStatus == 0}">Inativos</option>
-												<option value=""  th:selected="${filtro.filtroStatus == null}">Todos</option>
-											</select>
-											</div>
-											<div class="col-md-1 input-group-sm">
-												<label class="form-label  text-secondary fw-semibold">Linhas</label> <select
-													name="size" class="form-select">
-												<option value="10" th:selected="${filtro.size == 10}">10</option>
-												<option value="15" th:selected="${filtro.size == 15}">15</option>
-												<option value="20" th:selected="${filtro.size == 20}">20</option>
-												<option value="25" th:selected="${filtro.size == 25}">25</option>
-												<option value="30" th:selected="${filtro.size == 30}">30</option>
-											</select>
-											</div>
+
+											<div th:replace="~{fragments/botoesBusca :: filtroStatus(${filtro})}"></div>
+											<div th:replace="~{fragments/botoesBusca :: filtroLinhas(${filtro})}"></div>
+
 											<div class="col-md-2 d-flex justify-content-end align-items-end  gap-1 input-group-sm">
 												<div th:replace="fragments/botoesBusca :: btnLimpar(@{/departamentos}, 'Limpar Filtros')"></div>
 												<div th:replace="fragments/botoesBusca :: btnBuscar('Aplicar Filtros')"></div>
-
-
-
 											</div>
 
 										</div>
@@ -159,7 +142,6 @@
 
 													</form>
 
-
 													<!-- Se não tiver permissão, mostra apenas o status -->
 													<span th:unless="${podeGerenciarCadastros}"
 													      th:classappend="${departamento.status} ? 'text-success' : 'text-danger'" class="fw-semibold fs-5">
@@ -204,7 +186,77 @@
 										</table>
 									</div>
 									<div class="d-block d-md-none">
+										<div th:each="departamento : ${departamentos}" class="card mb-3 shadow-sm">
+											<div class="card-body">
+												<div class="d-flex align-items-center mb-2">
+													<div class="ms-3 flex-grow-1">
+														<h5 class="mb-0 text-secondary fs-6">
+															Detalhes: ID#: <span class="fw-bolder fs-6"	th:text="'[ '+${departamento.id}+' ]'"></span>
+														</h5>
+														<span class="text-muted fs-6" th:text="${departamento.nome}"></span><br/>
+														<small class="text-muted" th:text="${departamento.descricao}"></small>
+													</div>
+													<div>
+														<form th:action="@{'/departamentos/alterar-status/'+ ${departamento.id}+ '?'+ ${queryParams}}"
+														      method="post"
+														      class="d-inline">
 
+															<button type="submit"
+															        class="btn btn-link p-0 border-0 text-decoration-none"
+															        data-bs-toggle="tooltip"
+															        th:title="${departamento.status ? 'Inativar' : 'Ativar'}">
+
+																<i th:if="${departamento.status}"
+																   class="fa-duotone fa-solid fa-circle-check text-success fs-5">
+																</i>
+
+																<i th:unless="${departamento.status}"
+																   class="fa-duotone fa-solid fa-circle-xmark text-danger fs-5">
+																</i>
+
+															</button>
+
+														</form>
+
+
+														<!-- Se não tiver permissão, mostra apenas o status -->
+														<span th:unless="${podeGerenciarCadastros}"
+														      th:classappend="${departamento.status} ? 'text-success' : 'text-danger'" class="fw-semibold fs-5">
+
+															<i th:class="${departamento.status}
+																	? 'fa-duotone fa-solid fa-circle-check'
+																	: 'fa-duotone fa-solid fa-circle-xmark'">
+															</i>
+
+   															 </span>
+
+													</div>
+												</div>
+												<div class="d-flex justify-content-end gap-2">
+													<a	th:href="@{'/departamentos/detalhes/' + ${departamento.id} + '?'+ ${queryParams}}"
+													      class="btn btn-outline-sistema btn-sm px-2"
+													      data-bs-toggle="tooltip" title="Detalhes"> <i
+															class="fa-duotone fa-eye"></i>
+													</a>
+													<a th:href="${podeGerenciarCadastros}? @{'/departamentos/editar/' + ${departamento.id} + '?' + ${queryParams}} : '#'"
+													   th:classappend="${!podeGerenciarCadastros} ? ' disabled opacity-50'"
+													   class="btn btn-outline-sistema btn-sm px-2"
+													   data-bs-toggle="tooltip"
+													   th:title="${podeGerenciarCadastros} ? 'Editar' : 'Sem permissão para editar'">
+														<i class="fa-duotone fa-pen-to-square"></i>
+													</a>
+
+													<a th:href="${podeGerenciarCadastros}? @{'/departamentos/detalhes/'+ ${departamento.id}+ '?acao=excluir&'
+                                                       + ${queryParams}}: '#'" th:classappend="${!podeGerenciarCadastros} ? ' disabled opacity-50'"
+													   class="btn btn-outline-sistema btn-sm px-2"
+													   data-bs-toggle="tooltip"
+													   title="Excluir">
+
+														<i class="fa-duotone fa-trash"></i>
+													</a>
+												</div>
+											</div>
+										</div>
 
 									</div>
 								</div>

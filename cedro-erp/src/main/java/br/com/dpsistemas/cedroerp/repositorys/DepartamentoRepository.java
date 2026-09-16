@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 @Repository
 public interface DepartamentoRepository
@@ -22,7 +23,10 @@ public interface DepartamentoRepository
             Long idEmpresa,
             Pageable pageable
     );
-
+    List<Departamento> findByEmpresa_IdAndStatusOrderByNomeAsc(
+            Long idEmpresa,
+            Boolean status
+    );
     Page<Departamento> findByEmpresa_IdAndNomeContainingIgnoreCase(
             Long idEmpresa,
             String nome,

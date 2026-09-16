@@ -71,7 +71,7 @@
 								<!-- COM FILTRO -->
 								<a th:if="${queryParams != null and queryParams != ''}"
 								   th:href="@{'/departamentos?' + ${queryParams}}"
-								   class="btn btn-outline-danger">
+								   class="btn btn-outline-danger btn-formulario">
 
 									<i class="fa-duotone fa-solid fa-rotate-left"></i>
 									Voltar
@@ -80,7 +80,7 @@
 								<!-- SEM FILTRO -->
 								<a th:if="${queryParams == null or queryParams == ''}"
 								   th:href="@{/departamentos}"
-								   class="btn btn-outline-danger">
+								   class="btn btn-outline-danger btn-formulario">
 
 									<i class="fa-duotone fa-solid fa-rotate-left"></i>
 									Voltar
@@ -96,7 +96,7 @@
             + ${departamento.id}
             + '?'
             + ${queryParams}}"
-								   class="btn btn-outline-primary">
+								   class="btn btn-outline-primary btn-formulario">
 
 									<i class="fa-solid fa-pen"></i>
 									Editar
@@ -118,7 +118,7 @@
 								      class="d-inline">
 
 									<button type="submit"
-									        class="btn btn-outline-danger">
+									        class="btn btn-outline-danger btn-formulario">
 
 										<i class="fa-duotone fa-solid fa-trash"></i>
 										Excluir

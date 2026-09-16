@@ -2,6 +2,28 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 
+<!-- STATUS -->
+<div th:fragment="filtroStatus(filtro)" class="col-md-1 input-group-sm">
+    <label class="form-label text-secondary fw-semibold"> Status </label>
+    <select name="filtroStatus"class="form-select">
+        <option value="1" th:selected="${filtro.filtroStatus == 1}"> Ativos </option>
+        <option value="0" th:selected="${filtro.filtroStatus == 0}"> Inativos </option>
+        <option value=""  th:selected="${filtro.filtroStatus == null}">Todos </option>
+    </select>
+</div>
+
+<div th:fragment="filtroLinhas(filtro)" class="col-md-1 input-group-sm">
+    <label class="form-label  text-secondary fw-semibold">Linhas</label>
+    <select name="size" class="form-select">
+        <option value="10" th:selected="${filtro.size == 10}">10</option>
+        <option value="15" th:selected="${filtro.size == 15}">15</option>
+        <option value="20" th:selected="${filtro.size == 20}">20</option>
+        <option value="25" th:selected="${filtro.size == 25}">25</option>
+        <option value="30" th:selected="${filtro.size == 30}">30</option>
+    </select>
+</div>
+
+
     <div th:fragment="btnBuscar(titulo)">
         <button type="submit"
                 class="btn btn-outline-sistema btn-sm w-100"

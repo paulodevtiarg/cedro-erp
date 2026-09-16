@@ -25,6 +25,23 @@ public interface UsuarioRepository
      * ==================================================
      */
 
+    boolean existsByEmpresa_IdAndLoginIgnoreCase(
+            Long idEmpresa,
+            String login
+    );
+
+    boolean existsByEmpresa_IdAndLoginIgnoreCaseAndIdNot(
+            Long idEmpresa,
+            String login,
+            Long id
+    );
+
+    boolean existsByEmpresa_IdAndCpfAndIdNot(
+            Long idEmpresa,
+            String cpf,
+            Long id
+    );
+
     @EntityGraph(attributePaths = {
             "empresa",
             "departamento"
@@ -44,29 +61,25 @@ public interface UsuarioRepository
             "departamento"
     })
     @Query("""
-        SELECT u
-        FROM Usuario u
+    SELECT u
+    FROM Usuario u
+    WHERE u.empresa.id = :idEmpresa
 
-        WHERE u.empresa.id = :idEmpresa
+    AND (
+        :nome IS NULL
+        OR LOWER(u.nome) LIKE LOWER(CONCAT('%', :nome, '%'))
+    )
 
-        AND (
-            :nome IS NULL
-            OR :nome = ''
-            OR LOWER(u.nome)
-                LIKE LOWER(CONCAT('%', :nome, '%'))
-        )
+    AND (
+        :cpf IS NULL
+        OR u.cpf LIKE CONCAT('%', :cpf, '%')
+    )
 
-        AND (
-            :cpf IS NULL
-            OR :cpf = ''
-            OR u.cpf LIKE CONCAT('%', :cpf, '%')
-        )
-
-        AND (
-            :status IS NULL
-            OR u.status = :status
-        )
-    """)
+    AND (
+        :status IS NULL
+        OR u.status = :status
+    )
+""")
     Page<Usuario> filtrar(
             @Param("idEmpresa") Long idEmpresa,
             @Param("nome") String nome,
@@ -75,7 +88,7 @@ public interface UsuarioRepository
             Pageable pageable
     );
 
-
+    Optional<Usuario> findByLoginOrCpfOrEmail(String login, String cpf, String email);
     /*
      * ==================================================
      * AUTENTICAÇÃO
@@ -95,6 +108,15 @@ public interface UsuarioRepository
     Optional<Usuario> findByLoginIgnoreCase(
             String login
     );
+
+
+    boolean existsByEmpresa_IdAndCpf(
+            Long idEmpresa,
+            String cpf
+    );
+
+
+
 
 
     @EntityGraph(attributePaths = {

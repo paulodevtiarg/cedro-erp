@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
+import java.util.Locale;
+import java.util.Optional;
 
 public class UsuarioDTO {
 
@@ -81,9 +83,7 @@ public class UsuarioDTO {
     @NotNull(message = "O perfil é obrigatório.")
     private PerfilEnum perfil;
 
-
     private String foto;
-
 
     /*
      * Herdados da BaseEntity
@@ -95,6 +95,12 @@ public class UsuarioDTO {
     private LocalDateTime dataAlteracao;
 
 
+    private Boolean primeiroAcesso = false;
+
+    private LocalDateTime dataExpiracao;
+
+    private String codigoSeguranca;
+
     /*
      * ==========================
      * FILTROS DA TELA INDEX
@@ -102,25 +108,9 @@ public class UsuarioDTO {
      */
 
     private String filtroNome;
-
     private String filtroCpf;
-
-    /*
-     * null = Todos
-     * 0    = Inativos
-     * 1    = Ativos
-     */
     private Integer filtroStatus;
-
-    /*
-     * Página atual
-     */
     private Integer page = 0;
-
-    /*
-     * Quantidade de registros por página:
-     * 5, 10, 20 ou 30
-     */
     private Integer size = 10;
 
     /*
@@ -213,8 +203,22 @@ public class UsuarioDTO {
         return cpf;
     }
 
+    public String getCpfFormatado() {
+
+        if (cpf == null || cpf.length() != 11) {
+            return cpf;
+        }
+
+        return cpf.replaceFirst(
+                "(\\d{3})(\\d{3})(\\d{3})(\\d{2})",
+                "$1.$2.$3-$4"
+        );
+    }
+
     public void setCpf(String cpf) {
-        this.cpf = cpf;
+        this.cpf = cpf == null
+                ? null
+                : cpf.replaceAll("\\D", "");
     }
 
     public String getTelefone() {
@@ -270,7 +274,11 @@ public class UsuarioDTO {
     }
 
     public void setFiltroNome(String filtroNome) {
-        this.filtroNome = filtroNome;
+        this.filtroNome = Optional.ofNullable(filtroNome)
+                .map(String::trim)
+                .filter(s -> !s.isBlank())
+                .map(s -> s.toUpperCase(Locale.ROOT))
+                .orElse(null);
     }
 
     public String getFiltroCpf() {
@@ -278,7 +286,10 @@ public class UsuarioDTO {
     }
 
     public void setFiltroCpf(String filtroCpf) {
-        this.filtroCpf = filtroCpf;
+        this.filtroCpf = Optional.ofNullable(filtroCpf)
+                .map(s -> s.replaceAll("\\D", ""))
+                .filter(s -> !s.isBlank())
+                .orElse(null);
     }
 
     public Integer getFiltroStatus() {
@@ -303,5 +314,29 @@ public class UsuarioDTO {
 
     public void setSize(Integer size) {
         this.size = size;
+    }
+
+    public Boolean getPrimeiroAcesso() {
+        return primeiroAcesso;
+    }
+
+    public void setPrimeiroAcesso(Boolean primeiroAcesso) {
+        this.primeiroAcesso = primeiroAcesso;
+    }
+
+    public LocalDateTime getDataExpiracao() {
+        return dataExpiracao;
+    }
+
+    public void setDataExpiracao(LocalDateTime dataExpiracao) {
+        this.dataExpiracao = dataExpiracao;
+    }
+
+    public String getCodigoSeguranca() {
+        return codigoSeguranca;
+    }
+
+    public void setCodigoSeguranca(String codigoSeguranca) {
+        this.codigoSeguranca = codigoSeguranca;
     }
 }
