@@ -121,7 +121,13 @@ public class EmailService {
             mailSender.send(message);
 
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao enviar e-mail", e);
+             System.err.println("ERRO REAL NO ENVIO DO EMAIL:");
+    e.printStackTrace();
+
+    throw new RuntimeException(
+            "Erro ao enviar e-mail",
+            e
+    );
         }
     }
 }
