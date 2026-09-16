@@ -41,7 +41,9 @@ public class UsuarioMapper {
         dto.setTelefone(usuario.getTelefone());
         dto.setPerfil(usuario.getPerfil());
         dto.setFoto(usuario.getFoto());
-
+        dto.setPrimeiroAcesso(
+                usuario.getPrimeiroAcesso()
+        );
         dto.setStatus(usuario.getStatus());
         dto.setDataCadastro(usuario.getDataCadastro());
         dto.setDataAlteracao(usuario.getDataAlteracao());
@@ -79,7 +81,9 @@ public class UsuarioMapper {
         usuario.setEmail(normalizar(dto.getEmail()));
         usuario.setCpf(normalizar(dto.getCpf()));
         usuario.setTelefone(normalizar(dto.getTelefone()));
-
+        usuario.setPrimeiroAcesso(
+                Boolean.TRUE.equals(dto.getPrimeiroAcesso())
+        );
         usuario.setPerfil(dto.getPerfil());
         usuario.setFoto(dto.getFoto());
 
@@ -87,10 +91,6 @@ public class UsuarioMapper {
             usuario.setStatus(dto.getStatus());
         }
 
-        /*
-         * A senha NÃO é definida aqui.
-         * O Service fará o BCrypt.
-         */
 
         return usuario;
     }

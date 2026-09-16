@@ -7,6 +7,9 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 
 public class DepartamentoDTO {
 
@@ -96,7 +99,11 @@ public class DepartamentoDTO {
     }
 
     public void setFiltroNome(String filtroNome) {
-        this.filtroNome = filtroNome;
+        this.filtroNome = Optional.ofNullable(filtroNome)
+                .map(String::trim)
+                .filter(s -> !s.isBlank())
+                .map(s -> s.toUpperCase(Locale.ROOT))
+                .orElse(null);
     }
 
     public Integer getFiltroStatus() {
@@ -112,7 +119,7 @@ public class DepartamentoDTO {
     }
 
     public void setPage(Integer page) {
-        this.page = page;
+        this.page = page == null || page < 0 ? 0 : page;
     }
 
     public Integer getSize() {
@@ -120,7 +127,9 @@ public class DepartamentoDTO {
     }
 
     public void setSize(Integer size) {
-        this.size = size;
+        this.size = size != null && TAMANHOS_PERMITIDOS.contains(size)
+                ? size
+                : 10;
     }
 
     public String getDataAlteracaoFormatada() {
@@ -142,4 +151,6 @@ public class DepartamentoDTO {
                 DateTimeFormatter.ofPattern("dd/MM/yyyy")
         );
     }
+    private static final List<Integer> TAMANHOS_PERMITIDOS =
+            List.of(10, 20, 50, 100);
 }

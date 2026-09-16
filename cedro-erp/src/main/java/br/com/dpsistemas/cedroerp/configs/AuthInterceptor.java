@@ -17,20 +17,22 @@ public class AuthInterceptor implements HandlerInterceptor {
     	
     	 String uri = request.getRequestURI();
 
-    	// LIBERA TUDO QUE É PÚBLICO
-    	 if (uri.equals("/") || // 🔥 ESSA LINHA QUE FALTA
-    	     uri.startsWith("/login") ||
-    	     uri.startsWith("/landing") ||
-    	     uri.startsWith("/css") ||
-    	     uri.startsWith("/js") ||
-    	     uri.startsWith("/images") ||
-    	     uri.startsWith("/img") ||
-    	     uri.startsWith("/uploads") ||
-    		 uri.startsWith("/esqueci-senha") ||
-    		 uri.startsWith("/reset-senha")||
-    		 uri.startsWith("/validar-reset-senha")){
-    	     return true;
-    	 }
+		// ROTAS PÚBLICAS
+		if (uri.equals("/") ||
+				uri.startsWith("/login") ||
+				uri.startsWith("/landing") ||
+				uri.startsWith("/css") ||
+				uri.startsWith("/js") ||
+				uri.startsWith("/images") ||
+				uri.startsWith("/img") ||
+				uri.startsWith("/uploads") ||
+				uri.startsWith("/esqueci-senha") ||
+				uri.startsWith("/reset-senha") ||
+				uri.startsWith("/validar-reset-senha") ||
+				uri.startsWith("/primeiro-acesso")) {
+
+			return true;
+		}
 
         HttpSession session = request.getSession(false);
 

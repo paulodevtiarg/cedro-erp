@@ -12,12 +12,20 @@ public class UsuarioSessaoDTO {
     private String nome;
     private String nomeEmpresa;
     private String nomeDepartamento;
-
+    private Boolean primeiroAcesso;
     private PerfilEnum perfil;
     private String foto;
 
     public Long getIdUsuario() {
         return idUsuario;
+    }
+
+    public Boolean getPrimeiroAcesso() {
+        return primeiroAcesso;
+    }
+
+    public void setPrimeiroAcesso(Boolean primeiroAcesso) {
+        this.primeiroAcesso = primeiroAcesso;
     }
 
     public void setIdUsuario(Long idUsuario) {
