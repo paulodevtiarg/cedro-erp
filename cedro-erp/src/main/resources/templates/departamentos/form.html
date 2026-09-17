@@ -63,7 +63,9 @@
 						<div class="card">
 							<div class="card-header d-flex justify-content-between align-items-center fs-4 pr-custom-text fw-semibold text-uppercase">
 
-								<h5 class="mb-0 text-secondary fs-6">Novo Registro</h5>
+								<h5 class="mb-0 text-secondary fs-6"
+								    th:text="${departamento.id == null} ? 'Novo Registro' : 'Editar Registro'">
+								</h5>
 								<div class="d-flex gap-2">
 									<a data-bs-toggle="tooltip" title="Cancelar Ação"	th:href="@{${queryParams != null and queryParams != ''} ? '/departamentos?' + queryParams :'/departamentos'}"
 										class="btn btn-outline-danger btn-sm btn-formulario"> <i class="fa-duotone fa-solid fa-ban"></i> Cancelar

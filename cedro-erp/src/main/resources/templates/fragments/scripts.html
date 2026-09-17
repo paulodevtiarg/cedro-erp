@@ -347,10 +347,19 @@ function validarCPF(input) {
 
 		document.addEventListener("DOMContentLoaded", function () {
 
-			const inputCpf = document.getElementById("filtroCpf");
+			// CPF do filtro
+			const filtroCpf = document.getElementById("filtroCpf");
 
-			if (inputCpf && inputCpf.value) {
-				inputCpf.value = formatarCPF(inputCpf.value);
+			if (filtroCpf && filtroCpf.value) {
+				filtroCpf.value = formatarCPF(filtroCpf.value);
+			}
+
+
+			// CPF do formulário de cadastro/edição
+			const cpf = document.getElementById("cpf");
+
+			if (cpf && cpf.value) {
+				cpf.value = formatarCPF(cpf.value);
 			}
 
 		});

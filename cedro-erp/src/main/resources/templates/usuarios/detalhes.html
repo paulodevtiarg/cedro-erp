@@ -70,14 +70,14 @@
 								<!-- COM FILTRO -->
 								<a th:if="${queryParams != null and queryParams != ''}"
 								   th:href="@{'/usuarios?' + ${queryParams}}"
-								   class="btn btn-outline-danger btn-formulario">
+								   class="btn btn-outline-danger btn-formulario btn-sm" data-bs-toggle="tooltip" title="Voltar a página">
 									<i class="fa-duotone fa-solid fa-rotate-left"></i>
 									Voltar
 								</a>
 								<!-- SEM FILTRO -->
 								<a th:if="${queryParams == null or queryParams == ''}"
 								   th:href="@{/usuarios}"
-								   class="btn btn-outline-danger btn-formulario">
+								   class="btn btn-outline-danger btn-formulario btn-sm" data-bs-toggle="tooltip" title="Voltar a página">
 									<i class="fa-duotone fa-solid fa-rotate-left"></i>
 									Voltar
 								</a>
@@ -86,18 +86,19 @@
 								<!-- MODO NORMAL -> EDITAR     -->
 								<!-- ========================= -->
 
-								<a th:if="${modoExclusao == null or !modoExclusao}"
-								   th:href="@{'/usuarios/editar/' + ${usuario.id} + '?' + ${queryParams}}"  class="btn btn-outline-primary btn-formulario">
+								<a th:if="${podeGerenciarCadastros == true and (modoExclusao == null or !modoExclusao)}"
+								   th:href="@{'/usuarios/editar/' + ${usuario.id} + '?' + ${queryParams}}"  class="btn btn-outline-primary btn-formulario btn-sm"
+								   data-bs-toggle="tooltip"  th:title="${podeGerenciarCadastros} ? 'Editar Registro' : 'Sem permissão para editar'">
 									<i class="fa-solid fa-pen"></i>	Editar
 								</a>
 								<!-- ========================= -->
 								<!-- MODO EXCLUSÃO -> EXCLUIR  -->
 								<!-- ========================= -->
 
-								<form th:if="${modoExclusao != null  and modoExclusao and !usuarioEmUso}"  th:action="@{'/usuarios/excluir/' + ${usuario.id}
-								+ '?'
-								+ ${queryParams}}" method="post" class="d-inline">
-									<button type="submit" class="btn btn-outline-danger btn-formulario">
+								<form th:if="${podeGerenciarCadastros == true and (modoExclusao != null  and modoExclusao and !usuarioEmUso)}"  th:action="@{'/usuarios/excluir/' + ${usuario.id}
+								+ '?' + ${queryParams}}" method="post" class="d-inline">
+									<button type="submit" data-bs-toggle="tooltip" class="btn btn-outline-danger btn-formulario btn-sm"
+									        th:title="${podeGerenciarCadastros} ? 'Excluir Registro' : 'Sem permissão para excluir'">
 										<i class="fa-duotone fa-solid fa-trash"></i>
 										Excluir
 									</button>
@@ -105,23 +106,20 @@
 								<!-- ========================= -->
 								<!-- EM USO -> INATIVAR        -->
 								<!-- ========================= -->
-
-								<form th:if="${modoExclusao != null and modoExclusao and usuarioEmUso and usuario.status}"
+								<form th:if="${podeGerenciarCadastros == true and modoExclusao != null and modoExclusao and usuarioEmUso and usuario.status}"
 								      th:action="@{'/usuario/alterar-status/'+ ${usuario.id}+ '?'+ ${queryParams}}"
 								      method="post"
 								      class="d-inline">
 									<button type="submit"
-									        class="btn btn-outline-warning">
+									        class="btn btn-outline-warning btn-sm"
+									        data-bs-toggle="tooltip" th:title="${podeGerenciarCadastros} ? 'Excluir Registro' : 'Sem permissão para inativar'">
 										<i class="fa-duotone fa-solid fa-circle-xmark"></i>
 										Inativar
 									</button>
-
 								</form>
-
 								<!-- JÁ ESTÁ INATIVO -->
 								<button th:if="${modoExclusao != null and modoExclusao and usuarioEmUso and !usuario.status}"
-								        type="button" class="btn btn-outline-secondary" disabled>
-
+								        type="button" class="btn btn-outline-secondary btn-sm" disabled>
 									<i class="fa-duotone fa-solid fa-circle-xmark"></i> Já está inativo
 								</button>
 
@@ -134,23 +132,23 @@
 
 								<div class="col-md-12">
 									<div class="row">
-										<div class="col-md-2 mb-3">
-											<div class="foto-3x4-container-dt">
+										<div class="col-md-1" style="margin-top: 0.3rem !important;">
+											<div class="foto-3x4-container-2">
 												<div th:if="${usuario.foto != null}" class="foto-wrapper-dt">
 													<img th:src="${usuario.foto}" class="foto-3x4-img-dt" alt="Foto do usuário">
 												</div>
 
-												<div th:if="${usuario.foto == null}" class="foto-placeholder-dt">
-													<i class="fas fa-user"></i> <span>Sem foto</span>
+												<div th:if="${usuario.foto == null}" class="foto-label-dt">
+													<i class="fas fa-user fs-1"></i> <span style="font-size: 1.7rem !important">Sem foto</span>
 												</div>
-												<div class="foto-label-dt"
+												<div class="foto-label-dt" style="font-size: 0.5rem !important"
 												     th:text="${usuario.foto != null ? 'IMAGEM CADASTRADA' : 'SEM IMAGEM'}">
 												</div>
 
 											</div>
 
 										</div>
-										<div class="col-md-10 mb-3">
+										<div class="col-md-11 mb-3">
 											<div class="row ">
 												<div class="col-md-6">
 													<div class="input-group">
@@ -245,10 +243,6 @@
 												</div>
 											</div>
 										</div>
-
-
-
-
 
 									</div>
 

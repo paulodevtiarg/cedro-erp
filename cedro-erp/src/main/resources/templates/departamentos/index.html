@@ -121,7 +121,8 @@
 												<td th:text="${departamento.descricao}"></td>
 												<td class="text-center">
 
-													<form th:action="@{'/departamentos/alterar-status/'+ ${departamento.id}+ '?'+ ${queryParams}}"
+													<form  th:if="${podeGerenciarCadastros}"
+														   th:action="@{'/departamentos/alterar-status/'+ ${departamento.id}+ '?'+ ${queryParams}}"
 													      method="post"
 													      class="d-inline">
 
@@ -168,7 +169,7 @@
 													   th:title="${podeGerenciarCadastros} ? 'Editar' : 'Sem permissão para editar'">
 														<i class="fa-duotone fa-pen-to-square"></i>
 													</a>
-
+													<!-- o botao exclir tb chama detalhe mas passa o flag excluir -->
 													<a th:href="${podeGerenciarCadastros}? @{'/departamentos/detalhes/'+ ${departamento.id}+ '?acao=excluir&'
                                                        + ${queryParams}}: '#'" th:classappend="${!podeGerenciarCadastros} ? ' disabled opacity-50'"
 													   class="btn btn-outline-sistema btn-sm px-2"
@@ -197,7 +198,8 @@
 														<small class="text-muted" th:text="${departamento.descricao}"></small>
 													</div>
 													<div>
-														<form th:action="@{'/departamentos/alterar-status/'+ ${departamento.id}+ '?'+ ${queryParams}}"
+														<form  th:if="${podeGerenciarCadastros}"
+															   th:action="@{'/departamentos/alterar-status/'+ ${departamento.id}+ '?'+ ${queryParams}}"
 														      method="post"
 														      class="d-inline">
 
