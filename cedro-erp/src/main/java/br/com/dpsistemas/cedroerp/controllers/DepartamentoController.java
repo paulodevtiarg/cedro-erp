@@ -167,8 +167,7 @@ public class DepartamentoController {
         model.addAttribute("departamento", dto);
 
         if ("excluir".equals(acao)) {
-
-            boolean departamentoEmUso =   departamentoService.departamentoEstaEmUso(id,idEmpresa);
+            boolean departamentoEmUso =  departamentoService.departamentoEstaEmUso(id,idEmpresa);
             model.addAttribute("modoExclusao",true);
             model.addAttribute("departamentoEmUso", departamentoEmUso);
         }

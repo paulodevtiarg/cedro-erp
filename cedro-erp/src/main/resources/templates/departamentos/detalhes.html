@@ -71,8 +71,7 @@
 								<!-- COM FILTRO -->
 								<a th:if="${queryParams != null and queryParams != ''}"
 								   th:href="@{'/departamentos?' + ${queryParams}}"
-								   class="btn btn-outline-danger btn-formulario">
-
+								   class="btn btn-outline-danger btn-formulario btn-sm"  data-bs-toggle="tooltip" title="Voltar a página">
 									<i class="fa-duotone fa-solid fa-rotate-left"></i>
 									Voltar
 								</a>
@@ -80,8 +79,7 @@
 								<!-- SEM FILTRO -->
 								<a th:if="${queryParams == null or queryParams == ''}"
 								   th:href="@{/departamentos}"
-								   class="btn btn-outline-danger btn-formulario">
-
+								   class="btn btn-outline-danger btn-formulario btn-sm" data-bs-toggle="tooltip" title="Voltar a página">
 									<i class="fa-duotone fa-solid fa-rotate-left"></i>
 									Voltar
 								</a>
@@ -91,15 +89,11 @@
 								<!-- MODO NORMAL -> EDITAR     -->
 								<!-- ========================= -->
 
-								<a th:if="${modoExclusao == null or !modoExclusao}"
-								   th:href="@{'/departamentos/editar/'
-            + ${departamento.id}
-            + '?'
-            + ${queryParams}}"
-								   class="btn btn-outline-primary btn-formulario">
-
-									<i class="fa-solid fa-pen"></i>
-									Editar
+								<a th:if="${podeGerenciarCadastros and (modoExclusao == null or !modoExclusao)}"
+								   th:href="@{'/departamentos/editar/'+ ${departamento.id} + '?' + ${queryParams}}"
+								   class="btn btn-outline-primary btn-formulario btn-sm" data-bs-toggle="tooltip"
+								   th:title="${podeGerenciarCadastros} ? 'Editar Registro' : 'Sem permissão para editar'">
+									<i class="fa-solid fa-pen"></i>	Editar
 								</a>
 
 
@@ -107,19 +101,14 @@
 								<!-- MODO EXCLUSÃO -> EXCLUIR  -->
 								<!-- ========================= -->
 
-								<form th:if="${modoExclusao != null
-                  and modoExclusao
-                  and !departamentoEmUso}"
-								      th:action="@{'/departamentos/excluir/'
-                + ${departamento.id}
-                + '?'
-                + ${queryParams}}"
+								<form th:if="${podeGerenciarCadastros and (modoExclusao != null and modoExclusao and !departamentoEmUso)}" th:action="@{'/departamentos/excluir/'
+										+ ${departamento.id}
+										+ '?'
+										+ ${queryParams}}"
 								      method="post"
 								      class="d-inline">
-
-									<button type="submit"
-									        class="btn btn-outline-danger btn-formulario">
-
+									<button type="submit" data-bs-toggle="tooltip"  class="btn btn-outline-danger btn-formulario btn-sm"
+											th:title="${podeGerenciarCadastros} ? 'Excluir Registro' : 'Sem permissão para excluir'">
 										<i class="fa-duotone fa-solid fa-trash"></i>
 										Excluir
 									</button>
@@ -131,19 +120,14 @@
 								<!-- EM USO -> INATIVAR        -->
 								<!-- ========================= -->
 
-								<form th:if="${modoExclusao != null
-                  and modoExclusao
-                  and departamentoEmUso
-                  and departamento.status}"
+								<form th:if="${podeGerenciarCadastros and (modoExclusao != null and modoExclusao and departamentoEmUso and departamento.status)}"
 								      th:action="@{'/departamentos/alterar-status/'
-                + ${departamento.id}
-                + '?'
-                + ${queryParams}}"
+									+ ${departamento.id}
+									+ '?'
+									+ ${queryParams}}"
 								      method="post"
 								      class="d-inline">
-
-									<button type="submit"
-									        class="btn btn-outline-warning">
+									<button type="submit"   class="btn btn-outline-warning" data-bs-toggle="tooltip" th:title="${podeGerenciarCadastros} ? 'Excluir Registro' : 'Sem permissão para inativar'">
 										<i class="fa-duotone fa-solid fa-circle-xmark"></i>
 										Inativar
 									</button>
@@ -152,10 +136,7 @@
 
 
 								<!-- JÁ ESTÁ INATIVO -->
-								<button th:if="${modoExclusao != null
-                    and modoExclusao
-                    and departamentoEmUso
-                    and !departamento.status}"
+								<button th:if="${modoExclusao != null  and modoExclusao and departamentoEmUso and !departamento.status}"
 								        type="button"
 								        class="btn btn-outline-secondary"
 								        disabled>

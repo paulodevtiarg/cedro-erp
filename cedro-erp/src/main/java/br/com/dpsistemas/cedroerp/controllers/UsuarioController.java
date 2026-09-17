@@ -153,4 +153,162 @@ public class UsuarioController {
 
         return "redirect:/usuarios";
     }
+
+    @GetMapping("/detalhes/{id}")
+    public String detalhes(
+            @PathVariable Long id,
+            @ModelAttribute("filtro") UsuarioDTO filtro,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String acao,
+            Model model) {
+        Long idEmpresa = usuarioLogadoService.getEmpresaId();
+        UsuarioDTO dto = usuarioService.buscarPorId(id,idEmpresa );
+
+        model.addAttribute("usuario", dto);
+        if ("excluir".equals(acao)) {
+            model.addAttribute("modoExclusao",true);
+        }
+
+        model.addAttribute("pageTitle", "Usuarios:Detalhes - Cedro ERP");
+        model.addAttribute("activeMenu","pessoal");
+        model.addAttribute("queryParams", urlUtils.usuarioQuery(filtro, page));
+
+        return "usuarios/detalhes";
+    }
+
+    @GetMapping("/editar/{id}")
+    public String editar( @PathVariable Long id,
+                          @ModelAttribute("filtro") UsuarioDTO filtro,
+                          @RequestParam(defaultValue = "0") int page,
+                          Model model,
+                          RedirectAttributes redirectAttributes)
+    {
+        if (!usuarioLogadoService.podeGerenciarCadastros()) {
+            redirectAttributes.addFlashAttribute(
+                    "msgErro",
+                    "Você não possui permissão para editar Usuários."
+            );
+
+            return "redirect:/usuarios";
+        }
+        Long idEmpresa =  usuarioLogadoService.getEmpresaId();
+        UsuarioDTO usuario = usuarioService.buscarPorId(id,idEmpresa);
+        model.addAttribute("departamentos", departamentoService.listarAtivosPorEmpresa(usuarioLogadoService.getEmpresaId()));
+        model.addAttribute("perfis", PerfilEnum.values() );
+        model.addAttribute("usuario",usuario);
+        model.addAttribute("pageTitle","Usuarios: Editar - Cedro ERP");
+        model.addAttribute("activeMenu","pessoal");
+        String queryParams = urlUtils.usuarioQuery(filtro, page);
+        model.addAttribute("queryParams",queryParams);
+        return "usuarios/form";
+    }
+
+    @PostMapping("/editar/{id}")
+    public String atualizar(
+            @PathVariable Long id,
+            @Valid @ModelAttribute("usuario") UsuarioDTO dto,
+            BindingResult resultUsuario,
+            @ModelAttribute("filtro") UsuarioDTO filtro,
+            @RequestParam(defaultValue = "0") int page,
+            Model model,
+            @RequestParam(value = "arquivoFoto", required = false) MultipartFile foto,
+            RedirectAttributes redirectAttributes)
+    {
+
+        if (!usuarioLogadoService.podeGerenciarCadastros()) {
+            redirectAttributes.addFlashAttribute(
+                    "msgErro",
+                    "Você não possui permissão para editar Usuarios."
+            );
+            return "redirect:/usuarios";
+        }
+
+        dto.setId(id);
+        String queryParams = urlUtils.usuarioQuery(filtro,page);
+
+        if (dto.getId() == null) {
+            if (dto.getSenha() == null || dto.getSenha().isBlank()) {
+                resultUsuario.rejectValue("senha", "erro.senha", "Senha é obrigatória");
+            } else if (dto.getSenha().length() < 6 || dto.getSenha().length() > 60) {
+                resultUsuario.rejectValue("senha", "erro.senha", "A senha deve ter entre 6 e 60 caracteres");
+            }else if(dto.getConfirmarSenha() == null || !dto.getSenha().equals(dto.getConfirmarSenha())){
+                resultUsuario.rejectValue("senha", "erro.senha", "A senha deve ter entre 6 e 60 caracteres");
+            }
+        }
+        // edição → só valida se digitou
+        if (dto.getId() != null && dto.getSenha() != null && !dto.getSenha().isBlank()) {
+            if (dto.getSenha().length() < 6 || dto.getSenha().length() > 60) {
+                resultUsuario.rejectValue("senha", "erro.senha", "A senha deve ter entre 6 e 60 caracteres");
+            }
+        }
+
+        // CPF
+        if (dto.getCpf() != null && !dto.getCpf().isBlank()) {
+            boolean cpfJaExiste;
+            if (dto.getId() == null) {
+                // NOVO CADASTRO
+                cpfJaExiste = usuarioService.existeCpf(dto.getCpf(),usuarioLogadoService.getEmpresaId());
+            } else {
+                // EDIÇÃO
+                cpfJaExiste =  usuarioService.existeCpfOutroUsuario(dto.getCpf(),usuarioLogadoService.getEmpresaId(),dto.getId());
+            }
+            if (cpfJaExiste) {
+                resultUsuario.rejectValue("cpf","erro.cpf","CPF já cadastrado nesta empresa.");
+            }
+        }
+        // LOGIN
+        if (dto.getLogin() != null && !dto.getLogin().isBlank()) {
+            boolean loginJaExiste;
+            if (dto.getId() == null) {
+                // NOVO CADASTRO
+                loginJaExiste =usuarioService.existeLogin(dto.getLogin(), usuarioLogadoService.getEmpresaId());
+            } else {
+                // EDIÇÃO
+                loginJaExiste =usuarioService.existeLoginOutroUsuario(dto.getLogin(), usuarioLogadoService.getEmpresaId(),dto.getId());
+            }
+            if (loginJaExiste) {
+                resultUsuario.rejectValue("login","erro.login","Login já cadastrado nesta empresa."
+                );
+            }
+        }
+        if (resultUsuario.hasErrors()) {
+            model.addAttribute("departamentos",departamentoService.listarAtivosPorEmpresa(usuarioLogadoService.getEmpresaId()));
+            model.addAttribute("perfis", PerfilEnum.values());
+            model.addAttribute("pageTitle", "Usuario :Novo - Cedro ERP");
+            model.addAttribute("activeMenu","pessoal");
+            return "usuarios/form";
+        }
+
+
+        try {
+
+            Long idEmpresa = usuarioLogadoService.getEmpresaId();
+            UsuarioDTO usuarioSalvo = usuarioService.atualizar(id,dto, idEmpresa);
+            if(foto !=null && !foto.isEmpty()){
+                try{
+                    String urlFoto = cloudinaryService.upload(foto, "usuarios");
+                    usuarioService.atualizarFoto(usuarioSalvo.getId(), idEmpresa, urlFoto);
+                }catch (Exception e){
+                    log.warn("Usuario {} salvo, mas houve erro no upload da Foto", dto.getEmail(),e);
+                }
+            }
+            redirectAttributes.addFlashAttribute(     "msgOk","Registro alterado com sucesso!");
+
+
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute(
+                    "msgErro",
+                    e.getMessage()
+            );
+
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("msgErro", "Erro ao salvar o usuário: " + e.getMessage());
+        }
+
+        return "redirect:/usuarios?" + queryParams;
+    }
+
 }

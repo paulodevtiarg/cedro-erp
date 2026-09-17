@@ -73,8 +73,6 @@
 								class="fa-duotone fa-plus"></i> Novo
 							</a>
 
-
-
 						</div>
 						<div class="card-body">
 							<div class="row">
@@ -130,7 +128,8 @@
 												<td class="align-middle" th:text="${usuario.login}"></td>
 												<td class="align-middle" th:text="${usuario.telefone}"></td>
 												<td  class="text-center align-middle">
-													<form th:action="@{'/usuarios/alterar-status/'+ ${usuario.id}+ '?'+ ${queryParams}}"
+													<form   th:if="${podeGerenciarCadastros}"
+															th:action="@{'/usuarios/alterar-status/'+ ${usuario.id}+ '?'+ ${queryParams}}"
 													      method="post"
 													      class="d-inline">
 
@@ -154,13 +153,12 @@
 													<!-- Se não tiver permissão, mostra apenas o status -->
 													<span th:unless="${podeGerenciarCadastros}"
 													      th:classappend="${usuario.status} ? 'text-success' : 'text-danger'" class="fw-semibold fs-5">
-
 															<i th:class="${usuario.status}
 																	? 'fa-duotone fa-solid fa-circle-check'
 																	: 'fa-duotone fa-solid fa-circle-xmark'">
 															</i>
 
-   															 </span>
+   													</span>
 
 												</td>
 
@@ -170,6 +168,9 @@
 															data-bs-toggle="tooltip" title="Detalhes"> <i
 															class="fa-duotone fa-eye"></i>
 													</a>
+
+
+
 													<a th:href="${podeGerenciarCadastros}? @{'/usuarios/editar/' + ${usuario.id} + '?' + ${queryParams}} : '#'"
 													   th:classappend="${!podeGerenciarCadastros} ? ' disabled opacity-50'"
 													   class="btn btn-outline-sistema btn-sm px-2"
@@ -206,7 +207,8 @@
 															<small class="text-muted" th:text="${usuario.login}"></small>
 														</div>
 														<div>
-															<form th:action="@{'/usuarios/alterar-status/'+ ${usuario.id}+ '?'+ ${queryParams}}"
+															<form  th:if="${podeGerenciarCadastros}"
+																   th:action="@{'/usuarios/alterar-status/'+ ${usuario.id}+ '?'+ ${queryParams}}"
 															      method="post"
 															      class="d-inline">
 
