@@ -110,7 +110,7 @@ public class UsuarioDTO {
 
     private String filtroNome;
     private String filtroCpf;
-    private Integer filtroStatus;
+    private Integer filtroStatus = 1;
     private Integer page = 0;
     private Integer size = 10;
 

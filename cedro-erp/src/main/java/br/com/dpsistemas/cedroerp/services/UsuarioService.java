@@ -153,12 +153,6 @@ public class UsuarioService {
     }
 
 
-    /*
-     * ==================================================
-     * ALTERAR
-     * ==================================================
-     */
-
     @Transactional
     public UsuarioDTO atualizar(
             Long id,
@@ -187,12 +181,6 @@ public class UsuarioService {
         return usuarioMapper.toDTO(atualizado);
     }
 
-
-    /*
-     * ==================================================
-     * AUTENTICAÇÃO
-     * ==================================================
-     */
 
     @Transactional(readOnly = true)
     public Usuario autenticar(
@@ -223,7 +211,6 @@ public class UsuarioService {
         ) {
 
             case "email" ->
-
                     usuario = usuarioRepository
                             .findByEmailIgnoreCase(
                                     identificador.trim()
@@ -234,9 +221,7 @@ public class UsuarioService {
 
 
             case "cpf" -> {
-
                 String cpf = identificador;
-
                 usuario = usuarioRepository
                         .findByCpf(cpf)
                         .orElseThrow(() ->
@@ -246,7 +231,6 @@ public class UsuarioService {
 
 
             default ->
-
                     usuario = usuarioRepository
                             .findByLoginIgnoreCase(
                                     identificador.trim()
@@ -258,27 +242,25 @@ public class UsuarioService {
 
 
         /*
-         * Usuário inativo não pode entrar.
+         * ========================================
+         * USUÁRIO BLOQUEADO
+         * ========================================
+         *
+         * VERIFICA ANTES DA SENHA.
          */
-        if (!Boolean.TRUE.equals(
-                usuario.getStatus())) {
+        if (!Boolean.TRUE.equals(usuario.getStatus())) {
 
-            throw loginInvalido();
+            throw new IllegalArgumentException(
+                    "Usuário bloqueado. Entre em contato com o administrador do sistema."
+            );
         }
 
 
-        /*
-         * Empresa inativa também bloqueia acesso.
-         */
-        if (
-                usuario.getEmpresa() == null ||
-                        !Boolean.TRUE.equals(
-                                usuario.getEmpresa().getStatus()
-                        )
-        ) {
+        if (!Boolean.TRUE.equals(usuario.getStatus())) {
 
-            throw loginInvalido();
+            throw new IllegalArgumentException("A empresa, a qual o Usuário pertence, está Bloqueada. Entre em contato com o administrador do sistema." );
         }
+
 
 
         /*
@@ -298,13 +280,14 @@ public class UsuarioService {
         return usuario;
     }
 
+    @Transactional
+    public void excluir(
+            Long id,
+            Long idEmpresa) {
+        Usuario usuario = buscarEntidadePorId( id, idEmpresa );
 
-    /*
-     * ==================================================
-     * ATIVAR
-     * ==================================================
-     */
-
+        usuarioRepository.delete(usuario);
+    }
 
     @Transactional
     public void ativar(
@@ -323,12 +306,6 @@ public class UsuarioService {
     }
 
 
-    /*
-     * ==================================================
-     * INATIVAR
-     * ==================================================
-     */
-
     @Transactional
     public void inativar(
             Long id,
@@ -345,12 +322,6 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
-
-    /*
-     * ==================================================
-     * ALTERAR STATUS
-     * ==================================================
-     */
 
     @Transactional
     public void alterarStatus(
@@ -394,6 +365,7 @@ public class UsuarioService {
 
         usuarioRepository.save(usuario);
     }
+
     private void normalizarDados(
             UsuarioDTO dto) {
 
@@ -433,6 +405,8 @@ public class UsuarioService {
 
         return usuarioRepository.save(usuario);
     }
+
+
     private void validarDuplicidadeCadastro(
             UsuarioDTO dto,
             Long idEmpresa) {
@@ -524,6 +498,7 @@ public class UsuarioService {
                 .findByLoginOrCpfOrEmail(valor, valor, valor)
                 .orElse(null);
     }
+
     @Transactional(readOnly = true)
     public boolean existeLoginOutroUsuario(
             String login,
@@ -557,6 +532,7 @@ public class UsuarioService {
                         login.trim()
                 );
     }
+
     @Transactional(readOnly = true)
     public boolean existeCpf(
             String cpf,
@@ -568,6 +544,7 @@ public class UsuarioService {
                         cpf
                 );
     }
+
     @Transactional(readOnly = true)
     public boolean existeCpfOutroUsuario(
             String cpf,
@@ -628,13 +605,6 @@ public class UsuarioService {
         }
     }
 
-
-    /*
-     * ==================================================
-     * FILTROS
-     * ==================================================
-     */
-
     private String normalizarFiltro(String valor)
     {
         if (
@@ -647,13 +617,6 @@ public class UsuarioService {
     }
 
 
-
-
-    /*
-     * null → todos
-     * 0    → inativo
-     * 1    → ativo
-     */
     private Boolean converterStatus(
             Integer status) {
 
