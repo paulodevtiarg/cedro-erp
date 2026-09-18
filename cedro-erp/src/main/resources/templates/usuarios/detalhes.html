@@ -95,7 +95,7 @@
 								<!-- MODO EXCLUSÃO -> EXCLUIR  -->
 								<!-- ========================= -->
 
-								<form th:if="${podeGerenciarCadastros == true and (modoExclusao != null  and modoExclusao and !usuarioEmUso)}"  th:action="@{'/usuarios/excluir/' + ${usuario.id}
+								<form th:if="${podeGerenciarCadastros == true and (modoExclusao != null  and modoExclusao == true)}"  th:action="@{'/usuarios/excluir/' + ${usuario.id}
 								+ '?' + ${queryParams}}" method="post" class="d-inline">
 									<button type="submit" data-bs-toggle="tooltip" class="btn btn-outline-danger btn-formulario btn-sm"
 									        th:title="${podeGerenciarCadastros} ? 'Excluir Registro' : 'Sem permissão para excluir'">
@@ -106,19 +106,19 @@
 								<!-- ========================= -->
 								<!-- EM USO -> INATIVAR        -->
 								<!-- ========================= -->
-								<form th:if="${podeGerenciarCadastros == true and modoExclusao != null and modoExclusao and usuarioEmUso and usuario.status}"
+								<form th:if="${podeGerenciarCadastros == true and modoExclusao != null and modoExclusao == true and usuario.status}"
 								      th:action="@{'/usuario/alterar-status/'+ ${usuario.id}+ '?'+ ${queryParams}}"
 								      method="post"
 								      class="d-inline">
 									<button type="submit"
 									        class="btn btn-outline-warning btn-sm"
-									        data-bs-toggle="tooltip" th:title="${podeGerenciarCadastros} ? 'Excluir Registro' : 'Sem permissão para inativar'">
+									        data-bs-toggle="tooltip" th:title="${podeGerenciarCadastros} ? 'Inativar Registro' : 'Sem permissão para inativar'">
 										<i class="fa-duotone fa-solid fa-circle-xmark"></i>
 										Inativar
 									</button>
 								</form>
 								<!-- JÁ ESTÁ INATIVO -->
-								<button th:if="${modoExclusao != null and modoExclusao and usuarioEmUso and !usuario.status}"
+								<button th:if="${modoExclusao != null and modoExclusao == true and !usuario.status}"
 								        type="button" class="btn btn-outline-secondary btn-sm" disabled>
 									<i class="fa-duotone fa-solid fa-circle-xmark"></i> Já está inativo
 								</button>
@@ -266,9 +266,7 @@
 
 
 							<!-- PODE EXCLUIR -->
-							<div th:if="${modoExclusao != null
-                 and modoExclusao
-                 and !usuarioEmUso}"
+							<div th:if="${modoExclusao != null  and modoExclusao}"
 							     class="alert alert-warning mb-0">
 
 								<i class="fa-duotone fa-solid fa-triangle-exclamation me-2"></i>
@@ -281,9 +279,7 @@
 
 
 							<!-- NÃO PODE EXCLUIR -->
-							<div th:if="${modoExclusao != null
-                 and modoExclusao
-                 and usuarioEmUso}"
+							<div th:if="${modoExclusao != null  and modoExclusao != true}"
 							     class="alert alert-danger mb-0">
 
 								<i class="fa-duotone fa-solid fa-triangle-exclamation me-2"></i>

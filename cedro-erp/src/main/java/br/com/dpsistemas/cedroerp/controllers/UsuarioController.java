@@ -311,4 +311,83 @@ public class UsuarioController {
         return "redirect:/usuarios?" + queryParams;
     }
 
+    /*
+    * Alteração de Sstatus na tela de index
+    * 18/09/2026    *
+    * */
+    @PostMapping("/alterar-status/{id}")
+    public String alterarStatus(
+            @PathVariable Long id,
+            @ModelAttribute("filtro") UsuarioDTO filtro,
+            @RequestParam(defaultValue = "0") int page,
+            RedirectAttributes redirectAttributes)
+    {
+        try {
+
+            if (!usuarioLogadoService.podeGerenciarCadastros()) {
+                redirectAttributes.addFlashAttribute("msgErro","Você não possui permissão para alterar o status.");
+                return "redirect:/usuarios";
+            }
+            Long idEmpresa =  usuarioLogadoService.getEmpresaId();
+            UsuarioDTO usuario = usuarioService.buscarPorId(id, idEmpresa);
+            Boolean novoStatus =!usuario.getStatus();
+            usuarioService.alterarStatus(id,idEmpresa,novoStatus);
+            redirectAttributes.addFlashAttribute("msgOk",novoStatus
+                    ? "Usuário ativado com sucesso!"
+                    : "Usuário inativado com sucesso!"
+            );
+
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute(
+                    "msgErro",
+                    "Erro ao alterar o status: " + e.getMessage()
+            );
+        }
+        String queryParams = urlUtils.usuarioQuery(filtro,page);
+
+        return "redirect:/usuarios?" + queryParams;
+    }
+
+    /*
+    * Exclusão do registro
+    *
+    * */
+    @PostMapping("/excluir/{id}")
+    public String excluir(
+            @PathVariable Long id,
+            @ModelAttribute("filtro") UsuarioDTO filtro,
+            @RequestParam(defaultValue = "0") int page,
+            RedirectAttributes redirectAttributes) {
+
+        String queryParams = urlUtils.usuarioQuery(filtro, page);
+
+        if (!usuarioLogadoService.podeGerenciarCadastros()) {
+            redirectAttributes.addFlashAttribute("Você não possui permissão para excluir departamentos.");
+            return "redirect:/usuarios?" + queryParams;
+        }
+
+        try {
+
+            Long idEmpresa = usuarioLogadoService.getEmpresaId();
+
+            usuarioService.excluir(id,idEmpresa);
+
+            redirectAttributes.addFlashAttribute("msgOk","Registro excluído com sucesso!");
+
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("msgErro", e.getMessage());
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            redirectAttributes.addFlashAttribute("msgErro","Erro ao excluir o registro.");
+        }
+
+        return "redirect:/usuarios?" + queryParams;
+    }
+
 }
