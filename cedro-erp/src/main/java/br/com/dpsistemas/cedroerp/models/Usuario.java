@@ -2,6 +2,7 @@ package br.com.dpsistemas.cedroerp.models;
 
 import br.com.dpsistemas.cedroerp.enumerators.EstadosEnum;
 import br.com.dpsistemas.cedroerp.enumerators.PerfilEnum;
+import br.com.dpsistemas.cedroerp.utils.UppercaseTrimConverter;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 
@@ -30,6 +31,7 @@ public class Usuario extends BaseEntity {
     @Column(name = "SENHA_HASH", nullable = false, length = 255)
     private String senha;
 
+    @Convert(converter = UppercaseTrimConverter.class)
     @Column(name = "NOME", nullable = false, length = 255)
     private String nome;
 

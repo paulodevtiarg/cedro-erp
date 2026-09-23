@@ -74,4 +74,25 @@ public class CnaeService {
 
         return cnaePorCodigo.get(codigo);
     }
+
+    public CnaeDTO buscarPorCodigo(
+            String codigo,
+            CnaeListaDTO lista) {
+
+        if (codigo == null ||
+                codigo.isBlank() ||
+                lista == null ||
+                lista.getListaCnae() == null) {
+
+            return null;
+        }
+
+        return lista.getListaCnae()
+                .stream()
+                .filter(cnae ->
+                        codigo.equals(cnae.getCodigo())
+                )
+                .findFirst()
+                .orElse(null);
+    }
 }

@@ -1,10 +1,10 @@
 package br.com.dpsistemas.cedroerp.enumerators;
 
 public enum RegimeTributarioEnum {
-    SIMPLES_NACIONAL("Simples Nacional"),
-    LUCRO_PRESUMIDO("Lucro Presumido"),
-    LUCRO_REAL("Lucro Real"),
-    OUTROS("Outros");
+    SIMPLES_NACIONAL("SIMPLES NACIONAL"),
+    LUCRO_PRESUMIDO("LUCRO PRESUMIDO"),
+    LUCRO_REAL("LUCRO REAL"),
+    OUTROS("OUTROS");
 
     private final String descricao;
 

@@ -132,7 +132,7 @@
 
 								<div class="col-md-12">
 									<div class="row">
-										<div class="col-md-1" style="margin-top: 0.3rem !important;">
+										<div class="col-md-1" style="margin-top: 1.4rem !important;">
 											<div class="foto-3x4-container-2">
 												<div th:if="${usuario.foto != null}" class="foto-wrapper-dt">
 													<img th:src="${usuario.foto}" class="foto-3x4-img-dt" alt="Foto do usuário">
@@ -148,16 +148,16 @@
 											</div>
 
 										</div>
-										<div class="col-md-11 mb-3">
+										<div class="col-md-11 mt-2 ">
 											<div class="row ">
-												<div class="col-md-6">
+												<div class="col-md-6 mt-2">
 													<div class="input-group">
 														<span class="input-group-text label-fixa">Nome</span> <input
 															type="text" class="form-control fw-bolder fs-6"
 															th:value="${usuario.nome}" disabled>
 													</div>
 												</div>
-												<div class="col-md-3">
+												<div class="col-md-3 mt-2">
 													<div class="input-group">
 														<span class="input-group-text label-fixa">Login</span> <input
 															type="text" class="form-control fw-bolder fs-6"
@@ -165,7 +165,7 @@
 													</div>
 
 												</div>
-												<div class="col-md-3">
+												<div class="col-md-3 mt-2">
 													<div class="input-group">
 														<span class="input-group-text label-fixa">CPF</span> <input
 															type="text" class="form-control fw-bolder fs-6"
@@ -235,7 +235,7 @@
 																Ativo
 															</span>
 
-														<span style="background-color: #e9f5d747 !important;" class="form-control fw-bolder fs-6"
+														<span style="background-color: #f8f9fc !important;" class="form-control fw-bolder fs-6"
 														      th:text="${usuario.status ? 'SIM' : 'NÃO'}"
 														      th:classappend="${usuario.status ? ' text-success' : ' text-danger'}">
 												       </span>
@@ -252,7 +252,7 @@
 
 						</div>
 
-						<div class="card-footer">
+						<div class="card-footer mt-2">
 
 							<!-- MODO NORMAL -->
 							<div th:if="${modoExclusao == null or !modoExclusao}"
