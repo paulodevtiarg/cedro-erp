@@ -120,8 +120,15 @@
 											<tbody>
 											<tr th:each="usuario : ${usuarios}">
 												<td style="width: 5%;" class="text-center">
-													<img th:if="${usuario.foto != null}" th:src="${usuario.foto}" class="foto-tabela">
-													<img th:if="${usuario.foto == null}" src="/img/user.png" class="foto-tabela" alt="Foto Usuário">
+													<img th:if="${usuario.foto != null and !#strings.isEmpty(#strings.trim(usuario.foto))}"
+													     th:src="${usuario.foto}"
+													     class="foto-tabela"
+													     alt="Foto Usuário">
+
+													<img th:unless="${usuario.foto != null and !#strings.isEmpty(#strings.trim(usuario.foto))}"
+													     th:src="@{/img/user.png}"
+													     class="foto-tabela"
+													     alt="Foto Usuário">
 												</td>
 												<td class="align-middle" th:text="${usuario.nome}">	</td>
 												<td class="align-middle" th:text="${usuario.getCpfFormatado}"></td>
