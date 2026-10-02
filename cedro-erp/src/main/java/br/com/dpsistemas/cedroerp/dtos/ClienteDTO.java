@@ -11,7 +11,10 @@ public class ClienteDTO {
 
     // EMPRESA
     private Long idEmpresa;
+
     private String nomeEmpresa;
+
+    private Long idMunicipio;
 
     // DADOS PRINCIPAIS
     private TipoPessoaEnum tipoPessoa;
@@ -424,7 +427,13 @@ public class ClienteDTO {
         this.dataAlteracao = dataAlteracao;
     }
 
+    public Long getIdMunicipio() {
+        return idMunicipio;
+    }
 
+    public void setIdMunicipio(Long idMunicipio) {
+        this.idMunicipio = idMunicipio;
+    }
     /*
      * ==================================================
      * FILTROS

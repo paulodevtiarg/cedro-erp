@@ -149,53 +149,73 @@
         }
     </script>
 
+
 	<!-- =========================
-         TATUAGENS
-    ========================== -->
+     MÁSCARA E VALIDAÇÃO DE DATA
+========================== -->
 	<script>
-        let tatuagemIndex = 0;
+		function formatarData(valor) {
+			let value = valor.replace(/\D/g, '');
 
-        function addTatuagem() {
-            const container = document.getElementById("tatuagensContainer");
-            const template = document.getElementById("tatuagemTemplate");
+			if (value.length > 8) value = value.substring(0, 8);
 
-            let html = template.innerHTML.replaceAll("INDEX", tatuagemIndex);
-            container.insertAdjacentHTML("beforeend", html);
+			if (value.length > 4) {
+				value = value.replace(/^(\d{2})(\d{2})(\d{1,4})/, '$1/$2/$3');
+			} else if (value.length > 2) {
+				value = value.replace(/^(\d{2})(\d{1,2})/, '$1/$2');
+			}
 
-            tatuagemIndex++;
-        }
+			return value;
+		}
 
-        function previewTatuagem(input) {
-            const file = input.files[0];
-            if (!file) return;
+		function mascaraData(input) {
+			input.value = formatarData(input.value);
+			validarData(input);
+		}
 
-            const reader = new FileReader();
+		function validarData(input) {
+			const valor = input.value;
+			input.classList.remove('is-valid', 'is-invalid');
 
-            reader.onload = e => {
-                let img = input.parentElement.querySelector(".img-preview");
-                img.src = e.target.result;
-                img.style.display = "block";
-            };
+			if (valor === '') return true;
 
-            reader.readAsDataURL(file);
-        }
+			if (valor.length !== 10) {
+				input.classList.add('is-invalid');
+				return false;
+			}
 
-        function removerTatuagem(btn) {
-            const item = btn.closest(".tatuagem-item");
-            const input = item.querySelector("input[type='file']");
-            const previewId = input?.dataset.previewId;
+			const partes = valor.split('/');
+			const dia = parseInt(partes[0], 10);
+			const mes = parseInt(partes[1], 10);
+			const ano = parseInt(partes[2], 10);
 
-            if (previewId) {
-                document.querySelectorAll("#previewTatuagens .thumb-wrapper").forEach(w => {
-                    if (w.dataset.previewId === previewId) {
-                        w.remove();
-                    }
-                });
-            }
+			// Validação básica de limites
+			if (mes < 1 || mes > 12 || ano < 1900 || ano > 2099) {
+				input.classList.add('is-invalid');
+				return false;
+			}
 
-            item.remove();
-        }
-    </script>
+			// Validação de dias por mês (considerando ano bissexto)
+			const diasPorMes = [31, (ano % 4 === 0 && (ano % 100 !== 0 || ano % 400 === 0)) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+			if (dia < 1 || dia > diasPorMes[mes - 1]) {
+				input.classList.add('is-invalid');
+				return false;
+			}
+
+			input.classList.add('is-valid');
+			return true;
+		}
+
+		// Formata automaticamente na carga da página (caso seja tela de edição)
+		document.addEventListener("DOMContentLoaded", function () {
+			document.querySelectorAll(".mask-data").forEach(input => {
+				if (input.value) {
+					input.value = formatarData(input.value);
+				}
+			});
+		});
+	</script>
 
 	<!-- =========================
          MÁSCARAS (CEP / TELEFONE)

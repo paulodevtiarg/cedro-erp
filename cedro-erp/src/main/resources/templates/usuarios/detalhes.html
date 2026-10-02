@@ -129,124 +129,132 @@
 
 						<div class="card-body">
 							<div class="row">
+                                <div class="col-md-2" style="margin-top: 0.5rem !important;">
+                                    <div class="foto-3x4-container-2  w-100 h-100 d-flex flex-column justify-content-between">
+                                        <div th:if="${usuario.foto != null}" class="foto-wrapper-dt">
+                                            <img th:src="${usuario.foto}" class="foto-3x4-img-dt" alt="Foto do usuário">
+                                        </div>
 
-								<div class="col-md-12">
-									<div class="row">
-										<div class="col-md-1" style="margin-top: 1.4rem !important;">
-											<div class="foto-3x4-container-2">
-												<div th:if="${usuario.foto != null}" class="foto-wrapper-dt">
-													<img th:src="${usuario.foto}" class="foto-3x4-img-dt" alt="Foto do usuário">
-												</div>
+                                        <div th:if="${usuario.foto == null}" class="foto-label-dt">
+                                            <i class="fas fa-user fs-1"></i> <span style="font-size: 1.7rem !important">Sem foto</span>
+                                        </div>
+                                        <div class="foto-label-dt" style="font-size: 0.5rem !important"
+                                             th:text="${usuario.foto != null ? 'IMAGEM CADASTRADA' : 'SEM IMAGEM'}">
+                                        </div>
 
-												<div th:if="${usuario.foto == null}" class="foto-label-dt">
-													<i class="fas fa-user fs-1"></i> <span style="font-size: 1.7rem !important">Sem foto</span>
-												</div>
-												<div class="foto-label-dt" style="font-size: 0.5rem !important"
-												     th:text="${usuario.foto != null ? 'IMAGEM CADASTRADA' : 'SEM IMAGEM'}">
-												</div>
+                                    </div>
 
-											</div>
+                                </div>
+                                <div class="col-md-10">
+                                   <div class="row">
+                                     <div class="col-md-6">
+                                         <div class="row">
+                                             <div class="col-md-12 mt-2">
+                                                 <div class="input-group">
+                                                     <span class="input-group-text label-fixa">Nome</span> <input
+                                                         type="text" class="form-control fw-bolder fs-6"
+                                                         th:value="${usuario.nome}" disabled>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                         <div class="row">
+                                             <div class="col-md-6 mt-2">
+                                                 <div class="input-group">
+                                                     <span class="input-group-text label-fixa">Login</span> <input
+                                                         type="text" class="form-control fw-bolder fs-6"
+                                                         th:value="${usuario.login}" disabled>
+                                                 </div>
 
-										</div>
-										<div class="col-md-11 mt-2 ">
-											<div class="row ">
-												<div class="col-md-6 mt-2">
-													<div class="input-group">
-														<span class="input-group-text label-fixa">Nome</span> <input
-															type="text" class="form-control fw-bolder fs-6"
-															th:value="${usuario.nome}" disabled>
-													</div>
-												</div>
-												<div class="col-md-3 mt-2">
-													<div class="input-group">
-														<span class="input-group-text label-fixa">Login</span> <input
-															type="text" class="form-control fw-bolder fs-6"
-															th:value="${usuario.login}" disabled>
-													</div>
+                                             </div>
+                                             <div class="col-md-6 mt-2">
+                                                 <div class="input-group">
+                                                     <span class="input-group-text label-fixa">CPF</span> <input
+                                                         type="text" class="form-control fw-bolder fs-6"
+                                                         th:value="${usuario.cpfFormatado}" disabled>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                         <div class="row">
+                                             <div class="col-md-6 mt-2">
+                                                 <div class="input-group">
+                                                     <span class="input-group-text label-fixa">E-Mail</span> <input
+                                                         type="text" class="form-control fw-bolder fs-6"
+                                                         th:value="${usuario.email}" disabled>
+                                                 </div>
+                                             </div>
+                                             <div class="col-md-6 mt-2">
+                                                 <div class="input-group">
+                                                     <span class="input-group-text label-fixa">Telefone</span> <input
+                                                         type="text" class="form-control fw-bolder fs-6"
+                                                         th:value="${usuario.telefone}" disabled>
+                                                 </div>
+                                             </div>
 
-												</div>
-												<div class="col-md-3 mt-2">
-													<div class="input-group">
-														<span class="input-group-text label-fixa">CPF</span> <input
-															type="text" class="form-control fw-bolder fs-6"
-															th:value="${usuario.cpfFormatado}" disabled>
-													</div>
-												</div>
-											</div>
-											<div class="row ">
-												<div class="col-md-6 mt-2">
-													<div class="input-group">
-														<span class="input-group-text label-fixa">E-Mail</span> <input
-															type="text" class="form-control fw-bolder fs-6"
-															th:value="${usuario.email}" disabled>
-													</div>
-												</div>
 
-												<div class="col-md-6 mt-2">
-													<div class="input-group">
-														<span class="input-group-text label-fixa">Departamento</span> <input
-															type="text" class="form-control fw-bolder fs-6"
-															th:value="${usuario.nomeDepartamento}" disabled>
-													</div>
-												</div>
-											</div>
-											<div class="row ">
-												<div class="col-md-3 mt-2">
-													<div class="input-group">
-														<span class="input-group-text label-fixa">Telefone</span> <input
-															type="text" class="form-control fw-bolder fs-6"
-															th:value="${usuario.telefone}" disabled>
-													</div>
-												</div>
-												<div class="col-md-3 mt-2">
-													<div class="input-group">
-														<span class="input-group-text label-fixa">Perfil</span> <input
-															type="text" class="form-control fw-bolder fs-6"
-															th:value="${usuario.perfil}" disabled>
-													</div>
-												</div>
-												<div class="col-md-6 mt-2">
-													<div class="input-group">
-														<span class="input-group-text label-fixa">Empresa</span> <input
-															type="text" class="form-control fw-bolder fs-6"
-															th:value="${usuario.nomeEmpresa}" disabled>
-													</div>
-												</div>
-											</div>
-											<div class="row ">
-												<div class="col-md-3 mt-2">
-													<div class="input-group">
-														<span class="input-group-text label-fixa">Data Cad.</span> <input
-															type="text" class="form-control fw-bolder fs-6"
-															th:value="${usuario.dataCadastroFormatada}" disabled>
-													</div>
+                                         </div>
+                                         <div class="row">
+                                             <div class="col-md-6 mt-2">
+                                                 <div class="input-group">
+                                                     <span class="input-group-text label-fixa">Departamento</span> <input
+                                                         type="text" class="form-control fw-bolder fs-6"
+                                                         th:value="${usuario.nomeDepartamento}" disabled>
+                                                 </div>
+                                             </div>
+                                             <div class="col-md-6 mt-2">
+                                                 <div class="input-group">
+                                                     <span class="input-group-text label-fixa">Perfil</span> <input
+                                                         type="text" class="form-control fw-bolder fs-6"
+                                                         th:value="${usuario.perfil}" disabled>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                         <div class="row">
+                                             <div class="col-md-12 mt-2">
+                                                 <div class="input-group">
+                                                     <span class="input-group-text label-fixa">Empresa</span> <input
+                                                         type="text" class="form-control fw-bolder fs-6"
+                                                         th:value="${usuario.nomeEmpresa}" disabled>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                         <div class="row">
+                                             <div class="col-md-12 mt-2">
+                                                 <div class="input-group">
+                                                     <span class="input-group-text label-fixa">Data Cad.</span> <input
+                                                         type="text" class="form-control fw-bolder fs-6"
+                                                         th:value="${usuario.dataCadastroFormatada}" disabled>
+                                                 </div>
 
-												</div>
-												<div class="col-md-3 mt-2">
-													<div class="input-group">
-														<span class="input-group-text label-fixa">Data Alt.</span> <input
-															type="text" class="form-control fw-bolder fs-6"
-															th:value="${usuario.dataAlteracaoFormatada}" disabled>
-													</div>
-												</div>
-												<div class="col-md-6 mt-2">
-													<div class="input-group"  disabled>
+                                             </div>
+                                         </div>
+                                         <div class="row">
+                                             <div class="col-md-12 mt-2">
+                                                 <div class="input-group">
+                                                     <span class="input-group-text label-fixa">Data Alt.</span> <input
+                                                         type="text" class="form-control fw-bolder fs-6"
+                                                         th:value="${usuario.dataAlteracaoFormatada}" disabled>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                         <div class="row">
+                                             <div class="col-md-12 mt-2">
+                                                 <div class="input-group"  disabled>
 															<span class="input-group-text label-fixa">
 																Ativo
 															</span>
 
-														<span style="background-color: #f8f9fc !important;" class="form-control fw-bolder fs-6"
-														      th:text="${usuario.status ? 'SIM' : 'NÃO'}"
-														      th:classappend="${usuario.status ? ' text-success' : ' text-danger'}">
+                                                     <span style="background-color: #f8f9fc !important;" class="form-control fw-bolder fs-6"
+                                                           th:text="${usuario.status ? 'SIM' : 'NÃO'}"
+                                                           th:classappend="${usuario.status ? ' text-success' : ' text-danger'}">
 												       </span>
-													</div>
-												</div>
-											</div>
-										</div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
+                                       <div class="col-md-6"></div>
+                                   </div>
 
-									</div>
-
-								</div>
+                                </div>
 							</div>
 
 
