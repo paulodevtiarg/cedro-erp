@@ -2,40 +2,42 @@ package br.com.dpsistemas.cedroerp.enumerators;
 
 public enum EstadosEnum {
 
-    AC("AC", "Acre"),
-    AL("AL", "Alagoas"),
-    AP("AP", "Amapá"),
-    AM("AM", "Amazonas"),
-    BA("BA", "Bahia"),
-    CE("CE", "Ceará"),
-    DF("DF", "Distrito Federal"),
-    ES("ES", "Espírito Santo"),
-    GO("GO", "Goiás"),
-    MA("MA", "Maranhão"),
-    MT("MT", "Mato Grosso"),
-    MS("MS", "Mato Grosso do Sul"),
-    MG("MG", "Minas Gerais"),
-    PA("PA", "Pará"),
-    PB("PB", "Paraíba"),
-    PR("PR", "Paraná"),
-    PE("PE", "Pernambuco"),
-    PI("PI", "Piauí"),
-    RJ("RJ", "Rio de Janeiro"),
-    RN("RN", "Rio Grande do Norte"),
-    RS("RS", "Rio Grande do Sul"),
-    RO("RO", "Rondônia"),
-    RR("RR", "Roraima"),
-    SC("SC", "Santa Catarina"),
-    SP("SP", "São Paulo"),
-    SE("SE", "Sergipe"),
-    TO("TO", "Tocantins");
+    RO("RO", "Rondônia", "11"),
+    AC("AC", "Acre", "12"),
+    AM("AM", "Amazonas", "13"),
+    RR("RR", "Roraima", "14"),
+    PA("PA", "Pará", "15"),
+    AP("AP", "Amapá", "16"),
+    TO("TO", "Tocantins", "17"),
+    MA("MA", "Maranhão", "21"),
+    PI("PI", "Piauí", "22"),
+    CE("CE", "Ceará", "23"),
+    RN("RN", "Rio Grande do Norte", "24"),
+    PB("PB", "Paraíba", "25"),
+    PE("PE", "Pernambuco", "26"),
+    AL("AL", "Alagoas", "27"),
+    SE("SE", "Sergipe", "28"),
+    BA("BA", "Bahia", "29"),
+    MG("MG", "Minas Gerais", "31"),
+    ES("ES", "Espírito Santo", "32"),
+    RJ("RJ", "Rio de Janeiro", "33"),
+    SP("SP", "São Paulo", "35"),
+    PR("PR", "Paraná", "41"),
+    SC("SC", "Santa Catarina", "42"),
+    RS("RS", "Rio Grande do Sul", "43"),
+    MS("MS", "Mato Grosso do Sul", "50"),
+    MT("MT", "Mato Grosso", "51"),
+    GO("GO", "Goiás", "52"),
+    DF("DF", "Distrito Federal", "53");
 
     private final String codigo;
     private final String nome;
+    private final String codigoIbge;
 
-    EstadosEnum(String codigo, String nome) {
+    EstadosEnum(String codigo, String nome, String codigoIbge) {
         this.codigo = codigo;
         this.nome = nome;
+        this.codigoIbge = codigoIbge;
     }
 
     public String getCodigo() {
@@ -46,12 +48,25 @@ public enum EstadosEnum {
         return nome;
     }
 
+    public String getCodigoIbge() {
+        return codigoIbge;
+    }
+
     public static EstadosEnum fromCodigo(String codigo) {
         for (EstadosEnum estado : EstadosEnum.values()) {
-            if (estado.getCodigo().equals(codigo)) {
+            if (estado.getCodigo().equalsIgnoreCase(codigo)) {
                 return estado;
             }
         }
-        throw new IllegalArgumentException("Código inválido: " + codigo);
+        throw new IllegalArgumentException("Código de estado inválido: " + codigo);
+    }
+
+    public static EstadosEnum fromCodigoIbge(String codigoIbge) {
+        for (EstadosEnum estado : EstadosEnum.values()) {
+            if (estado.getCodigoIbge().equals(codigoIbge)) {
+                return estado;
+            }
+        }
+        throw new IllegalArgumentException("Código IBGE inválido: " + codigoIbge);
     }
 }

@@ -18,6 +18,11 @@ public class Cliente  extends BaseEntity {
     @JoinColumn(name = "ID_EMPRESA", nullable = false)
     private Empresa empresa;
 
+    // Relacionamento com a tabela MUNICIPIO
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "MUNICIPIO_ID")
+    private Municipio municipio;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "TIPO_PESSOA", nullable = false)
     private TipoPessoaEnum tipoPessoa;
@@ -112,6 +117,14 @@ public class Cliente  extends BaseEntity {
 
     public Long getId() {
         return id;
+    }
+
+    public Municipio getMunicipio() {
+        return municipio;
+    }
+
+    public void setMunicipio(Municipio municipio) {
+        this.municipio = municipio;
     }
 
     public void setId(Long id) {

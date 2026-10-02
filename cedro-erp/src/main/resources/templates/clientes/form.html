@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/base}">
+
+<head>
+<title>Usuários</title>
+
+</head>
+
+<body>
+	<div layout:fragment="content">
+		<div class="container-fluid p-2">
+			<div class="row">
+				<div class="col-12">
+					<nav aria-label="breadcrumb card" style="margin-top: -25px; font-size: 0.8rem;">
+						<ol class="breadcrumb">
+							<li class="breadcrumb-item">
+								<a  class="text-decoration-none" th:href="@{/home}">
+								     <i class="fa-duotone fa-solid fa-house fs-7"></i> Home
+							    </a>
+							</li>
+							<li class="breadcrumb-item">
+								<a  class="text-decoration-none"	th:href="@{${queryParams != null and queryParams != ''} ? '/usuarios?' + queryParams : '/usuarios'}">
+									<i class="fa-duotone fa-solid fa-users"></i> Usuários - Lista </a>
+							</li>
+							<li class="breadcrumb-item">
+								<a  class="text-decoration-none"	th:href="@{${queryParams != null and queryParams != ''} ? '/clientes?' + queryParams : '/clientes'}">
+									<i class="fa-duotone fa-solid fa-rectangle-history-circle-user"></i> Clientes - Lista </a>
+
+							</li>
+							<li class="breadcrumb-item">
+								<span class="text-muted"><i class="fa-duotone fa-solid fa-building-user"></i> Novo Registro </span>
+							</li>
+
+						</ol>
+					</nav>
+				</div>
+
+				<div class="col-12">
+
+					<form th:object="${cliente}"
+						  th:action="${cliente.id == null} ? @{/clientes/salvar} : @{'/clientes/editar/' + ${cliente.id} + '?' + ${queryParams}}"
+					      method="post">
+						<input type="hidden" th:field="*{id}">
+
+						<div class="card">
+							<div class="card-header d-flex justify-content-between align-items-center fs-6 pr-custom-text fw-semibold text-uppercase">
+								<h5 class="mb-0 text-secondary fs-6"
+								    th:text="${cliente.id == null} ? 'Novo Registro' : 'Editar Registro'">
+								</h5>
+								<div class="d-flex gap-2">
+									<a data-bs-toggle="tooltip" title="Cancelar Ação"	th:href="@{${queryParams != null and queryParams != ''} ? '/clientes?' + queryParams :'/clientes'}"
+										class="btn btn-outline-danger btn-sm btn-formulario"> <i class="fa-duotone fa-solid fa-ban"></i> Cancelar
+									</a>
+
+									<button data-bs-toggle="tooltip" title="Salvar o Registro" type="submit" class="btn btn-outline-sistema btn-sm btn-formulario">
+										<i class="fa-duotone fa-solid fa-floppy-disk"></i> SALVAR
+									</button>
+								</div>
+							</div>
+							<div class="card-body">
+								<div class="row">
+									<div class="col-md-3">
+										<label for="tipoPessoa" class="form-label fw-semibold text-secondary mb-0">Perfil * </label>
+										<select class="form-select" th:field="*{tipoPessoa}" id="tipoPessoa"
+										        th:classappend="${#fields.hasErrors('tipoPessoa')} ? 'is-invalid' : ''">
+
+											<option value="">Selecione</option>
+
+											<option th:each="g : ${tipoPessoas}" th:value="${g}"
+											        th:text="${g.descricao}"></option>
+
+										</select>
+
+										<div class="invalid-feedback d-block"
+										     style="min-height: 20px;"
+										     th:if="${#fields.hasErrors('tipoPessoa')}"
+										     th:errors="*{tipoPessoa}"></div>
+									</div>
+								</div>
+								<div class="mb-2" style="border-bottom: 1px solid #d6d6d6; margin-top: 10px;"></div>
+
+									<!-- =================================================================== -->
+									<!-- BLOCO PESSOA FÍSICA (Inicialmente escondido com d-none) -->
+									<!-- =================================================================== -->
+									<div id="blocoPessoaFisica" class="d-none row">
+										<div class="col-md-6 pe-md-4">
+											<div class="row">
+												<div class="col-md-12">
+													<label class="form-label fw-semibold text-secondary mb-0">
+														Nome Cliente * </label>
+													<input type="text" th:field="*{nome}" id="nome" placeholder="Digite o Nome do novo Clente"  class="form-control"
+													       th:classappend="${#fields.hasErrors('nome')} ? 'is-invalid' : ''">
+													<div class="invalid-feedback d-block"
+													     style="min-height: 20px;"
+													     th:if="${#fields.hasErrors('nome')}"
+													     th:errors="*{nome}">
+													</div>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-md-6 mt-2">
+													<label class="form-label fw-semibold text-secondary mb-0">CPF * </label>
+													<input type="text" th:field="*{cpf}" id="cpf" placeholder="000.000.000-00"  oninput="mascaraCPF(this)" class="form-control"
+													       th:classappend="${#fields.hasErrors('cpf')} ? 'is-invalid' : ''">
+													<div class="invalid-feedback d-block"
+													     style="min-height: 20px;"
+													     th:if="${#fields.hasErrors('cpf')}"
+													     th:errors="*{cpf}">
+													</div>
+
+												</div>
+												<div class="col-md-6 mt-2">
+													<label for="genero" class="form-label fw-semibold text-secondary mb-0">Gênero * </label>
+													<select class="form-select" th:field="*{genero}" id="genero"
+													        th:classappend="${#fields.hasErrors('genero')} ? 'is-invalid' : ''">
+														<option value="">Selecione</option>
+														<option th:each="g : ${generos}" th:value="${g}"
+														        th:text="${g.descricao}"></option>
+
+													</select>
+
+													<div class="invalid-feedback d-block"
+													     style="min-height: 20px;"
+													     th:if="${#fields.hasErrors('genero')}"
+													     th:errors="*{genero}"></div>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-md-6 mt-2">
+													<label class="form-label fw-semibold text-secondary mb-0">Data de Nasc * </label>
+													<input type="text" th:field="*{dataNascimentoInicio}" id="dataNascimentoInicio"
+													       placeholder="DD/MM/AAAA" maxlength="10"
+													       oninput="mascaraData(this)" class="form-control mask-data"
+													       th:classappend="${#fields.hasErrors('dataNascimentoInicio')} ? 'is-invalid' : ''">
+													<div class="invalid-feedback d-block"
+													     style="min-height: 20px;"
+													     th:if="${#fields.hasErrors('dataNascimentoInicio')}"
+													     th:errors="*{dataNascimentoInicio}">
+													</div>
+
+												</div>
+												<div class="col-md-6 mt-2">
+													<label for="genero" class="form-label fw-semibold text-secondary mb-0">Estado Civil </label>
+													<select class="form-select" th:field="*{estadoCivil}" id="estadoCivil">
+
+														<option value="">Selecione</option>
+														<option th:each="g : ${estadosCivil}" th:value="${g}"
+														        th:text="${g.descricao}"></option>
+													</select>
+
+												</div>
+											</div>
+											<div class="row ">
+												<div class="col-md-6 mt-2">
+													<!-- CABEÇALHO DO CAMPO: LABEL + SWITCH WHATSAPP ALINHADOS -->
+													<div class="d-flex justify-content-between align-items-center">
+														<label for="celular" class="form-label fw-semibold text-secondary mb-0">Celular</label>
+
+														<div class="form-check form-switch mb-0 d-flex align-items-center">
+															<input class="form-check-input" type="checkbox" role="switch"
+															       id="whatsapp" th:field="*{whatsapp}" style="cursor: pointer;">
+															<label class="form-check-label fw-semibold text-secondary small" for="whatsapp" style="cursor: pointer;">
+																<i class="fa-brands fa-whatsapp text-success me-1"></i> WhatsApp
+															</label>
+														</div>
+													</div>
+													<!-- CAMPO DE INPUT DE CELULAR -->
+													<input type="text" th:field="*{celular}" id="celular"
+													       placeholder="(00) 00000-0000" oninput="mascaraTelefone(this)"
+													       class="form-control">
+												</div>
+												<div class="col-md-6 mt-2">
+													<label class="form-label fw-semibold text-secondary mb-0">CEP * </label>
+													<input type="text" th:field="*{cep}" id="cep" placeholder="00.000-000"   class="form-control mask-cep"
+													       th:classappend="${#fields.hasErrors('cep')} ? 'is-invalid' : ''">
+													<div class="invalid-feedback d-block"
+													     style="min-height: 20px;"
+													     th:if="${#fields.hasErrors('cep')}"
+													     th:errors="*{cep}">
+													</div>
+
+												</div>
+
+											</div>
+											<div class="row">
+												<div class="col-md-12 mt-2">
+													<label class="form-label fw-semibold text-secondary mb-0">Logradouro * </label>
+													<input type="text" th:field="*{logradouro}" id="logradouro" placeholder="Rua, Avenida, etc..."   class="form-control"
+													       th:classappend="${#fields.hasErrors('logradouro')} ? 'is-invalid' : ''">
+													<div class="invalid-feedback d-block"
+													     style="min-height: 20px;"
+													     th:if="${#fields.hasErrors('logradouro')}"
+													     th:errors="*{logradouro}">
+													</div>
+
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-md-3 mt-2">
+													<label class="form-label fw-semibold text-secondary mb-0">Número </label>
+													<input type="text" th:field="*{numero}" id="numero" placeholder="SN se não houver"   class="form-control">
+
+
+												</div>
+												<div class="col-md-9 mt-2">
+													<label class="form-label fw-semibold text-secondary mb-0">Complemento </label>
+													<input type="text" th:field="*{complemento}" id="complemento" placeholder="Qd, Lote, etc..."   class="form-control">
+
+
+												</div>
+											</div>
+										</div>
+										<div class="col-md-6 ps-md-4 border-start-md" style="border-left: 1px solid #d6d6d6;">
+												<div class="row">
+													<div class="col-md-12">
+														<label class="form-label fw-semibold text-secondary mb-0">Bairro </label>
+														<input type="text" th:field="*{bairro}" id="bairro" placeholder="Setor, Loteamento, Vila"   class="form-control">
+
+													</div>
+												</div>
+											    <div class="row">
+													<div class="col-md-6 mt-2">
+														<label for="uf" class="form-label fw-semibold text-secondary mb-0">UF *</label>
+														<select class="form-select" th:field="*{uf}" id="uf"
+													            th:classappend="${#fields.hasErrors('uf')} ? 'is-invalid' : ''">
+															<option value="">Selecione</option>
+															<option th:each="g : ${estados}" th:value="${g.codigo}" th:text="${g.nome}"></option>
+														</select>
+														<div class="invalid-feedback d-block" style="min-height: 20px;"
+													         th:if="${#fields.hasErrors('uf')}" th:errors="*{uf}"></div>
+													</div>
+													<!-- SELECT DE CIDADE (Guarda o ID do Município ou o Código IBGE) -->
+													<div class="col-md-6 mt-2">
+														<label for="idMunicipio" class="form-label fw-semibold text-secondary mb-0">Cidade / Município *</label>
+														<select class="form-select" th:field="*{idMunicipio}" id="idMunicipio"
+													            th:classappend="${#fields.hasErrors('idMunicipio')} ? 'is-invalid' : ''">
+															<option value="">Selecione o Estado primeiro</option>
+															<option th:each="m : ${municipios}" th:value="${m.id}" th:text="${m.nome}"></option>
+														</select>
+														<div class="invalid-feedback d-block" style="min-height: 20px;"
+													         th:if="${#fields.hasErrors('idMunicipio')}" th:errors="*{idMunicipio}"></div>
+													</div>
+												</div>
+
+
+										</div>
+									</div>
+									<!-- =================================================================== -->
+									<!-- BLOCO PESSOA JURIDICA (Inicialmente escondido com d-none) -->
+									<!-- =================================================================== -->
+									<div id="blocoPessoaJuridica" class="d-none"></div>
+
+
+
+								<!-- fim da col dentro do bdy -->
+							</div>
+
+						</div>
+                        <div th:replace="~{fragments/footerForm :: footerForm}"></div>
+					</form>
+				</div>
+				<!-- fim do card -->
+
+			</div>
+
+		</div>
+		<!-- FIM DO CARD -->
+
+
+
+		<div id="modalImagem" class="modal-img">
+			<span class="fechar" onclick="fecharModal()">&times;</span> <img
+				id="imgModalConteudo">
+		</div>
+		<script>
+			document.addEventListener('DOMContentLoaded', function () {
+
+				// Referências dos Elementos
+				const cepInput = document.getElementById('cep');
+				const logradouroInput = document.getElementById('logradouro');
+				const bairroInput = document.getElementById('bairro');
+				const estadoSelect = document.getElementById('uf');
+				const municipioSelect = document.getElementById('idMunicipio');
+
+				/**
+				 * 1. Função para carregar os municípios de uma determinada UF via AJAX
+				 * @param {string} uf - Sigla do estado (ex: "TO")
+				 * @param {number|string|null} idMunicipioSelecionar - ID do município para selecionar automaticamente
+				 */
+				function carregarMunicipiosPorUf(uf, idMunicipioSelecionar = null) {
+					if (!municipioSelect) return;
+
+					// Feedback visual
+					municipioSelect.innerHTML = '<option value="">Carregando municípios...</option>';
+
+					if (!uf) {
+						municipioSelect.innerHTML = '<option value="">Selecione o Estado primeiro</option>';
+						return;
+					}
+
+					fetch('/api/municipios/' + uf)
+							.then(response => {
+								if (!response.ok) {
+									throw new Error('Erro na requisição dos municípios');
+								}
+								return response.json();
+							})
+							.then(municipios => {
+								municipioSelect.innerHTML = '<option value="">Selecione o município</option>';
+
+								municipios.forEach(mun => {
+									const option = document.createElement('option');
+									option.value = mun.id;
+									option.text = mun.nome;
+
+									// Marca como selecionado se corresponder ao ID desejado
+									if (idMunicipioSelecionar && String(mun.id) === String(idMunicipioSelecionar)) {
+										option.selected = true;
+									}
+
+									municipioSelect.appendChild(option);
+								});
+							})
+							.catch(error => {
+								console.error('Erro ao carregar municípios:', error);
+								municipioSelect.innerHTML = '<option value="">Erro ao carregar municípios</option>';
+							});
+				}
+
+				/**
+				 * 2. Evento ao alterar o Estado (UF) manualmente no combo
+				 */
+				if (estadoSelect) {
+					estadoSelect.addEventListener('change', function () {
+						const ufSelecionada = this.value;
+						carregarMunicipiosPorUf(ufSelecionada);
+					});
+				}
+
+				/**
+				 * 3. Evento ao sair do campo CEP (Consulta ViaCEP + API do Cedro ERP)
+				 */
+				if (cepInput) {
+					cepInput.addEventListener('blur', function () {
+						const cepLimpo = this.value.replace(/\D/g, '');
+
+						if (cepLimpo.length === 8) {
+							// Mostra indicador visual se a função mostrarLoading existir no projeto
+							if (typeof mostrarLoading === 'function') mostrarLoading();
+
+							fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`)
+									.then(response => response.json())
+									.then(data => {
+										if (data.erro) {
+											alert('CEP não encontrado!');
+											return;
+										}
+
+										// Preenche campos de texto do endereço
+										if (logradouroInput) logradouroInput.value = data.logradouro;
+										if (bairroInput) bairroInput.value = data.bairro;
+
+										// Preenche o Estado (UF)
+										if (estadoSelect) {
+											estadoSelect.value = data.uf;
+
+											// Busca a cidade na API interna usando o Código IBGE retornado pelo ViaCEP
+											fetch('/api/municipios/ibge/' + data.ibge)
+													.then(res => {
+														if (!res.ok) throw new Error('Município não encontrado no banco');
+														return res.json();
+													})
+													.then(munDto => {
+														// Recarrega os municípios da UF e já deixa o município do CEP selecionado
+														carregarMunicipiosPorUf(data.uf, munDto.id);
+													})
+													.catch(err => {
+														console.warn('Município não localizado pelo IBGE, carregando apenas lista da UF:', err);
+														carregarMunicipiosPorUf(data.uf);
+													});
+										}
+									})
+									.catch(error => {
+										console.error('Erro ao consultar ViaCEP:', error);
+										alert('Não foi possível consultar o CEP no momento.');
+									})
+									.finally(() => {
+										if (typeof esconderLoading === 'function') esconderLoading();
+									});
+						}
+					});
+				}
+
+			});
+		</script>
+		<!--JAVA SCRIPT -->
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				const selectTipoPessoa = document.getElementById('tipoPessoa');
+				const blocoFisica = document.getElementById('blocoPessoaFisica');
+				const blocoJuridica = document.getElementById('blocoPessoaJuridica');
+
+				function alternarTipoPessoa() {
+					const valor = selectTipoPessoa.value;
+
+					if (valor === 'FISICA') {
+						blocoFisica.classList.remove('d-none');
+						blocoJuridica.classList.add('d-none');
+					} else if (valor === 'JURIDICA') {
+						blocoJuridica.classList.remove('d-none');
+						blocoFisica.classList.add('d-none');
+					} else {
+						// Se nenhum estiver selecionado ("Selecione..."), esconde ambos
+						blocoFisica.classList.add('d-none');
+						blocoJuridica.classList.add('d-none');
+					}
+				}
+
+				// Executa na troca do select
+				selectTipoPessoa.addEventListener('change', alternarTipoPessoa);
+
+				// Executa imediatamente na carga da página (essencial para Edição e validações que voltaram com erro)
+				alternarTipoPessoa();
+			});
+		</script>
+
+
+	</div>
+</body>
+</html>

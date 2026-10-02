@@ -62,4 +62,12 @@ public abstract class BaseEntity {
     public LocalDateTime getDataAlteracao() {
         return dataAlteracao;
     }
+
+    public void setDataCadastro(LocalDateTime dataCadastro) {
+        this.dataCadastro = dataCadastro;
+    }
+
+    public void setDataAlteracao(LocalDateTime dataAlteracao) {
+        this.dataAlteracao = dataAlteracao;
+    }
 }

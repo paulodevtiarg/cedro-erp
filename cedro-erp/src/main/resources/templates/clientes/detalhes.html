@@ -105,43 +105,43 @@
 						<div class="card-body">
 							<div class="row">
 								<div class="col-md-12">
+									<div class="row">
+										<div class="col-md-6 pe-md-4">
+											<span class="text-muted fw-semibold fs-5" >Informções</span>
+											<div class="mb-2" style="border-bottom: 1px solid #d6d6d6; margin-top: 4px;"></div>
 											<!--Pessoa Física -->
-											<div th:if="${cliente.tipoPessoa.name() == 'FISICA'}" >
+											<div th:if="${cliente.tipoPessoa.name() == 'FISICA'}">
 												<div class="row">
-													<div class="col-md-3 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Pessoa</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.tipoPessoa}" disabled>
-														</div>
-													</div>
-													<div class="col-md-5 mt-2">
+													<div class="col-md-12 mt-2">
 														<div class="input-group">
 															<span class="input-group-text label-fixa">Nome</span>
 															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.nome}" disabled>
 														</div>
 													</div>
-													<div class="col-md-4 mt-2">
+												</div>
+												<div class="row">
+													<div class="col-md-6 mt-2">
+														<div class="input-group">
+															<span class="input-group-text label-fixa">Pessoa</span>
+															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.tipoPessoa}" disabled>
+														</div>
+													</div>
+													<div class="col-md-6 mt-2">
 														<div class="input-group">
 															<span class="input-group-text label-fixa">Gêmero</span>
 															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.genero}" disabled>
 														</div>
 													</div>
-
+												
 												</div>
 												<div class="row">
-													<div class="col-md-3 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Est. Civil</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.estadoCivil}" disabled>
-														</div>
-													</div>
-													<div class="col-md-5 mt-2">
+													<div class="col-md-6 mt-2">
 														<div class="input-group">
 															<span class="input-group-text label-fixa">CPF</span>
 															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.cpfFormatado}" disabled>
 														</div>
 													</div>
-													<div class="col-md-4 mt-2">
+													<div class="col-md-6 mt-2">
 														<div class="input-group">
 															<span class="input-group-text label-fixa">Data Nasc.</span>
 															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.dataNascimentoInicioFormatada}" disabled>
@@ -150,79 +150,79 @@
 
 												</div>
 												<div class="row">
-													<div class="col-md-3 mt-2">
+													<div class="col-md-6 mt-2">
 														<div class="input-group">
-															<span class="input-group-text label-fixa">Logradouro</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.logradouro}" disabled>
+															<span class="input-group-text label-fixa">Est. Civil</span>
+															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.estadoCivil}" disabled>
 														</div>
 													</div>
-													<div class="col-md-5 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Complemento</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.complemento}" disabled>
-														</div>
-													</div>
-													<div class="col-md-4 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Bairro</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.bairro}" disabled>
-														</div>
-													</div>
-
-												</div>
-												<div class="row">
-													<div class="col-md-3 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Número</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.numero}" disabled>
-														</div>
-													</div>
-													<div class="col-md-5 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Cidade</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	 th:value="|${cliente.cidade} - ${cliente.uf}|" disabled>
-														</div>
-													</div>
-
-													<div class="col-md-4 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">País</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.pais}" disabled>
-														</div>
-													</div>
-
-
-												</div>
-												<div class="row">
-
-													<div class="col-md-3 mt-2">
+													<div class="col-md-6 mt-2">
 														<div class="input-group">
 															<span class="input-group-text label-fixa">CEP</span>
 															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.cep}" disabled>
 														</div>
 													</div>
-													<div class="col-md-5 mt-2">
+
+												</div>
+
+												<div class="row">
+													<div class="col-md-12 mt-2">
+														<div class="input-group">
+															<span class="input-group-text label-fixa">Logradouro</span>
+															<input type="text" class="form-control fw-bolder fs-6"
+															       th:value="${cliente.logradouro} + ${!#strings.isEmpty(cliente.numero) ? ' , ' + cliente.numero : ''}"
+															       disabled>
+														</div>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-12 mt-2">
+														<div class="input-group">
+															<span class="input-group-text label-fixa">Complemento</span>
+															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.complemento}" disabled>
+														</div>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-12 mt-2">
+														<div class="input-group">
+															<span class="input-group-text label-fixa">Bairro</span>
+															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.bairro}" disabled>
+														</div>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-12 mt-2">
+														<div class="input-group">
+															<span class="input-group-text label-fixa">Cidade</span>
+															<input	type="text" class="form-control fw-bolder fs-6"	 th:value="|${cliente.cidade} - ${cliente.uf} - ${cliente.pais}|" disabled>
+														</div>
+													</div>
+												</div>
+												<div class="row">
+
+													<div class="col-md-6 mt-2">
 														<div class="input-group">
 															<span class="input-group-text label-fixa">E-Mail</span>
 															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.emailPrincipal}" disabled>
 														</div>
 													</div>
-													<div class="col-md-4 mt-2">
+													<div class="col-md-6 mt-2">
 														<div class="input-group">
 															<span class="input-group-text label-fixa">Telefone</span>
 															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.telefone}" disabled>
 														</div>
 													</div>
-
 												</div>
 												<div class="row">
-													<div class="col-md-3 mt-2">
+
+													<div class="col-md-6 mt-2">
 														<div class="input-group">
 															<span class="input-group-text label-fixa">Celular</span>
 															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.celular}" disabled>
 														</div>
 													</div>
-													<div class="col-md-3 mt-2">
+													<div class="col-md-6 mt-2">
 														<div class="input-group">
 															<span class="input-group-text label-fixa">
 																WhatsApp?
@@ -244,156 +244,407 @@
 
 														</div>
 													</div>
+												</div>
+
+											</div>
+											<!--Pessoa Juridica -->
+											<div th:if="${cliente.tipoPessoa.name() == 'JURIDICA'}">
+												<div class="row">
+													<div class="col-md-12 mt-2">
+														<div class="input-group">
+															<span class="input-group-text label-fixa">Raz. Social</span>
+															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.razaoSocial}" disabled>
+														</div>
+													</div>
+												</div>
+												<div class="row">
 													<div class="col-md-6 mt-2">
 														<div class="input-group">
-															<span class="input-group-text label-fixa">Observações</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.obs == null ? 'SEM OBSERVAÇÕES' : cliente.obs }" disabled>
+															<span class="input-group-text label-fixa">Pessoa</span>
+															<input	type="text" class="form-control fw-bolder fs-6"	 th:value="${cliente.tipoPessoa == null
+									                ? 'NÃO INFORMADO': (cliente.tipoPessoa.name() == 'JURIDICA' and cliente.mei == true	? 'JURÍDICA - MEI' : cliente.tipoPessoa.name())}" disabled>
 														</div>
+													</div>
+													<div class="col-md-6 mt-2">
+														<div class="input-group">
+															<span class="input-group-text label-fixa">CNPJ</span>
+															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.cnpjFormatado}" disabled>
+														</div>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-6 mt-2">
+														<div class="input-group">
+															<span class="input-group-text label-fixa">Insc. Estadual</span>
+															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.inscricaoEstadual != null ? cliente.inscricaoEstadual : 'NÃO INFORMADO'}" disabled>
+														</div>
+													</div>
+													<div class="col-md-6 mt-2">
+														<div class="input-group">
+															<span class="input-group-text label-fixa">Regime</span>
+															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.regimeTributario.descricao}" disabled>
+														</div>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-12 mt-2">
+														<div class="input-group">
+															<span class="input-group-text label-fixa">Cnae</span>
+															<input	type="text" class="form-control fw-bolder fs-6"	 th:value="${cliente.cnaeDescricao != null
+													? cliente.cnaeFormatado + ' - ' + cliente.cnaeDescricao
+													: 'NÃO INFORMADO'}" disabled>
+														</div>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-12 mt-2">
+														<div class="input-group">
+															<span class="input-group-text label-fixa">Logradouro</span>
+															<input type="text" class="form-control fw-bolder fs-6"
+															       th:value="${cliente.logradouro} + ${!#strings.isEmpty(cliente.numero) ? ' , ' + cliente.numero : ''}"
+															       disabled>
+														</div>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-12 mt-2 ">
+														<div class="input-group">
+															<span class="input-group-text label-fixa">Complemento</span>
+															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.complemento}" disabled>
+														</div>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-12 mt-2">
+														<div class="input-group">
+															<span class="input-group-text label-fixa">Bairro</span>
+															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.bairro}" disabled>
+														</div>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-12 mt-2">
+														<div class="input-group">
+															<span class="input-group-text label-fixa">Cidade</span>
+															<input	type="text" class="form-control fw-bolder fs-6"	 th:value="|${cliente.cidade} - ${cliente.uf} - ${cliente.pais}|" disabled>
+														</div>
+													</div>
+												</div>
+											</div>
+											<!--geral -->
+											<div class="row">
+												<div class="col-md-12 mt-2">
+													<div class="input-group">
+														<span class="input-group-text label-fixa">Observações</span>
+														<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.obs == null ? 'SEM OBSERVAÇÕES' : cliente.obs }" disabled>
+													</div>
+												</div>
+
+											</div>
+											<div class="row">
+												<div class="col-md-6 mt-2">
+													<div class="input-group">
+														<span class="input-group-text label-fixa">Data Cad.</span> <input
+															type="text" class="form-control fw-bolder fs-6"
+															th:value="${cliente.dataCadastroFormatada}" disabled>
 													</div>
 
 												</div>
-
-											</div>
-									<!--Pessoa Jurídica -->
-									<div th:if="${cliente.tipoPessoa.name() == 'JURIDICA'}" >
-
-										<div class="row ">
-											<div class="col-md-3 mt-2">
-												<div class="input-group">
-													<span class="input-group-text label-fixa">Pessoa</span>
-													<input	type="text" class="form-control fw-bolder fs-6"	 th:value="${cliente.tipoPessoa == null
-									                ? 'NÃO INFORMADO': (cliente.tipoPessoa.name() == 'JURIDICA' and cliente.mei == true	? 'JURÍDICA - MEI' : cliente.tipoPessoa.name())}" disabled>
+												<div class="col-md-6 mt-2">
+													<div class="input-group">
+														<span class="input-group-text label-fixa">Data Alt.</span> <input
+															type="text" class="form-control fw-bolder fs-6"
+															th:value="${cliente.dataAlteracaoFormatada}" disabled>
+													</div>
 												</div>
 											</div>
-											<div class="col-md-5 mt-2">
-												<div class="input-group">
-													<span class="input-group-text label-fixa">Raz. Social</span>
-													<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.razaoSocial}" disabled>
+											<div class="row">
+												<div class="col-md-6 mt-2">
+													<div class="input-group">
+														<span class="input-group-text label-fixa">Empresa</span> <input
+															type="text" class="form-control fw-bolder fs-6"
+															th:value="${cliente.nomeEmpresa}" disabled>
+													</div>
 												</div>
-											</div>
-											<div class="col-md-4 mt-2">
-												<div class="input-group">
-													<span class="input-group-text label-fixa">CNPJ</span>
-													<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.cnpjFormatado}" disabled>
-												</div>
-											</div>
-
-										</div>
-										<div class="row">
-											<div class="col-md-3 mt-2">
-												<div class="input-group">
-													<span class="input-group-text label-fixa">Insc. Estadual</span>
-													<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.inscricaoEstadual != null ? cliente.inscricaoEstadual : 'NÃO INFORMADO'}" disabled>
-												</div>
-											</div>
-											<div class="col-md-5 mt-2">
-												<div class="input-group">
-													<span class="input-group-text label-fixa">Cnae</span>
-													<input	type="text" class="form-control fw-bolder fs-6"	 th:value="${cliente.cnaeDescricao != null
-													? cliente.cnaeFormatado + ' - ' + cliente.cnaeDescricao
-													: 'NÃO INFORMADO'}" disabled>
-												</div>
-											</div>
-											<div class="col-md-4 mt-2">
-												<div class="input-group">
-													<span class="input-group-text label-fixa">Regime</span>
-													<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.regimeTributario.descricao}" disabled>
-												</div>
-											</div>
-
-										</div>
-										<div class="row">
-											<div class="col-md-3 mt-2">
-												<div class="input-group">
-													<span class="input-group-text label-fixa">Logradouro</span>
-													<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.logradouro}" disabled>
-												</div>
-											</div>
-											<div class="col-md-5 mt-2 ">
-												<div class="input-group">
-													<span class="input-group-text label-fixa">Complemento</span>
-													<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.complemento}" disabled>
-												</div>
-											</div>
-											<div class="col-md-4 mt-2">
-												<div class="input-group">
-													<span class="input-group-text label-fixa">Bairro</span>
-													<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.bairro}" disabled>
-												</div>
-											</div>
-
-										</div>
-										<div class="row">
-											<div class="col-md-3 mt-2">
-												<div class="input-group">
-													<span class="input-group-text label-fixa">Número</span>
-													<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.numero}" disabled>
-												</div>
-											</div>
-											<div class="col-md-5 mt-2">
-												<div class="input-group">
-													<span class="input-group-text label-fixa">Cidade</span>
-													<input	type="text" class="form-control fw-bolder fs-6"	 th:value="|${cliente.cidade} - ${cliente.uf}|" disabled>
-												</div>
-											</div>
-
-											<div class="col-md-4 mt-2">
-												<div class="input-group">
-													<span class="input-group-text label-fixa">País</span>
-													<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.pais}" disabled>
-												</div>
-											</div>
-
-
-										</div>
-										<div class="row ">
-											<div class="col-md-12 mt-2">
-												<div class="input-group">
-													<span class="input-group-text label-fixa">Observações</span>
-													<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.obs == null ? 'SEM OBSERVAÇÕES' : cliente.obs }" disabled>
-												</div>
-											</div>
-										</div>
-									</div> <!--fim pessoa JURIDICA -->
-
-
-									       <!-- GEral -->
-
-									<div class="row">
-										<div class="col-md-3 mt-2">
-											<div class="input-group">
-												<span class="input-group-text label-fixa">Data Cad.</span> <input
-													type="text" class="form-control fw-bolder fs-6"
-													th:value="${cliente.dataCadastroFormatada}" disabled>
-											</div>
-
-										</div>
-										<div class="col-md-3 mt-2">
-											<div class="input-group">
-												<span class="input-group-text label-fixa">Data Alt.</span> <input
-													type="text" class="form-control fw-bolder fs-6"
-													th:value="${cliente.dataAlteracaoFormatada}" disabled>
-											</div>
-										</div>
-										<div class="col-md-2 mt-2">
-											<div class="input-group"  disabled>
+												<div class="col-md-6 mt-2">
+													<div class="input-group"  disabled>
 															<span class="input-group-text label-fixa">
 																Ativo
 															</span>
-												<span style="background-color: #f8f9fc !important;" class="form-control fw-bolder fs-6"
-												      th:text="${cliente.status ? 'SIM' : 'NÃO'}"
-												      th:classappend="${cliente.status ? ' text-success' : ' text-danger'}">
-												</span>
+														<span style="background-color: #f8f9fc !important;" class="form-control fw-bolder fs-6"
+														      th:text="${cliente.status ? 'SIM' : 'NÃO'}"
+														      th:classappend="${cliente.status ? ' text-success' : ' text-danger'}">
+														</span>
+													</div>
+												</div>
 											</div>
 										</div>
-										<div class="col-md-4 mt-2">
-											<div class="input-group">
-												<span class="input-group-text label-fixa">Empresa</span> <input
-													type="text" class="form-control fw-bolder fs-6"
-													th:value="${cliente.nomeEmpresa}" disabled>
+										<div class="col-md-6 ps-md-4 border-start-md" style="border-left: 1px solid #d6d6d6;">
+											<span class="text-muted fw-semibold fs-5" >Histórico</span>
+											<div class="mb-2" style="border-bottom: 1px solid #d6d6d6; margin-top: 4px;"></div>
+											<!--Table com o Histórico do Cliente -->
+											<!-- Wrapper principal travado em 450px e sem rolagem -->
+											<!-- Container do Card Moderno -->
+											<div class="card border-0 shadow-sm rounded-3 my-3">
+
+												<!-- Corpo da Tabela com altura fixa de 450px e sem rolagem -->
+												<div class="card-body p-0 d-flex flex-column justify-content-between" style="height: 450px; overflow: hidden;">
+
+													<div class="flex-grow-1" style="overflow: hidden;">
+														<table class="table table-hover align-middle m-0 h-100" style="table-layout: fixed;">
+															<thead  class="bg-light  border-bottom">
+															<tr class="text-secondary small text-uppercase" style="height: 42px; letter-spacing: 0.5px;">
+																<th scope="col" class="ps-4 fw-semibold" style="width: 20%;">Tipo</th>
+																<th scope="col" class="fw-semibold" style="width: 20%;">Registro</th>
+																<th scope="col" class="fw-semibold" style="width: 20%;">Data</th>
+																<th scope="col" class="fw-semibold" style="width: 25%;">Valor</th>
+																<th scope="col" class="text-center pe-4 fw-semibold" style="width: 15%;">Ação</th>
+															</tr>
+															</thead>
+															<tbody class="border-top-0">
+															<tr>
+																<td class="ps-4">
+																	<span class="badge bg-emerald-subtle text-emerald rounded-pill px-2 py-1 fw-medium" style="background-color: #e6f4ea; color: #0c4a31;">Pedido</span>
+																</td>
+																<td class="fw-semibold text-dark">#1256</td>
+																<td class="text-secondary small">24/05/2026</td>
+																<td class="fw-bold text-dark">R$ 256,80</td>
+																<td class="text-center text-nowrap align-middle">
+
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Detalhes">
+																			<i class="fa-duotone fa-eye"></i>
+																		</button>
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Imprimir">
+																			<i class="fa-duotone fa-print"></i>
+																		</button>
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Baixar PDF">
+																			<i class="fa-duotone fa-file-pdf"></i>
+																		</button>
+
+																</td>
+															</tr>
+															<tr>
+																<td class="ps-4">
+																	<span class="badge bg-amber-subtle text-amber rounded-pill px-2 py-1 fw-medium" style="background-color: #fff7ed; color: #c2410c;">Orçamento</span>
+																</td>
+																<td class="fw-semibold text-dark">#1358</td>
+																<td class="text-secondary small">29/05/2026</td>
+																<td class="fw-bold text-dark">R$ 1.356,40</td>
+																<td class="text-center text-nowrap align-middle">
+
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Detalhes">
+																			<i class="fa-duotone fa-eye"></i>
+																		</button>
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Imprimir">
+																			<i class="fa-duotone fa-print"></i>
+																		</button>
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Baixar PDF">
+																			<i class="fa-duotone fa-file-pdf"></i>
+																		</button>
+
+																</td>
+															</tr>
+															<tr>
+																<td class="ps-4">
+																	<span class="badge bg-emerald-subtle text-emerald rounded-pill px-2 py-1 fw-medium" style="background-color: #e6f4ea; color: #0c4a31;">Pedido</span>
+																</td>
+																<td class="fw-semibold text-dark">#1477</td>
+																<td class="text-secondary small">30/08/2026</td>
+																<td class="fw-bold text-dark">R$ 896,40</td>
+																<td class="text-center text-nowrap align-middle">
+
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Detalhes">
+																			<i class="fa-duotone fa-eye"></i>
+																		</button>
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Imprimir">
+																			<i class="fa-duotone fa-print"></i>
+																		</button>
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Baixar PDF">
+																			<i class="fa-duotone fa-file-pdf"></i>
+																		</button>
+
+																</td>
+															</tr>
+															<tr>
+																<td class="ps-4">
+																	<span class="badge bg-amber-subtle text-amber rounded-pill px-2 py-1 fw-medium" style="background-color: #fff7ed; color: #c2410c;">Orçamento</span>
+																</td>
+																<td class="fw-semibold text-dark">#1502</td>
+																<td class="text-secondary small">02/09/2026</td>
+																<td class="fw-bold text-dark">R$ 3.240,00</td>
+																<td class="text-center text-nowrap align-middle">
+
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Detalhes">
+																			<i class="fa-duotone fa-eye"></i>
+																		</button>
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Imprimir">
+																			<i class="fa-duotone fa-print"></i>
+																		</button>
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Baixar PDF">
+																			<i class="fa-duotone fa-file-pdf"></i>
+																		</button>
+
+																</td>
+															</tr>
+															<tr>
+																<td class="ps-4">
+																	<span class="badge bg-emerald-subtle text-emerald rounded-pill px-2 py-1 fw-medium" style="background-color: #e6f4ea; color: #0c4a31;">Pedido</span>
+																</td>
+																<td class="fw-semibold text-dark">#1519</td>
+																<td class="text-secondary small">10/09/2026</td>
+																<td class="fw-bold text-dark">R$ 412,15</td>
+																<td class="text-center text-nowrap align-middle">
+
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Detalhes">
+																			<i class="fa-duotone fa-eye"></i>
+																		</button>
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Imprimir">
+																			<i class="fa-duotone fa-print"></i>
+																		</button>
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Baixar PDF">
+																			<i class="fa-duotone fa-file-pdf"></i>
+																		</button>
+
+																</td>
+															</tr>
+															<tr>
+																<td class="ps-4">
+																	<span class="badge bg-amber-subtle text-amber rounded-pill px-2 py-1 fw-medium" style="background-color: #fff7ed; color: #c2410c;">Orçamento</span>
+																</td>
+																<td class="fw-semibold text-dark">#1533</td>
+																<td class="text-secondary small">15/09/2026</td>
+																<td class="fw-bold text-dark">R$ 980,00</td>
+																<td class="text-center text-nowrap align-middle">
+
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Detalhes">
+																			<i class="fa-duotone fa-eye"></i>
+																		</button>
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Imprimir">
+																			<i class="fa-duotone fa-print"></i>
+																		</button>
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Baixar PDF">
+																			<i class="fa-duotone fa-file-pdf"></i>
+																		</button>
+
+																</td>
+															</tr>
+															<tr>
+																<td class="ps-4">
+																	<span class="badge bg-emerald-subtle text-emerald rounded-pill px-2 py-1 fw-medium" style="background-color: #e6f4ea; color: #0c4a31;">Pedido</span>
+																</td>
+																<td class="fw-semibold text-dark">#1560</td>
+																<td class="text-secondary small">18/09/2026</td>
+																<td class="fw-bold text-dark">R$ 1.750,50</td>
+																<td class="text-end pe-4">
+
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Detalhes">
+																			<i class="fa-duotone fa-eye"></i>
+																		</button>
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Imprimir">
+																			<i class="fa-duotone fa-print"></i>
+																		</button>
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Baixar PDF">
+																			<i class="fa-duotone fa-file-pdf"></i>
+																		</button>
+
+																</td>
+															</tr>
+															<tr>
+																<td class="ps-4">
+																	<span class="badge bg-amber-subtle text-amber rounded-pill px-2 py-1 fw-medium" style="background-color: #fff7ed; color: #c2410c;">Orçamento</span>
+																</td>
+																<td class="fw-semibold text-dark">#1584</td>
+																<td class="text-secondary small">22/09/2026</td>
+																<td class="fw-bold text-dark">R$ 620,00</td>
+																<td class="text-end pe-4">
+
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Detalhes">
+																			<i class="fa-duotone fa-eye"></i>
+																		</button>
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Imprimir">
+																			<i class="fa-duotone fa-print"></i>
+																		</button>
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Baixar PDF">
+																			<i class="fa-duotone fa-file-pdf"></i>
+																		</button>
+
+																</td>
+															</tr>
+															<tr>
+																<td class="ps-4">
+																	<span class="badge bg-emerald-subtle text-emerald rounded-pill px-2 py-1 fw-medium" style="background-color: #e6f4ea; color: #0c4a31;">Pedido</span>
+																</td>
+																<td class="fw-semibold text-dark">#1601</td>
+																<td class="text-secondary small">27/09/2026</td>
+																<td class="fw-bold text-dark">R$ 2.110,90</td>
+																<td class="text-end pe-4">
+
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Detalhes">
+																			<i class="fa-duotone fa-eye"></i>
+																		</button>
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Imprimir">
+																			<i class="fa-duotone fa-print"></i>
+																		</button>
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Baixar PDF">
+																			<i class="fa-duotone fa-file-pdf"></i>
+																		</button>
+
+																</td>
+															</tr>
+															<tr>
+																<td class="ps-4">
+																	<span class="badge bg-amber-subtle text-amber rounded-pill px-2 py-1 fw-medium" style="background-color: #fff7ed; color: #c2410c;">Orçamento</span>
+																</td>
+																<td class="fw-semibold text-dark">#1625</td>
+																<td class="text-secondary small">01/10/2026</td>
+																<td class="fw-bold text-dark">R$ 540,30</td>
+																<td class="text-end pe-4">
+
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Detalhes">
+																			<i class="fa-duotone fa-eye"></i>
+																		</button>
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Imprimir">
+																			<i class="fa-duotone fa-print"></i>
+																		</button>
+																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Baixar PDF">
+																			<i class="fa-duotone fa-file-pdf"></i>
+																		</button>
+
+																</td>
+															</tr>
+															</tbody>
+														</table>
+													</div>
+
+													<!-- Rodapé Integrado com Paginação Flutuante/Limpa -->
+													<div class="card-footer bg-white border-top-0 px-4 py-3 d-flex justify-content-between align-items-center">
+														<span class="text-secondary small">Mostrando <strong>1-10</strong> de <strong>30</strong> registros</span>
+														<nav aria-label="Navegação da tabela">
+															<ul class="pagination pagination-sm mb-0 gap-1">
+																<li class="page-item disabled">
+																	<a class="page-link border-0 rounded-2 text-secondary" href="#">Anterior</a>
+																</li>
+																<li class="page-item">
+																	<a class="page-link border-0 rounded-2 text-white fw-bold" style="background-color: #0c4a31;" href="#">1</a>
+																</li>
+																<li class="page-item">
+																	<a class="page-link border-0 rounded-2 text-dark" href="#">2</a>
+																</li>
+																<li class="page-item">
+																	<a class="page-link border-0 rounded-2 text-dark" href="#">3</a>
+																</li>
+																<li class="page-item">
+																	<a class="page-link border-0 rounded-2 text-dark" href="#">Próximo</a>
+																</li>
+															</ul>
+														</nav>
+													</div>
+
+												</div>
 											</div>
 										</div>
 									</div>
+
 							   </div>
 						   </div>
 						</div>

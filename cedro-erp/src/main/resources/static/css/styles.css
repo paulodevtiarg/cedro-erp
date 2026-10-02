@@ -75,7 +75,7 @@
         .foto-3x4 {
             width: 100%;
             aspect-ratio: 3/4;
-            object-fit: contain;
+            object-fit: cover;
             border: 1px solid #ced4da;
             border-radius: 4px;
             background-color: #fff;
@@ -264,7 +264,7 @@
 .foto-3x4-img-dt {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
     object-position: center;
     display: block;
 }
@@ -412,7 +412,7 @@
     }
 .foto-3x4-container-2 {
     width: 100%;
-    max-width: 190px;
+    max-width: 260px;
     margin: 0 auto;
     border: 1px solid #dee2e6;
     border-radius: 8px;
