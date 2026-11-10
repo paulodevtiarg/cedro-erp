@@ -2,6 +2,8 @@ package br.com.dpsistemas.cedroerp.services;
 
 import br.com.dpsistemas.cedroerp.dtos.ClienteDTO;
 import br.com.dpsistemas.cedroerp.dtos.CnaeDTO;
+import br.com.dpsistemas.cedroerp.enumerators.TipoPessoaEnum;
+import br.com.dpsistemas.cedroerp.exceptions.ClienteJaCadastradoException;
 import br.com.dpsistemas.cedroerp.mappers.ClienteMapper;
 import br.com.dpsistemas.cedroerp.models.Cliente;
 import br.com.dpsistemas.cedroerp.models.Empresa;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -29,6 +32,7 @@ public class ClienteService {
     private final EmpresaService empresaService;
     private final CnaeService cnaeService;
     private final MunicipioRepository municipioRepository;
+
 
     private static final Set<Integer> TAMANHOS_PERMITIDOS = Set.of(5, 10, 20, 30);
 
@@ -88,7 +92,7 @@ public class ClienteService {
         int page = normalizarPagina(filtro.getPage());
         int size = normalizarTamanhoPagina(filtro.getSize());
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "nome"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dataCadastro"));
 
         Specification<Cliente> spec = ClienteSpecification.empresaIgual(idEmpresa)
                 .and(ClienteSpecification.nomeContem(nome))
@@ -141,18 +145,21 @@ public class ClienteService {
 
     @Transactional
     public ClienteDTO salvar(ClienteDTO dto, Long idEmpresa) {
-        if (dto == null) {
-            throw new IllegalArgumentException("Dados do cliente não informados.");
-        }
-
+        if (dto == null) throw new IllegalArgumentException("Dados do cliente não informados.");
         validarEmpresa(idEmpresa);
         normalizarDados(dto);
-        validarDuplicidadeCadastro(dto, idEmpresa);
 
-        // Define o idEmpresa no DTO para ser mapeado pelo Mapper
+        validarClienteJaCadastrado(dto, idEmpresa, null);   // ← idIgnorar = null (novo)
+
         dto.setIdEmpresa(idEmpresa);
+        // 1. Preenche o País se estiver vazio
+        if (dto.getPais() == null || dto.getPais().isBlank()) {
+            dto.setPais("Brasil");
+        }
 
-        // Converte o DTO para Entidade
+
+
+            // Converte o DTO para Entidade
         Cliente cliente = clienteMapper.toEntity(dto);
 
         // Garante que a Empresa persistida no banco está associada corretamente
@@ -184,14 +191,12 @@ public class ClienteService {
 
     @Transactional
     public ClienteDTO atualizar(Long id, ClienteDTO dto, Long idEmpresa) {
-        if (dto == null) {
-            throw new IllegalArgumentException("Dados do cliente não informados.");
-        }
+        if (dto == null) throw new IllegalArgumentException("Dados do cliente não informados.");
 
         Cliente cliente = buscarEntidadePorId(id, idEmpresa);
-
         normalizarDados(dto);
-        validarDuplicidadeAlteracao(dto, idEmpresa, id);
+
+        validarClienteJaCadastrado(dto, idEmpresa, id);     // ← idIgnorar = id (edição)
 
         // Copia os dados atualizados do DTO para a Entidade existente
         dto.setId(id);
@@ -338,16 +343,44 @@ public class ClienteService {
      * ==================================================
      */
 
-    private void validarDuplicidadeCadastro(ClienteDTO dto, Long idEmpresa) {
-        String cpf = normalizarDocumento(dto.getCpf());
-        String cnpj = normalizarDocumento(dto.getCnpj());
+    private void validarClienteJaCadastrado(ClienteDTO dto, Long idEmpresa, Long idIgnorar) {
 
-        if (cpf != null && clienteRepository.existsByEmpresa_IdAndCpf(idEmpresa, cpf)) {
-            throw new IllegalArgumentException("Já existe um cliente com esse CPF nesta empresa.");
+        boolean ehNovo = (idIgnorar == null);
+
+        if (dto.getTipoPessoa() == TipoPessoaEnum.FISICA) {
+            String cpf = normalizarDocumento(dto.getCpf());
+            if (cpf == null) return;
+
+            Optional<Cliente> existente = clienteRepository.findByEmpresa_IdAndCpf(idEmpresa, cpf);
+
+            if (existente.isPresent()) {
+                Cliente c = existente.get();
+                if (ehNovo || !c.getId().equals(idIgnorar)) {
+                    throw new ClienteJaCadastradoException(
+                            "cpf",
+                            "Já existe um cliente cadastrado com este CPF: "
+                                    + c.getNome() + " (ID #" + c.getId() + ").",
+                            c.getId());
+                }
+            }
         }
 
-        if (cnpj != null && clienteRepository.existsByEmpresa_IdAndCnpj(idEmpresa, cnpj)) {
-            throw new IllegalArgumentException("Já existe um cliente com esse CNPJ nesta empresa.");
+        if (dto.getTipoPessoa() == TipoPessoaEnum.JURIDICA) {
+            String cnpj = normalizarDocumento(dto.getCnpj());
+            if (cnpj == null) return;
+
+            Optional<Cliente> existente = clienteRepository.findByEmpresa_IdAndCnpj(idEmpresa, cnpj);
+
+            if (existente.isPresent()) {
+                Cliente c = existente.get();
+                if (ehNovo || !c.getId().equals(idIgnorar)) {
+                    throw new ClienteJaCadastradoException(
+                            "cnpj",
+                            "Já existe um cliente cadastrado com este CNPJ: "
+                                    + c.getNome() + " (ID #" + c.getId() + ").",
+                            c.getId());
+                }
+            }
         }
     }
 

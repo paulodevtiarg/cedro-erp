@@ -4,6 +4,7 @@ import br.com.dpsistemas.cedroerp.enumerators.*;
 import br.com.dpsistemas.cedroerp.utils.UppercaseTrimConverter;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -90,7 +91,7 @@ public class Cliente  extends BaseEntity {
     private String pais;
 
     @Column(name = "DATA_NASCIMENTO", nullable = true)
-    private LocalDateTime dataNascimentoInicio;
+    private LocalDate dataNascimentoInicio;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "GENERO", length = 2)
@@ -284,11 +285,11 @@ public class Cliente  extends BaseEntity {
         this.pais = pais;
     }
 
-    public LocalDateTime getDataNascimentoInicio() {
+    public LocalDate getDataNascimentoInicio() {
         return dataNascimentoInicio;
     }
 
-    public void setDataNascimentoInicio(LocalDateTime dataNascimentoInicio) {
+    public void setDataNascimentoInicio(LocalDate dataNascimentoInicio) {
         this.dataNascimentoInicio = dataNascimentoInicio;
     }
 

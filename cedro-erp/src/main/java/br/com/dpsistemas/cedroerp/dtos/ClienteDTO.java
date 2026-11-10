@@ -2,8 +2,15 @@ package br.com.dpsistemas.cedroerp.dtos;
 
 import br.com.dpsistemas.cedroerp.enumerators.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import org.springframework.format.annotation.DateTimeFormat;
 
 public class ClienteDTO {
 
@@ -14,9 +21,11 @@ public class ClienteDTO {
 
     private String nomeEmpresa;
 
+    @NotNull(message = "A Cidade é obrigatória.")
     private Long idMunicipio;
 
     // DADOS PRINCIPAIS
+    @NotNull(message = "Selecione o tipo de pessoa.")
     private TipoPessoaEnum tipoPessoa;
 
     private String nome;
@@ -36,12 +45,18 @@ public class ClienteDTO {
     private Boolean whatsapp;
 
     // ENDEREÇO
+    @NotBlank(message = "O CEP é obrigatório.")
     private String cep;
+    @NotBlank(message = "O Logradouro é obrigatório.")
     private String logradouro;
     private String numero;
     private String complemento;
     private String bairro;
+
+
     private String cidade;
+
+    @NotNull(message = "A UF é obrigatória.")
     private EstadosEnum uf;
     private String pais;
 
@@ -51,7 +66,8 @@ public class ClienteDTO {
 
 
     // PESSOA FÍSICA
-    private LocalDateTime dataNascimentoInicio;
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    private LocalDate dataNascimentoInicio;
     private GeneroEnum genero;
     private EstadoCivilEnum estadoCivil;
 
@@ -76,6 +92,63 @@ public class ClienteDTO {
     private Integer filtroStatus = 1;
     private Integer page = 0;
     private Integer size = 10;
+
+
+    /*
+     * ==================================================
+     * VALIDAÇÕES CONDICIONAIS (PF / PJ)
+     * ==================================================
+     */
+
+    @AssertTrue(message = "Informe o Nome para Pessoa Física.")
+    public boolean isNomePfValido() {
+        if (tipoPessoa != TipoPessoaEnum.FISICA) return true;
+        return nome != null && !nome.trim().isEmpty();
+    }
+
+    @AssertTrue(message = "Informe o CPF para Pessoa Física.")
+    public boolean isCpfValido() {
+        if (tipoPessoa != TipoPessoaEnum.FISICA) return true;
+        return cpf != null && cpf.replaceAll("\\D", "").length() == 11;
+    }
+
+    @AssertTrue(message = "Informe o Gênero para Pessoa Física.")
+    public boolean isGeneroValido() {
+        if (tipoPessoa != TipoPessoaEnum.FISICA) return true;
+        return genero != null;
+    }
+
+    @AssertTrue(message = "Informe a Data de Nascimento para Pessoa Física.")
+    public boolean isDataNascimentoValida() {
+        if (tipoPessoa != TipoPessoaEnum.FISICA) return true;
+        return dataNascimentoInicio != null;
+    }
+    @AssertTrue(message = "Informe a Data de início das atividades.")
+    public boolean isDataNascimentoValidaPj() {
+        if (tipoPessoa != TipoPessoaEnum.JURIDICA) return true;
+        return dataNascimentoInicio != null;
+    }
+
+
+    @AssertTrue(message = "Informe a Razão Social para Pessoa Jurídica.")
+    public boolean isRazaoSocialValida() {
+        if (tipoPessoa != TipoPessoaEnum.JURIDICA) return true;
+        return razaoSocial != null && !razaoSocial.trim().isEmpty();
+    }
+
+    @AssertTrue(message = "Informe o CNPJ para Pessoa Jurídica.")
+    public boolean isCnpjValido() {
+        if (tipoPessoa != TipoPessoaEnum.JURIDICA) return true;
+        return cnpj != null && cnpj.replaceAll("\\D", "").length() == 14;
+    }
+
+    @AssertTrue(message = "Informe o Regime Tributário para Pessoa Jurídica.")
+    public boolean isRegimeTributarioValido() {
+        if (tipoPessoa != TipoPessoaEnum.JURIDICA) return true;
+        return regimeTributario != null;
+    }
+
+
 
     private static final DateTimeFormatter FORMATO_DATA =
             DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -276,7 +349,7 @@ public class ClienteDTO {
     }
 
     public void setCep(String cep) {
-        this.cep = cep;
+        this.cep = cep == null ? null : cep.replaceAll("\\D", "");
     }
 
     public String getLogradouro() {
@@ -335,12 +408,12 @@ public class ClienteDTO {
         this.pais = pais;
     }
 
-    public LocalDateTime getDataNascimentoInicio() {
+    public LocalDate getDataNascimentoInicio() {
         return dataNascimentoInicio;
     }
 
     public void setDataNascimentoInicio(
-            LocalDateTime dataNascimentoInicio) {
+            LocalDate dataNascimentoInicio) {
 
         this.dataNascimentoInicio =
                 dataNascimentoInicio;
@@ -543,6 +616,11 @@ public class ClienteDTO {
 
     public void setCnaeDivisao(String cnaeDivisao) {
         this.cnaeDivisao = cnaeDivisao;
+    }
+
+    public String getCepFormatado() {
+        if (this.cep == null || this.cep.length() != 8) return this.cep;
+        return this.cep.replaceFirst("(\\d{5})(\\d{3})", "$1-$2");
     }
 
 }
