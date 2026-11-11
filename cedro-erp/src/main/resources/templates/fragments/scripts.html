@@ -684,513 +684,14 @@ window.addEventListener("beforeunload", function () {
 });
 </script>
 
-	<script>
-document.addEventListener("click", function (e) {
 
-    const card = e.target.closest(".foto-card");
-    if (!card) return;
 
-    const tipo = card.dataset.tipo;
-    const img = card.dataset.img;
 
-    document.getElementById("modalImg").src = img;
 
-    let html = "";
 
-    if (tipo === "foto") {
-        html = `
-        	 <div class="row"> 
-        		 <div class="col-md-12 mb-2">
-         		   <div class="input-group">
-            		    <span class="input-group-text label-fixa">Descrição</span>
-             			   <input type="text" class="form-control" value="${card.dataset.desc || ''}" disabled>
-          			  </div>
-       			 </div>
-        
-        	</div>
-            
-        `;
-    }
-    if (tipo === "tatuagem") {
-        html = `
-            <div class="row">
 
-                <div class="col-md-12 mb-2">
-                    <div class="input-group">
-                        <span class="input-group-text label-fixa">Ano</span>
-                        <input type="text" class="form-control" value="${card.dataset.ano || ''}" disabled>
-                    </div>
-                </div>
 
-                <div class="col-md-12 mb-2">
-                    <div class="input-group">
-                        <span class="input-group-text label-fixa">Forma</span>
-                        <input type="text" class="form-control" value="${card.dataset.forma || ''}" disabled>
-                    </div>
-                </div>
 
-                <div class="col-md-12 mb-2">
-                    <div class="input-group">
-                        <span class="input-group-text label-fixa">Descrição</span>
-                        <input type="text" class="form-control" value="${card.dataset.desc || ''}" disabled>
-                    </div>
-                </div>
-
-                <div class="col-md-12 mb-2">
-                    <div class="input-group">
-                        <span class="input-group-text label-fixa">Local</span>
-                        <input type="text" class="form-control" value="${card.dataset.local || ''}" disabled>
-                    </div>
-                </div>
-
-                <div class="col-md-12 mb-2">
-                    <div class="input-group">
-                        <span class="input-group-text label-fixa">Remover</span>
-                        <input type="text" class="form-control" value="${card.dataset.remover == 'true' ? 'SIM' : 'NÃO'}" disabled>
-                    </div>
-                </div>
-
-                <div class="col-md-12 mb-2">
-                    <div class="input-group">
-                        <span class="input-group-text label-fixa">Profissional</span>
-                        <input type="text" class="form-control" value="${card.dataset.prof == 'true' ? 'SIM' : 'NÃO'}" disabled>
-                    </div>
-                </div>
-
-                <div class="col-md-12 mb-2">
-                    <div class="input-group">
-                        <span class="input-group-text label-fixa">Tem significado</span>
-                        <input type="text" class="form-control" value="${card.dataset.sig == 'true' ? 'SIM' : 'NÃO'}" disabled>
-                    </div>
-                </div>
-
-                <div class="col-md-12 mb-2">
-                    <div class="input-group">
-                        <span class="input-group-text label-fixa">Qual significado</span>
-                        <input type="text" class="form-control" value="${card.dataset.qualsig || ''}" disabled>
-                    </div>
-                </div>
-
-            </div>
-        `;
-    }
-
-    if (tipo === "cicatriz") {
-        html = `
-        	 <div class="row"> 
-   				 <div class="col-md-12 mb-2">
-    		 		  <div class="input-group">
-       		 		   <span class="input-group-text label-fixa">Data</span>
-        			   <input type="text" class="form-control" value="${card.dataset.data|| ''}" disabled>
-     				 </div>
-  				 </div>
-  				 <div class="col-md-12 mb-2">
-		 		  <div class="input-group">
-  		 		   <span class="input-group-text label-fixa">Descrição</span>
-   			   <input type="text" class="form-control" value="${card.dataset.desc|| ''}" disabled>
-				 </div>
-				 </div>
-   
-   			</div>
-   		 <div class="row"> 
-			 <div class="col-md-12 mb-2">
-	 				  <div class="input-group">
-		 		 		  <span class="input-group-text label-fixa">Forma</span>
-			  			 <input type="text" class="form-control" value="${card.dataset.forma|| ''}" disabled>
-					 </div>
-			 </div>
-			 <div class="col-md-12 mb-2">
- 		  			<div class="input-group">
-	 		   			<span class="input-group-text label-fixa">Local</span>
-		  				 <input type="text" class="form-control" value="${card.dataset.local|| ''}" disabled>
-					 </div>
-		 	</div>
-
-		</div>
-		 <div class="row"> 
-		 <div class="col-md-12 mb-2">
- 				  <div class="input-group">
-	 		 		  <span class="input-group-text label-fixa">Tamanho <small>(cm)</small></span>
-		  			 <input type="text" class="form-control" value="${card.dataset.tamanho|| ''}" disabled>
-				 </div>
-		 </div>
-		 <div class="col-md-612mb-2">
-		  			<div class="input-group">
- 		   			<span class="input-group-text label-fixa">Tipo</span>
-	  				 <input type="text" class="form-control" value="${card.dataset.tipo2|| ''}" disabled>
-				 </div>
-	 	</div>
-
-	</div>          
-           
-        `;
-    }
-
-    document.getElementById("modalInfo").innerHTML = html;
-});
-</script>
-
-
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-
-    const el = document.getElementById("graficoInternacoesUnidade");
-    
-    const el2 = document.getElementById("graficoInternacoesGeral");
-    
-    if (!el) return;
-    if(!el2) return;
-
-    let dados = el.getAttribute("data-valores");
-    
-    let dadosGeral = el2.getAttribute("data-valores");
-    
-    if (!dados) return;
-    
-    if(!dadosGeral) return;
-
-    dados = JSON.parse(dados);
-	dadosGeral = JSON.parse(dadosGeral);
-	
-    const meses = [
-        "Jan","Fev","Mar","Abr","Mai","Jun",
-        "Jul","Ago","Set","Out","Nov","Dez"
-    ];
-
-    let valores = [];
-    let valoresGeral = [];
-
-    for (let i = 1; i <= 12; i++) {
-        valores.push(Number(dados[i]) || 0);
-    }
-    
-    for (let i = 1; i <= 12; i++) {
-        valoresGeral.push(Number(dadosGeral[i]) || 0);
-    }
-
-    // 🔥 pega o maior valor
-    let maxValor = Math.max(...valores);
-    
-    let maxValorGeral = Math.max(...valoresGeral);
-
-    // 🔥 se tudo for 0, força pelo menos 1
-    if (maxValor === 0) {
-        maxValor = 1;
-    }
-    
-    // 🔥 se tudo for 0, força pelo menos 1
-    if (maxValorGeral === 0) {
-        maxValorGeral = 1;
-    }
-
-    const ctx = document.getElementById("chartUnidade");
-    const ctxGeral = document.getElementById("chartGeral");
-
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: meses,
-            datasets: [{
-                label: "Internações",
-                data: valores,
-                fill: true,
-                tension: 0.3
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        min: 0,
-                        max: maxValor,
-                        stepSize: 1,
-                        callback: function(value) {
-                            if (Number.isInteger(value)) {
-                                return value;
-                            }
-                        }
-                    }
-                }]
-            }
-        }
-    });
-    
-    
-    new Chart(ctxGeral, {
-        type: 'line',
-        data: {
-            labels: meses,
-            datasets: [{
-                label: "Internações todas as Unidades",
-                data: valoresGeral,
-                fill: true,
-                tension: 0.3
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        min: 0,
-                        max: maxValorGeral,
-                        stepSize: 1,
-                        callback: function(value) {
-                            if (Number.isInteger(value)) {
-                                return value;
-                            }
-                        }
-                    }
-                }]
-            }
-        }
-    });
-      
-    
-    
-   
-
-});
-</script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-
-    const dataEl = document.getElementById("graficoPizza");
-    const canvas = document.getElementById("chartPizza");
-
-    if (!dataEl || !canvas) return;
-
-    let dados = dataEl.getAttribute("data-valores");
-
-    if (!dados) return;
-
-    dados = JSON.parse(dados);
-
-    const labels = Object.keys(dados);
-    const valores = Object.values(dados);
-
-    if (labels.length === 0) {
-        console.log("Sem internações ainda");
-        return;
-    }
-
-    new Chart(canvas, {
-        type: 'pie',
-        data: {
-            labels: labels,
-            datasets: [{
-                data: valores,
-                backgroundColor: [
-                    "#4e73df",
-                    "#1cc88a",
-                    "#36b9cc",
-                    "#f6c23e",
-                    "#e74a3b",
-                    "#858796"
-                ]
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
-        }
-    });
-
-});
-</script>
-	<script>
-		document.addEventListener("DOMContentLoaded", function () {
-
-			const unidadeCanvas = document.getElementById("chartCidadeUnidade");
-			const geralCanvas = document.getElementById("chartCidadeGeral");
-
-			const unidadeData = document.getElementById("graficoCidadeUnidade");
-			const geralData = document.getElementById("graficoCidadeGeral");
-
-			if (!unidadeCanvas || !geralCanvas || !unidadeData || !geralData) {
-				return;
-			}
-
-			let dadosUnidade = JSON.parse(unidadeData.getAttribute("data-valores") || "{}");
-			let dadosGeral = JSON.parse(geralData.getAttribute("data-valores") || "{}");
-
-			const labelsUnidade = Object.keys(dadosUnidade);
-			const valoresUnidade = Object.values(dadosUnidade).map(v => Number(v) || 0);
-
-			const labelsGeral = Object.keys(dadosGeral);
-			const valoresGeral = Object.values(dadosGeral).map(v => Number(v) || 0);
-
-			let maxUnidade = Math.max(...valoresUnidade);
-			let maxGeral = Math.max(...valoresGeral);
-
-			if (maxUnidade === 0) maxUnidade = 1;
-			if (maxGeral === 0) maxGeral = 1;
-
-			// 🔥 CHART JS 2.x (CORRETO)
-			new Chart(unidadeCanvas, {
-				type: 'bar',
-				data: {
-					labels: labelsUnidade,
-					datasets: [{
-						label: 'Internações por Cidade',
-						data: valoresUnidade,
-						backgroundColor: [
-							'#4e73df',
-							'#1cc88a',
-							'#36b9cc',
-							'#f6c23e',
-							'#e74a3b',
-							'#858796'
-						]
-					}]
-				},
-				options: {
-					responsive: true,
-					maintainAspectRatio: false,
-					scales: {
-						yAxes: [{
-							ticks: {
-								beginAtZero: true,
-								min: 0,
-								max: maxUnidade,
-								stepSize: 1
-							}
-						}]
-					}
-				}
-			});
-
-			new Chart(geralCanvas, {
-				type: 'bar',
-				data: {
-					labels: labelsGeral,
-					datasets: [{
-						label: 'Internações Gerais por Cidade',
-						data: valoresGeral,
-						backgroundColor: [
-							'#6610f2',
-							'#fd7e14',
-							'#20c997',
-							'#dc3545',
-							'#0dcaf0',
-							'#6f42c1'
-						]
-					}]
-				},
-				options: {
-					responsive: true,
-					maintainAspectRatio: false,
-					scales: {
-						yAxes: [{
-							ticks: {
-								beginAtZero: true,
-								min: 0,
-								max: maxGeral,
-								stepSize: 1
-							}
-						}]
-					}
-				}
-			});
-
-		});
-	</script>
-
-	<script>
-		document.addEventListener("DOMContentLoaded", function () {
-
-			const select = document.getElementById('adolescenteSelect');
-			const card = document.getElementById('cardAdolescente');
-
-			// Proteção: se não estiver numa página que usa esses elementos
-			if (!select || !card) {
-				return;
-			}
-
-			async function carregarAdolescente(idAdolescente) {
-
-				if (!idAdolescente) {
-					card.classList.add('d-none');
-					return;
-				}
-
-				// 🔥 Mostra o spinner global
-				mostrarLoading();
-
-				try {
-
-					const response = await fetch(
-							'/adolescentes/buscaAdolescente/' + idAdolescente
-					);
-
-					if (!response.ok) {
-						throw new Error("Erro ao buscar adolescente");
-					}
-
-					const adolescente = await response.json();
-
-					card.classList.remove('d-none');
-
-					const nome = document.getElementById('nomeAdolescente');
-					const idade = document.getElementById('idadeAdolescente');
-					const mae = document.getElementById('maeAdolescente');
-					const cidade = document.getElementById('cidadeAdolescente');
-					const foto = document.getElementById('fotoAdolescente');
-
-					if (nome) {
-						nome.value = adolescente.nome || '-';
-					}
-
-					if (idade) {
-						idade.value = adolescente.idade || '-';
-					}
-
-					if (mae) {
-						mae.value = adolescente.mae || '-';
-					}
-
-					if (cidade) {
-						cidade.value =
-								(adolescente.cidadeNascimento || '-') +
-								'/' +
-								(adolescente.ufNascimento || '-');
-					}
-
-					if (foto) {
-						foto.src =
-								adolescente.fotoRegistro || '/img/sem-foto.png';
-					}
-
-				} catch (e) {
-
-					console.error("Erro ao carregar adolescente:", e);
-
-					card.classList.add('d-none');
-
-				} finally {
-
-					// 🔥 SEMPRE fecha o spinner
-					esconderLoading();
-				}
-			}
-
-			// Se estiver editando e já houver adolescente selecionado
-			if (select.value) {
-				carregarAdolescente(select.value);
-			}
-
-			// 🔥 Ao selecionar/trocar adolescente
-			select.addEventListener('change', function () {
-				carregarAdolescente(this.value);
-			});
-
-		});
-	</script>
 
 	<!--Ativa Maiusculo -->
 	<script>
@@ -1571,6 +1072,155 @@ document.addEventListener("DOMContentLoaded", function () {
 
 				e.target.value = value;
 			}
+		});
+	</script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+
+			// ==========================================
+			// 1. GRÁFICO DE LINHA (Vendas e Faturamento)
+			// ==========================================
+			const elUnidade = document.getElementById("graficoInternacoesUnidade");
+			const elGeral = document.getElementById("graficoInternacoesGeral");
+
+			if (elUnidade && elGeral) {
+				const dadosUnidade = JSON.parse(elUnidade.getAttribute("data-valores") || "{}");
+				const dadosGeral = JSON.parse(elGeral.getAttribute("data-valores") || "{}");
+
+				const meses = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+				let valoresUnidade = [];
+				let valoresGeral = [];
+
+				for (let i = 1; i <= 12; i++) {
+					valoresUnidade.push(Number(dadosUnidade[i]) || 0);
+					valoresGeral.push(Number(dadosGeral[i]) || 0);
+				}
+
+				const ctxUnidade = document.getElementById("chartUnidade");
+				const ctxGeral = document.getElementById("chartGeral");
+
+				if (ctxUnidade) {
+					new Chart(ctxUnidade, {
+						type: 'line',
+						data: {
+							labels: meses,
+							datasets: [{
+								label: "Volume (m³)",
+								data: valoresUnidade,
+								borderColor: "#4e73df",
+								backgroundColor: "rgba(78, 115, 223, 0.1)",
+								fill: true,
+								tension: 0.3
+							}]
+						},
+						options: {
+							responsive: true,
+							maintainAspectRatio: false,
+							plugins: { legend: { display: false } },
+							scales: { y: { beginAtZero: true } }
+						}
+					});
+				}
+
+				if (ctxGeral) {
+					new Chart(ctxGeral, {
+						type: 'line',
+						data: {
+							labels: meses,
+							datasets: [{
+								label: "Faturamento (R$)",
+								data: valoresGeral,
+								borderColor: "#1cc88a",
+								backgroundColor: "rgba(28, 200, 138, 0.1)",
+								fill: true,
+								tension: 0.3
+							}]
+						},
+						options: {
+							responsive: true,
+							maintainAspectRatio: false,
+							plugins: { legend: { display: false } },
+							scales: { y: { beginAtZero: true } }
+						}
+					});
+				}
+			}
+
+			// ==========================================
+			// 2. GRÁFICO DE PIZZA (Tipos de Madeira)
+			// ==========================================
+			const elPizza = document.getElementById("graficoPizza");
+			const ctxPizza = document.getElementById("chartPizza");
+
+			if (elPizza && ctxPizza) {
+				const dadosPizza = JSON.parse(elPizza.getAttribute("data-valores") || "{}");
+				new Chart(ctxPizza, {
+					type: 'doughnut',
+					data: {
+						labels: Object.keys(dadosPizza),
+						datasets: [{
+							data: Object.values(dadosPizza),
+							backgroundColor: ["#4e73df", "#1cc88a", "#36b9cc", "#f6c23e", "#e74a3b"]
+						}]
+					},
+					options: {
+						responsive: true,
+						maintainAspectRatio: false,
+						cutout: '70%'
+					}
+				});
+			}
+
+			// ==========================================
+			// 3. GRÁFICO DE BARRAS (Top 5 Cidades)
+			// ==========================================
+			const elCidadeUnidade = document.getElementById("graficoCidadeUnidade");
+			const elCidadeGeral = document.getElementById("graficoCidadeGeral");
+			const ctxCidadeUnidade = document.getElementById("chartCidadeUnidade");
+			const ctxCidadeGeral = document.getElementById("chartCidadeGeral");
+
+			if (elCidadeUnidade && ctxCidadeUnidade) {
+				const dadosCidade = JSON.parse(elCidadeUnidade.getAttribute("data-valores") || "{}");
+				new Chart(ctxCidadeUnidade, {
+					type: 'bar',
+					data: {
+						labels: Object.keys(dadosCidade),
+						datasets: [{
+							label: 'Volume (m³)',
+							data: Object.values(dadosCidade),
+							backgroundColor: "#4e73df"
+						}]
+					},
+					options: {
+						responsive: true,
+						maintainAspectRatio: false,
+						plugins: { legend: { display: false } },
+						scales: { y: { beginAtZero: true } }
+					}
+				});
+			}
+
+			if (elCidadeGeral && ctxCidadeGeral) {
+				const dadosCidadeGeral = JSON.parse(elCidadeGeral.getAttribute("data-valores") || "{}");
+				new Chart(ctxCidadeGeral, {
+					type: 'bar',
+					data: {
+						labels: Object.keys(dadosCidadeGeral),
+						datasets: [{
+							label: 'Faturamento (R$)',
+							data: Object.values(dadosCidadeGeral),
+							backgroundColor: "#1cc88a"
+						}]
+					},
+					options: {
+						responsive: true,
+						maintainAspectRatio: false,
+						plugins: { legend: { display: false } },
+						scales: { y: { beginAtZero: true } }
+					}
+				});
+			}
+
 		});
 	</script>
 

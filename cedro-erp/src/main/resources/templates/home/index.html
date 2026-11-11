@@ -18,161 +18,435 @@
                         <li class="breadcrumb-item active"><a th:href="@{/home}">
                             <i class="fa-duotone fa-solid fa-house fs-6"></i> Home
                         </a></li>
-                    
                     </ol>
                 </nav>
             </div>
-            
-            
+
             <div class="col-12" style="margin-top: -15px;">
-                <div class="card ">
-                    <div
-                            class="card-header card-header-clinisys d-flex justify-content-between align-items-center fs-6 fw-semibold ">
-                        
-                        <h5 class="mb-0">Dashboard</h5>
-                    <!--    <a th:href="@{/home}" class="btn btn-outline-sistema "
-                           data-bs-toggle="tooltip" data-bs-placement="top"
-                           title="Baixar relatório"><i
-                                class="fa-duotone fa-solid fa-print me-1"></i> Gerar Relatório </a> -->
+                <div class="card">
+                    <div class="card-header card-header-clinisys d-flex justify-content-between align-items-center fs-6 fw-semibold">
+                        <h5 class="mb-0">Dashboard - Madeireira</h5>
                         <button class="btn btn-outline-sistema"
                                 data-bs-toggle="modal"
                                 data-bs-target="#modalRelatorio">
-                            <i class="fa-duotone fa-solid fa-file-lines me-1"></i>Relatório
+                            <i class="fa-duotone fa-solid fa-file-lines me-1"></i> Relatório
                         </button>
-                    
                     </div>
+
                     <div class="card-body">
+                        <!-- ================= CARDS KPI (TOPO) ================= -->
                         <div class="row">
+                            <!-- Faturamento -->
                             <div class="col-xl-3 col-md-6 mb-4">
                                 <div class="card border-left-primary shadow h-100 py-2">
                                     <div class="card-body">
-
-                                    
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                    Faturamento (Mês)
+                                                </div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                    R$ <span th:text="${faturamentoMes}">0,00</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fa-duotone fa-solid fa-money-bill-trend-up fa-2x text-gray-500"></i>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Volume Vendido -->
                             <div class="col-xl-3 col-md-6 mb-4">
                                 <div class="card border-left-success shadow h-100 py-2">
                                     <div class="card-body">
-
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                    Volume Vendido (Mês)
+                                                </div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                    <span th:text="${volumeMes}">0</span> m³
+                                                </div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fa-duotone fa-solid fa-cubes-stacked fa-2x text-gray-500"></i>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Pedidos Pendentes -->
                             <div class="col-xl-3 col-md-6 mb-4">
                                 <div class="card border-left-warning shadow h-100 py-2">
                                     <div class="card-body">
-
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                    Pedidos a Entregar
+                                                </div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                    <span th:text="${pedidosPendentes}">0</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fa-duotone fa-solid fa-truck-ramp-box fa-2x text-gray-500"></i>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            
                             </div>
+
+                            <!-- Clientes Ativos -->
                             <div class="col-xl-3 col-md-6 mb-4">
                                 <div class="card border-left-danger shadow h-100 py-2">
                                     <div class="card-body">
-
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                                    Clientes Cadastrados
+                                                </div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                    <span th:text="${totalClientes}">0</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fa-duotone fa-solid fa-users fa-2x text-gray-500"></i>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            
                             </div>
-                        
-                        
                         </div>
 
-                    
-                    
-                    
+                        <!-- ================= SEGUNDA FILEIRA DE CARDS ================= -->
+                        <div class="row">
+                            <!-- Estoque de Toras -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card border-left-info shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                                    Estoque de Toras
+                                                </div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                    <span th:text="${estoqueToras}">0</span> m³
+                                                    <small class="text-muted" style="font-size: 0.7rem;" th:text="'neste mês (' + ${anoSelecionado} + ')'"></small>
+                                                </div>
+                                                <div class="mt-1">
+                                                    <small class="text-muted d-block" style="font-size: 0.75rem;">
+                                                        <i class="fa-solid fa-warehouse"></i> Pátio Principal: <strong th:text="${estoquePatio}">0</strong> m³
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fa-duotone fa-solid fa-tree fa-2x text-gray-500"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Madeira Serrada -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card border-left-warning shadow h-100 py-2 opacity-75">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                    Madeira Serrada
+                                                </div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                    <span th:text="${estoqueSerrada}">0</span> m³
+                                                </div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fa-duotone fa-solid fa-layer-group fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Devoluções/Perdas -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card border-left-primary shadow h-100 py-2 opacity-75">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                    Perdas de Material
+                                                </div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                    <span th:text="${perdasMes}">0</span> m³
+                                                </div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fa-duotone fa-solid fa-triangle-exclamation fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fretes -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card border-left-success shadow h-100 py-2 opacity-75">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                    Cargas em Trânsito
+                                                </div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                    <span th:text="${cargasTransito}">0</span> viagens
+                                                </div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fa-duotone fa-solid fa-truck-fast fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Total Geral -->
+                            <div class="col-xl-6 col-md-12 mb-4">
+                                <div class="card border-left-dark shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-dark text-uppercase mb-1">
+                                                    Total Geral de Vendas no Ano
+                                                </div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                    <span th:text="${totalTodasAno}">0</span> m³
+                                                    <small class="text-muted" style="font-size: 0.7rem;" th:text="'neste ano (' + ${anoSelecionado} + ')'"></small>
+                                                </div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fa-duotone fa-solid fa-chart-line fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ================= GRÁFICOS ================= -->
+                        <div class="row">
+                            <!-- GRAFICO LINHA (Faturamento) -->
+                            <div class="col-xl-8 col-lg-7 d-flex">
+                                <div class="card shadow mb-4 w-100">
+                                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" style="min-height: 60px;">
+                                        <form method="get" th:action="@{/home}">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <h6 class="m-0 font-weight-bold text-primary mb-0">
+                                                    Evolução de Vendas (m³)</h6>
+                                                <select name="ano" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
+                                                    <option th:each="y : ${#numbers.sequence(2020, #dates.year(#dates.createNow()))}"
+                                                            th:value="${y}" th:text="${y}"
+                                                            th:selected="${y == anoSelecionado}"></option>
+                                                </select>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                    <div class="card-body d-flex flex-column">
+                                        <ul class="nav nav-tabs">
+                                            <li class="nav-item">
+                                                <button class="nav-link active" data-bs-toggle="tab" href="#cse-norte">
+                                                    Volume Vendido
+                                                </button>
+                                            </li>
+                                            <li class="nav-item">
+                                                <button class="nav-link" data-bs-toggle="tab" href="#geral">
+                                                    Faturamento (R$)
+                                                </button>
+                                            </li>
+                                        </ul>
+
+                                        <div class="tab-content flex-grow-1">
+                                            <div class="tab-pane fade show active h-100" id="cse-norte">
+                                                <small class="text-primary"> Vendas em m³ </small>
+                                                <div id="graficoInternacoesUnidade" th:attr="data-valores=${internacoesJson}" style="display: none;"></div>
+                                                <div class="chart-area h-100" style="height: 320px;">
+                                                    <canvas id="chartUnidade"></canvas>
+                                                </div>
+                                            </div>
+
+                                            <div class="tab-pane fade h-100" id="geral">
+                                                <small class="text-danger"> Faturamento em Reais </small>
+                                                <div id="graficoInternacoesGeral" th:attr="data-valores=${internacoesGeralJson}" style="display: none;"></div>
+                                                <div class="chart-area h-100" style="height: 320px;">
+                                                    <canvas id="chartGeral"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- GRAFICO PIZZA (Mix de Produtos) -->
+                            <div class="col-xl-4 col-lg-5 d-flex">
+                                <div class="card shadow mb-4 w-100">
+                                    <div class="card-header py-3" style="min-height: 65px;">
+                                        <h6 class="m-0 font-weight-bold text-primary">Vendas por Tipo de Madeira</h6>
+                                    </div>
+                                    <div class="card-body d-flex flex-column justify-content-center">
+                                        <div id="graficoPizza" th:attr="data-valores=${internacoesPorUnidadeJson}" style="display: none;"></div>
+                                        <div class="chart-pie" style="height: 320px;">
+                                            <canvas id="chartPizza"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ================= TERCEIRA FILEIRA (BARRAS E CIDADES) ================= -->
+                        <div class="row">
+                            <!-- Estoque em Barras -->
+                            <div class="col-xl-6 col-lg-6 d-flex">
+                                <div class="card shadow mb-4 w-100">
+                                    <div class="card-header py-3">
+                                        <h6 class="m-0 font-weight-bold text-primary">Nível de Estoque (Pátio)</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="nav nav-tabs mb-2">
+                                            <li class="nav-item">
+                                                <button class="nav-link active" data-bs-toggle="tab" href="#cse-norte-fx-etaria">
+                                                    Madeira Bruta
+                                                </button>
+                                            </li>
+                                            <li class="nav-item">
+                                                <button class="nav-link" data-bs-toggle="tab" href="#geral-fx-etaria">
+                                                    Madeira Processada
+                                                </button>
+                                            </li>
+                                        </ul>
+                                        <div class="tab-content flex-grow-1">
+                                            <div class="tab-pane fade show active h-100" id="cse-norte-fx-etaria">
+                                                <div th:each="item, iterStat : ${idadeUnidade}">
+                                                    <h4 class="small font-weight-bold">
+                                                        <span th:text="${item.key}"></span>
+                                                        <span class="float-right" th:text="${item.value}"></span>
+                                                    </h4>
+                                                    <div class="progress mb-4">
+                                                        <div class="progress-bar" th:class="${coresUnidade[iterStat.index]}" th:style="'width:' + ${item.value} + '%'"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade h-100" id="geral-fx-etaria">
+                                                <div th:each="item, iterStat : ${idadeGeral}">
+                                                    <h4 class="small font-weight-bold">
+                                                        <span th:text="${item.key}"></span>
+                                                        <span class="float-right" th:text="${item.value}"></span>
+                                                    </h4>
+                                                    <div class="progress mb-4">
+                                                        <div class="progress-bar" th:class="${coresGeral[iterStat.index]}" th:style="'width:' + ${item.value} + '%'"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Gráfico Cidades (Top Clientes) -->
+                            <div class="col-xl-6 col-lg-6 d-flex">
+                                <div class="card shadow mb-4 w-100">
+                                    <div class="card-header py-3">
+                                        <h6 class="m-0 font-weight-bold text-primary">Top 5 Cidades (Compradores)</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="nav nav-tabs mb-2">
+                                            <li class="nav-item">
+                                                <button class="nav-link active" data-bs-toggle="tab" href="#cse-norte-cidade">
+                                                    Por Volume (m³)
+                                                </button>
+                                            </li>
+                                            <li class="nav-item">
+                                                <button class="nav-link" data-bs-toggle="tab" href="#geral-cidade">
+                                                    Por Faturamento (R$)
+                                                </button>
+                                            </li>
+                                        </ul>
+                                        <div class="tab-content flex-grow-1">
+                                            <div class="tab-pane fade show active h-100" id="cse-norte-cidade">
+                                                <div id="graficoCidadeUnidade" th:data-valores="${cidadeUnidadeJson}" style="display:none;"></div>
+                                                <div style="height:300px;">
+                                                    <canvas id="chartCidadeUnidade"></canvas>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade h-100" id="geral-cidade">
+                                                <div id="graficoCidadeGeral" th:data-valores="${cidadeGeralJson}" style="display:none;"></div>
+                                                <div style="height:300px;">
+                                                    <canvas id="chartCidadeGeral"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                
                 </div>
-                <!-- fim do card principal -->
             </div>
-            <!-- fim da terceira col -->
-        
         </div>
-        <!-- fim da row dentro do container -->
-    
-    
-    
     </div>
-    <!-- fim do container-fluid -->
-    <!--modal -->
+
+    <!-- MODAL RELATÓRIO -->
     <div class="modal fade" id="modalRelatorio" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-
                 <form method="get" th:action="@{/home/relatorios/dashboard}">
                     <div class="modal-header">
                         <h5 class="modal-title">Gerar Relatório da Dashboard</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-
                     <div class="modal-body">
-
-                        <!-- TIPO DE PERÍODO -->
                         <div class="mb-3">
                             <label class="form-label fw-bold">Período</label>
-
                             <select id="tipoPeriodo" name="tipoPeriodo" class="form-control">
                                 <option value="ANO_CORRENTE">Ano Corrente</option>
                                 <option value="ANO_ESPECIFICO">Ano Específico</option>
                                 <option value="INTERVALO">Ano X até Ano Y</option>
                             </select>
                         </div>
-
-                        <!-- ANO -->
                         <div class="row">
                             <div class="col-md-6 mb-3" id="divAno">
                                 <label>Ano</label>
                                 <input type="number" name="ano" class="form-control">
                             </div>
-
                             <div class="col-md-6 mb-3 d-none" id="divAnoInicio">
                                 <label>Ano Inicial</label>
                                 <input type="number" name="anoInicio" class="form-control">
                             </div>
-
                             <div class="col-md-6 mb-3 d-none" id="divAnoFim">
                                 <label>Ano Final</label>
                                 <input type="number" name="anoFim" class="form-control">
                             </div>
                         </div>
-
-                        <!-- CIDADE -->
                         <div class="mb-3">
                             <label>Cidade</label>
                             <select name="cidade" class="form-control">
                                 <option value="">Todas</option>
-                                <option th:each="cidade : ${listaCidades}"
-                                        th:value="${cidade}"
-                                        th:text="${cidade}">
-                                </option>
+                                <option th:each="cidade : ${listaCidades}" th:value="${cidade}" th:text="${cidade}"></option>
                             </select>
                         </div>
-
-                        <!-- VISUALIZAÇÃO -->
-                        <div class="mb-3">
-                            <label>Mostrar Dados</label>
-                            <select name="modoVisualizacao" class="form-control">
-                                <option value="UNIDADE">Somente minha unidade</option>
-                                <option value="TODAS">Somente todas as unidades</option>
-                                <option value="AMBAS" selected>Todas</option>
-                            </select>
-                        </div>
-
                     </div>
-
                     <div class="modal-footer">
                         <button class="btn btn-outline-primary">
-                            <i class="fa-duotone fa-solid fa-gear"></i>  Gerar Relatório
+                            <i class="fa-duotone fa-solid fa-gear"></i> Gerar Relatório
                         </button>
                     </div>
-
                 </form>
             </div>
         </div>
     </div>
 </div>
-<!-- fim do content do fragmento -->
-
 </body>
 </html>
