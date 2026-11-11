@@ -105,6 +105,10 @@ public class ClienteService {
         return clienteRepository.findAll(spec, pageable).map(clienteMapper::toDTO);
     }
 
+    public long contarPorEmpresa(Long idEmpresa) {
+        if (idEmpresa == null) return 0;
+        return clienteRepository.countByEmpresa_Id(idEmpresa);
+    }
     /*
      * ==================================================
      * BUSCAR DTO POR ID

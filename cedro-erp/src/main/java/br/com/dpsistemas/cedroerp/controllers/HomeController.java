@@ -1,6 +1,11 @@
 package br.com.dpsistemas.cedroerp.controllers;
 
 
+import br.com.dpsistemas.cedroerp.dtos.UsuarioSessaoDTO;
+import br.com.dpsistemas.cedroerp.models.Usuario;
+import br.com.dpsistemas.cedroerp.services.ClienteService;
+import br.com.dpsistemas.cedroerp.services.UsuarioLogadoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,20 +23,35 @@ import java.util.Map;
 @Controller
 @RequestMapping("/home")
 public class HomeController {
-
-
+	@Autowired
+	private ClienteService clienteService; // Injete o ClienteService
+	@Autowired
+	private UsuarioLogadoService usuarioLogadoService;
 	@GetMapping
 	public String home( @RequestParam(required = false) Integer ano,
 	                    HttpSession session,
 	                    Model model) {
 
+		// DEPOIS (Correto):
+		UsuarioSessaoDTO usuario = (UsuarioSessaoDTO) session.getAttribute("usuarioLogado");
+		if (usuario == null) {
+			return "redirect:/login";
+		}
+
+		//Contagem de clientes
+		// 🔥 AQUI ESTÁ A MÁGICA:
+		// Pega o ID da empresa (ajuste o nome do atributo se no seu sistema for diferente)
+		Long idEmpresa = usuarioLogadoService.getEmpresaId(); // ou usuario.getIdEmpresa()
+
+		// Busca a contagem real no banco
+		long totalClientes = clienteService.contarPorEmpresa(idEmpresa);
 		// ==========================================
 		// MOCK DE DADOS PARA A DASHBOARD (MADEIREIRA)
 		// ==========================================
 		model.addAttribute("faturamentoMes", "45.500,00");
 		model.addAttribute("volumeMes", 120);
 		model.addAttribute("pedidosPendentes", 8);
-		model.addAttribute("totalClientes", 1);
+		model.addAttribute("totalClientes", totalClientes); //ja dinamico
 		model.addAttribute("estoqueToras", 450);
 		model.addAttribute("estoquePatio", 300);
 		model.addAttribute("estoqueSerrada", 200);
