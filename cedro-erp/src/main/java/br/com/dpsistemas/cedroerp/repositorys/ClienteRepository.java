@@ -15,6 +15,8 @@ public interface ClienteRepository
             Long idEmpresa
     );
 
+  // Conta quantos clientes existem para uma determinada empresa
+  long countByEmpresa_Id(Long idEmpresa);
 
     /*
      * ==================================================

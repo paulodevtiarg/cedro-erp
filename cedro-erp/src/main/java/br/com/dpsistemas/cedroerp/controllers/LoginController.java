@@ -5,6 +5,7 @@ import java.util.Set;
 import br.com.dpsistemas.cedroerp.dtos.UsuarioSessaoDTO;
 import br.com.dpsistemas.cedroerp.mappers.UsuarioSessaoMapper;
 import br.com.dpsistemas.cedroerp.models.Usuario;
+import br.com.dpsistemas.cedroerp.repositorys.VersaoSistemaRepository;
 import br.com.dpsistemas.cedroerp.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,6 +23,9 @@ public class LoginController {
 	private final UsuarioService usuarioService;
 	private final UsuarioSessaoMapper usuarioSessaoMapper;
 
+	@Autowired
+	private VersaoSistemaRepository versaoRepository;
+
 	public LoginController(
 			UsuarioService usuarioService,
 			UsuarioSessaoMapper usuarioSessaoMapper) {
@@ -35,7 +39,10 @@ public class LoginController {
 	                        @RequestParam(required = false) String login,
 	                        HttpSession session,
 	                        Model model) {
-
+// Busca a versão mais recente. Se não achar, retorna null.
+		versaoRepository.findTopByOrderByDataVersaoDesc().ifPresent(versao -> {
+			model.addAttribute("ultimaVersao", versao);
+		});
 		String modoAtual =	modo == null? "login": modo;
 
 		/*
