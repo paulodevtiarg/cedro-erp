@@ -21,7 +21,7 @@
 								</a>
 							</li>
 							<li class="breadcrumb-item">
-								<a  class="text-decoration-none" th:href="@{${queryParams != null and queryParams != ''} ? '/usuarios?' + queryParams : '/usuarios'}">
+								<a  class="text-decoration-none" th:href="@{${queryParams != null and queryParams != ''} ? '/clientes?' + queryParams : '/clientes'}">
 									<i class="fa-duotone fa-solid fa-rectangle-history-circle-user"></i> Clientes - Lista </a>
 							</li>
 							<li class="breadcrumb-item"><span class="text-muted"><i class="fa-duotone fa-solid fa-memo-circle-info"></i> Detalhes </span></li>
@@ -29,13 +29,24 @@
 					</nav>
 				</div>
 
-				<div class="col-12" style="margin-top: -15px;">
+				<div class="col-12">
 					<div class="card">
-						<div class="card-header d-flex justify-content-between align-items-center fs-6 fw-semibold text-uppercase">
+						<div class="card-header card-header-modern d-flex justify-content-between align-items-center">
 
-							<h5 class="mb-0 text-secondary fs-6">
-								Detalhes: ID#: <span class="fw-bolder fs-5"	th:text="'[ '+${cliente.id}+' ]'"></span>
-							</h5>
+							<!-- Título com ícone -->
+							<div class="d-flex align-items-center gap-2">
+								<div class="header-icon">
+									<i class="fa-duotone fa-solid fa-user-tie"></i>
+								</div>
+								<div>
+									<h5 class="mb-0 fw-semibold">
+										Detalhes do Cliente
+										<span class="badge badge-soft-secondary ms-1"
+										      th:text="'#' + ${cliente.id}">#0</span>
+									</h5>
+									<small class="text-muted" th:text="${cliente.nome}"></small>
+								</div>
+							</div>
 
 							<div class="d-flex gap-2">
 
@@ -45,14 +56,14 @@
 								<!-- COM FILTRO -->
 								<a th:if="${queryParams != null and queryParams != ''}"
 								   th:href="@{'/clientes?' + ${queryParams}}"
-								   class="btn btn-outline-danger btn-formulario btn-sm" data-bs-toggle="tooltip" title="Voltar a página">
+								   class="btn btn-light btn-modern btn-sm d-flex align-items-center gap-2" data-bs-toggle="tooltip" title="Voltar a página">
 									<i class="fa-duotone fa-solid fa-rotate-left"></i>
 									Voltar
 								</a>
 								<!-- SEM FILTRO -->
 								<a th:if="${queryParams == null or queryParams == ''}"
 								   th:href="@{/clientes}"
-								   class="btn btn-outline-danger btn-formulario btn-sm" data-bs-toggle="tooltip" title="Voltar a página">
+								   class="btn btn-light btn-modern btn-sm d-flex align-items-center gap-2" data-bs-toggle="tooltip" title="Voltar a página">
 									<i class="fa-duotone fa-solid fa-rotate-left"></i>
 									Voltar
 								</a>
@@ -62,7 +73,7 @@
 								<!-- ========================= -->
 
 								<a th:if="${podeGerenciarCadastros == true and (modoExclusao == null or !modoExclusao)}"
-								   th:href="@{'/clientes/editar/' + ${cliente.id} + '?' + ${queryParams}}"  class="btn btn-outline-primary btn-formulario btn-sm"
+								   th:href="@{'/clientes/editar/' + ${cliente.id} + '?' + ${queryParams}}"  class="btn btn-primary btn-modern btn-sm d-flex align-items-center gap-2"
 								   data-bs-toggle="tooltip"  th:title="${podeGerenciarCadastros} ? 'Editar Registro' : 'Sem permissão para editar'">
 									<i class="fa-solid fa-pen"></i>	Editar
 								</a>
@@ -72,7 +83,7 @@
 
 								<form th:if="${podeGerenciarCadastros == true and (modoExclusao != null  and modoExclusao == true)}"  th:action="@{'/clientes/excluir/' + ${usuario.id}
 								+ '?' + ${queryParams}}" method="post" class="d-inline">
-									<button type="submit" data-bs-toggle="tooltip" class="btn btn-outline-danger btn-formulario btn-sm"
+									<button type="submit" data-bs-toggle="tooltip" class="btn btn-danger btn-modern btn-sm d-flex align-items-center gap-2"
 									        th:title="${podeGerenciarCadastros} ? 'Excluir Registro' : 'Sem permissão para excluir'">
 										<i class="fa-duotone fa-solid fa-trash"></i>
 										Excluir
@@ -86,7 +97,7 @@
 								      method="post"
 								      class="d-inline">
 									<button type="submit"
-									        class="btn btn-outline-warning btn-sm"
+									        class="btn btn-warning btn-sm  btn-modern d-flex align-items-center gap-2"
 									        data-bs-toggle="tooltip" th:title="${podeGerenciarCadastros} ? 'Inativar Registro' : 'Sem permissão para inativar'">
 										<i class="fa-duotone fa-solid fa-circle-xmark"></i>
 										Inativar
@@ -94,7 +105,7 @@
 								</form>
 								<!-- JÁ ESTÁ INATIVO -->
 								<button th:if="${modoExclusao != null and modoExclusao == true and !cliente.status}"
-								        type="button" class="btn btn-outline-secondary btn-sm" disabled>
+								        type="button" class="btn btn-secondary btn-sm btn-modern d-flex align-items-center gap-2" disabled>
 									<i class="fa-duotone fa-solid fa-circle-xmark"></i> Já está inativo
 								</button>
 
@@ -105,129 +116,129 @@
 						<div class="card-body">
 							<div class="row">
 								<div class="col-md-12">
-									<div class="row">
-										<div class="col-md-6 pe-md-4">
-											<span class="text-muted fw-semibold fs-5" >Informções</span>
+									<div class="row" style="margin-top:-15px !important;">
+										<div class="col-md-6">
+											<div class="detalhe-secao">
+												<i class="fa-duotone fa-solid fa-user me-1"></i> Informações
+											</div>
 											<div class="mb-2" style="border-bottom: 1px solid #d6d6d6; margin-top: 4px;"></div>
 											<!--Pessoa Física -->
 											<div th:if="${cliente.tipoPessoa.name() == 'FISICA'}">
-												<div class="row">
-													<div class="col-md-12 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Nome</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.nome}" disabled>
+												<div class="row g-2">
+													<div class="col-md-12">
+														<div class="detalhe-item">
+															<span class="detalhe-label">Nome</span>
+															<span class="detalhe-valor" th:text="${cliente.nome}"></span>
 														</div>
 													</div>
 												</div>
 												<div class="row">
 													<div class="col-md-6 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Pessoa</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.tipoPessoa}" disabled>
+														<div class="detalhe-item">
+															<span class="detalhe-label">Pessoa</span>
+														    <span class="detalhe-valor" th:text="${cliente.tipoPessoa}"></span>
 														</div>
 													</div>
 													<div class="col-md-6 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Gêmero</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.genero}" disabled>
+														<div class="detalhe-item">
+															<span class="detalhe-label">Gêmero</span>
+															<span class="detalhe-valor"	th:text="${cliente.genero}"></span>
 														</div>
 													</div>
 												
 												</div>
 												<div class="row">
 													<div class="col-md-6 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">CPF</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.cpfFormatado}" disabled>
+														<div class="detalhe-item">
+															<span class="detalhe-label">CPF</span>
+															<span class="detalhe-valor"	th:text="${cliente.cpfFormatado}"></span>
 														</div>
 													</div>
 													<div class="col-md-6 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Data Nasc.</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.dataNascimentoInicioFormatada}" disabled>
+														<div class="detalhe-item">
+															<span class="detalhe-label">Data Nasc.</span>
+     														<span class="detalhe-valor"	th:text="${cliente.dataNascimentoInicioFormatada}"></span>
 														</div>
 													</div>
 
 												</div>
 												<div class="row">
 													<div class="col-md-6 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Est. Civil</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.estadoCivil}" disabled>
+														<div class="detalhe-item">
+															<span class="detalhe-label">Est. Civil</span>
+    														<span class="detalhe-valor"	th:text="${cliente.estadoCivil}"></span>
+
 														</div>
 													</div>
 													<div class="col-md-6 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">CEP</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.cep}" disabled>
+														<div class="detalhe-item">
+															<span class="detalhe-label">CEP</span>
+															<span class="detalhe-valor"	th:text="${cliente.getCepFormatado}"></span>
 														</div>
 													</div>
 
 												</div>
 
 												<div class="row">
-													<div class="col-md-12 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Logradouro</span>
-															<input type="text" class="form-control fw-bolder fs-6"
-															       th:value="${cliente.logradouro} + ${!#strings.isEmpty(cliente.numero) ? ' , ' + cliente.numero : ''}"
-															       disabled>
+													<div class="col-md-6 mt-2">
+														<div class="detalhe-item">
+															<span class="detalhe-label">Logradouro</span>
+															<span  class="detalhe-valor"
+															       th:text="${cliente.logradouro} + ${!#strings.isEmpty(cliente.numero) ? ' , ' + cliente.numero : ''}"
+															></span>
 														</div>
 													</div>
-												</div>
-												<div class="row">
-													<div class="col-md-12 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Complemento</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.complemento}" disabled>
-														</div>
-													</div>
-												</div>
-												<div class="row">
-													<div class="col-md-12 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Bairro</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.bairro}" disabled>
+													<div class="col-md-6 mt-2">
+														<div class="detalhe-item">
+															<span class="detalhe-label">Complemento</span>
+															<span class="detalhe-valor"	th:text="${cliente.complemento}"></span>
 														</div>
 													</div>
 												</div>
 												<div class="row">
 													<div class="col-md-12 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Cidade</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	 th:value="|${cliente.cidade} - ${cliente.uf} - ${cliente.pais}|" disabled>
+														<div class="detalhe-item">
+															<span class="detalhe-label">Bairro</span>
+															<span class="detalhe-valor"	th:text="${cliente.bairro}"></span>
+														</div>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-12 mt-2">
+														<div class="detalhe-item">
+															<span class="detalhe-label">Cidade</span>
+															<span class="detalhe-valor"	 th:text="|${cliente.cidade} - ${cliente.uf} - ${cliente.pais}|"></span>
+														</div>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-6 mt-2">
+														<div class="detalhe-item">
+															<span class="detalhe-label">E-Mail</span>
+															<span class="detalhe-valor"	th:text="${cliente.emailPrincipal}"></span>
+														</div>
+													</div>
+													<div class="col-md-6 mt-2">
+														<div class="detalhe-item">
+															<span class="detalhe-label">Telefone</span>
+															<span class="detalhe-valor"	th:text="${cliente.telefone}"></span>
 														</div>
 													</div>
 												</div>
 												<div class="row">
 
 													<div class="col-md-6 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">E-Mail</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.emailPrincipal}" disabled>
+														<div class="detalhe-item">
+															<span class="detalhe-label">Celular</span>
+															<span class="detalhe-valor"	th:text="${cliente.celular}"></span>
 														</div>
 													</div>
 													<div class="col-md-6 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Telefone</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.telefone}" disabled>
-														</div>
-													</div>
-												</div>
-												<div class="row">
-
-													<div class="col-md-6 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Celular</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.celular}" disabled>
-														</div>
-													</div>
-													<div class="col-md-6 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">
+														<div class="detalhe-item">
+															<span class="detalhe-label">
 																WhatsApp?
 															</span>
-															<div class="form-control fw-bolder fs-6 bg-light">
+															<div class="detalhe-valor">
 																<!-- SIM -->
 																<span th:if="${cliente.whatsapp == true}"  class="text-success">
 																	<i class="fa-brands fa-whatsapp me-1"></i>SIM
@@ -250,128 +261,161 @@
 											<!--Pessoa Juridica -->
 											<div th:if="${cliente.tipoPessoa.name() == 'JURIDICA'}">
 												<div class="row">
+													<div class="col-md-12">
+														<div class="detalhe-item">
+															<span class="detalhe-label">Razão Social</span>
+															<span class="detalhe-valor" th:text="${cliente.razaoSocial}"></span>
+														</div>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-6 mt-2">
+														<div class="detalhe-item">
+															<span class="detalhe-label">Pessoa</span>
+															<span class="detalhe-valor" th:text="${cliente.tipoPessoa == null
+									                ? 'NÃO INFORMADO': (cliente.tipoPessoa.name() == 'JURIDICA' and cliente.mei == true	? 'JURÍDICA - MEI' : cliente.tipoPessoa.name())}"></span>
+														</div>
+													</div>
+													<div class="col-md-6 mt-2">
+														<div class="detalhe-item">
+															<span class="detalhe-label">CNPJ</span>
+															<span class="detalhe-valor"	th:text="${cliente.cnpjFormatado}"></span>
+														</div>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-6 mt-2">
+														<div class="detalhe-item">
+															<span class="detalhe-label">Insc. Estadual</span>
+															<span class="detalhe-valor"	th:text="${cliente.inscricaoEstadual != null ? cliente.inscricaoEstadual : 'NÃO INFORMADO'}"> </span>
+														</div>
+													</div>
+													<div class="col-md-6 mt-2">
+														<div class="detalhe-item">
+															<span class="detalhe-label">Regime</span>
+															<span class="detalhe-valor"	th:text="${cliente.regimeTributario.descricao}"></span>
+														</div>
+													</div>
+												</div>
+												<div class="row">
 													<div class="col-md-12 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Raz. Social</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.razaoSocial}" disabled>
-														</div>
-													</div>
-												</div>
-												<div class="row">
-													<div class="col-md-6 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Pessoa</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	 th:value="${cliente.tipoPessoa == null
-									                ? 'NÃO INFORMADO': (cliente.tipoPessoa.name() == 'JURIDICA' and cliente.mei == true	? 'JURÍDICA - MEI' : cliente.tipoPessoa.name())}" disabled>
-														</div>
-													</div>
-													<div class="col-md-6 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">CNPJ</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.cnpjFormatado}" disabled>
-														</div>
-													</div>
-												</div>
-												<div class="row">
-													<div class="col-md-6 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Insc. Estadual</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.inscricaoEstadual != null ? cliente.inscricaoEstadual : 'NÃO INFORMADO'}" disabled>
-														</div>
-													</div>
-													<div class="col-md-6 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Regime</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.regimeTributario.descricao}" disabled>
-														</div>
-													</div>
-												</div>
-												<div class="row">
-													<div class="col-md-12 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Cnae</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	 th:value="${cliente.cnaeDescricao != null
+														<div class="detalhe-item">
+															<span class="detalhe-label">Cnae</span>
+															<span	class="detalhe-valor"	 th:text="${cliente.cnaeDescricao != null
 													? cliente.cnaeFormatado + ' - ' + cliente.cnaeDescricao
-													: 'NÃO INFORMADO'}" disabled>
+													: 'NÃO INFORMADO'}"> </span>
 														</div>
 													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-6 mt-2">
+														<div class="detalhe-item">
+															<span class="detalhe-label">Logradouro</span>
+															<span class="detalhe-valor"
+															       th:text="${cliente.logradouro} + ${!#strings.isEmpty(cliente.numero) ? ' , ' + cliente.numero : ''}"
+															></span>
+														</div>
+													</div>
+													<div class="col-md-6 mt-2 ">
+														<div class="detalhe-item">
+															<span class="detalhe-label">Complemento</span>
+															<span class="detalhe-valor"	th:text="${cliente.complemento}"> </span>
+														</div>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-6 mt-2">
+														<div class="detalhe-item">
+															<span class="detalhe-label">CEP</span>
+															<span class="detalhe-valor"	th:text="${cliente.getCepFormatado}"></span>
+														</div>
+													</div>
+													<div class="col-md-6 mt-2">
+														<div class="detalhe-item">
+															<span class="detalhe-label">Bairro</span>
+															<span class="detalhe-valor"	th:text="${cliente.bairro}"> </span>
+														</div>
+													</div>
+
 												</div>
 												<div class="row">
 													<div class="col-md-12 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Logradouro</span>
-															<input type="text" class="form-control fw-bolder fs-6"
-															       th:value="${cliente.logradouro} + ${!#strings.isEmpty(cliente.numero) ? ' , ' + cliente.numero : ''}"
-															       disabled>
+														<div class="detalhe-item">
+															<span class="detalhe-label">Cidade</span>
+															<span class="detalhe-valor"	 th:text="|${cliente.cidade} - ${cliente.uf} - ${cliente.pais}|"> </span>
 														</div>
 													</div>
 												</div>
 												<div class="row">
-													<div class="col-md-12 mt-2 ">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Complemento</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.complemento}" disabled>
+
+													<div class="col-md-6 mt-2">
+														<div class="detalhe-item">
+															<span class="detalhe-label">Celular</span>
+															<span class="detalhe-valor"	th:text="${cliente.celular}"></span>
+														</div>
+													</div>
+													<div class="col-md-6 mt-2">
+														<div class="detalhe-item">
+															<span class="detalhe-label">
+																WhatsApp?
+															</span>
+															<div class="detalhe-valor">
+																<!-- SIM -->
+																<span th:if="${cliente.whatsapp == true}"  class="text-success">
+																	<i class="fa-brands fa-whatsapp me-1"></i>SIM
+																</span>
+																<!-- NÃO -->
+																<span th:if="${cliente.whatsapp == false}" class="text-danger">
+																  <i class="fa-duotone fa-solid fa-circle-xmark me-1"></i>NÃO
+														    	</span>
+																<!-- NÃO INFORMADO -->
+																<span th:if="${cliente.whatsapp == null}"  class="text-secondary">
+																	<i class="fa-duotone fa-solid fa-circle-question me-1"></i>	NÃO INFORMADO
+																</span>
+															</div>
+
 														</div>
 													</div>
 												</div>
-												<div class="row">
-													<div class="col-md-12 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Bairro</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.bairro}" disabled>
-														</div>
-													</div>
-												</div>
-												<div class="row">
-													<div class="col-md-12 mt-2">
-														<div class="input-group">
-															<span class="input-group-text label-fixa">Cidade</span>
-															<input	type="text" class="form-control fw-bolder fs-6"	 th:value="|${cliente.cidade} - ${cliente.uf} - ${cliente.pais}|" disabled>
-														</div>
-													</div>
-												</div>
+
+
 											</div>
 											<!--geral -->
 											<div class="row">
 												<div class="col-md-12 mt-2">
-													<div class="input-group">
-														<span class="input-group-text label-fixa">Observações</span>
-														<input	type="text" class="form-control fw-bolder fs-6"	th:value="${cliente.obs == null ? 'SEM OBSERVAÇÕES' : cliente.obs }" disabled>
+													<div class="detalhe-item">
+														<span class="detalhe-label">Observações</span>
+														<span class="detalhe-valor"	th:text="${cliente.obs == null ? 'SEM OBSERVAÇÕES' : cliente.obs }"></span>
 													</div>
 												</div>
 
 											</div>
 											<div class="row">
 												<div class="col-md-6 mt-2">
-													<div class="input-group">
-														<span class="input-group-text label-fixa">Data Cad.</span> <input
-															type="text" class="form-control fw-bolder fs-6"
-															th:value="${cliente.dataCadastroFormatada}" disabled>
+													<div class="detalhe-item">
+														<span class="detalhe-label">Data Cad.</span>
+														<span class="detalhe-valor" th:text="${cliente.dataCadastroFormatada}"> </span>
 													</div>
 
 												</div>
 												<div class="col-md-6 mt-2">
-													<div class="input-group">
-														<span class="input-group-text label-fixa">Data Alt.</span> <input
-															type="text" class="form-control fw-bolder fs-6"
-															th:value="${cliente.dataAlteracaoFormatada}" disabled>
+													<div class="detalhe-item">
+														<span class="detalhe-label">Data Alt.</span>
+														<span class="detalhe-valor"	th:text="${cliente.dataAlteracaoFormatada}"></span>
 													</div>
 												</div>
 											</div>
 											<div class="row">
 												<div class="col-md-6 mt-2">
-													<div class="input-group">
-														<span class="input-group-text label-fixa">Empresa</span> <input
-															type="text" class="form-control fw-bolder fs-6"
-															th:value="${cliente.nomeEmpresa}" disabled>
+													<div class="detalhe-item">
+														<span class="detalhe-label">Empresa <small>(Cdastro*)</small></span>
+														<span class="detalhe-valor"	th:text="${cliente.nomeEmpresa}"> </span>
 													</div>
 												</div>
 												<div class="col-md-6 mt-2">
-													<div class="input-group"  disabled>
-															<span class="input-group-text label-fixa">
-																Ativo
-															</span>
-														<span style="background-color: #f8f9fc !important;" class="form-control fw-bolder fs-6"
+													<div class="detalhe-item" >
+															<span class="detalhe-label">Ativo </span>
+														<span style="background-color: #f8f9fc !important;" class="detalhe-valor"
 														      th:text="${cliente.status ? 'SIM' : 'NÃO'}"
 														      th:classappend="${cliente.status ? ' text-success' : ' text-danger'}">
 														</span>
@@ -380,7 +424,9 @@
 											</div>
 										</div>
 										<div class="col-md-6 ps-md-4 border-start-md" style="border-left: 1px solid #d6d6d6;">
-											<span class="text-muted fw-semibold fs-5" >Histórico</span>
+											<div class="detalhe-secao">
+												<i class="fa-duotone fa-solid fa-rectangle-history-circle-user"></i> Histórico
+											</div>
 											<div class="mb-2" style="border-bottom: 1px solid #d6d6d6; margin-top: 4px;"></div>
 											<!--Table com o Histórico do Cliente -->
 											<!-- Wrapper principal travado em 450px e sem rolagem -->
@@ -388,7 +434,7 @@
 											<div class="card border-0 shadow-sm rounded-3 my-3">
 
 												<!-- Corpo da Tabela com altura fixa de 450px e sem rolagem -->
-												<div class="card-body p-0 d-flex flex-column justify-content-between" style="height: 450px; overflow: hidden;">
+												<div class="card-body p-0 d-flex flex-column justify-content-between" style="height: 670px; overflow: hidden;">
 
 													<div class="flex-grow-1" style="overflow: hidden;">
 														<table class="table table-hover align-middle m-0 h-100" style="table-layout: fixed;">
@@ -535,7 +581,7 @@
 																<td class="fw-semibold text-dark">#1560</td>
 																<td class="text-secondary small">18/09/2026</td>
 																<td class="fw-bold text-dark">R$ 1.750,50</td>
-																<td class="text-end pe-4">
+																<td class="text-center text-nowrap align-middle">
 
 																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Detalhes">
 																			<i class="fa-duotone fa-eye"></i>
@@ -556,7 +602,7 @@
 																<td class="fw-semibold text-dark">#1584</td>
 																<td class="text-secondary small">22/09/2026</td>
 																<td class="fw-bold text-dark">R$ 620,00</td>
-																<td class="text-end pe-4">
+																<td class="text-center text-nowrap align-middle">
 
 																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Detalhes">
 																			<i class="fa-duotone fa-eye"></i>
@@ -577,7 +623,7 @@
 																<td class="fw-semibold text-dark">#1601</td>
 																<td class="text-secondary small">27/09/2026</td>
 																<td class="fw-bold text-dark">R$ 2.110,90</td>
-																<td class="text-end pe-4">
+																<td class="text-center text-nowrap align-middle">
 
 																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Detalhes">
 																			<i class="fa-duotone fa-eye"></i>
@@ -598,7 +644,7 @@
 																<td class="fw-semibold text-dark">#1625</td>
 																<td class="text-secondary small">01/10/2026</td>
 																<td class="fw-bold text-dark">R$ 540,30</td>
-																<td class="text-end pe-4">
+																<td class="text-center text-nowrap align-middle">
 
 																		<button class="btn btn-outline-sistema btn-sm p-1 px-2 text-secondary" data-bs-toggle="tooltip" title="Detalhes">
 																			<i class="fa-duotone fa-eye"></i>
@@ -612,6 +658,7 @@
 
 																</td>
 															</tr>
+
 															</tbody>
 														</table>
 													</div>

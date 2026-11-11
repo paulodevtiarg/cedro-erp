@@ -50,4 +50,8 @@ public interface ClienteRepository
             String cnpj,
             Long idCliente
     );
+
+    Optional<Cliente> findByEmpresa_IdAndCpf(Long idEmpresa, String cpf);
+    Optional<Cliente> findByEmpresa_IdAndCnpj(Long idEmpresa, String cnpj);
+
 }

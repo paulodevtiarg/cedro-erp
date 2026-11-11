@@ -572,24 +572,38 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 	<script>
-function mascaraTelefone(input) {
-    // Remove tudo que não for número
-    let valor = input.value.replace(/\D/g, '');
+		function mascaraTelefone(input) {
+			// Remove tudo que não for número
+			let valor = input.value.replace(/\D/g, '');
 
-    // Limita a 11 dígitos (DD + 9 + 8 números)
-    if (valor.length > 11) valor = valor.slice(0,11);
+			// Limita a 11 dígitos
+			if (valor.length > 11) valor = valor.slice(0,11);
 
-    // Aplica a máscara
-    if (valor.length <= 2) {
-        valor = '(' + valor;
-    } else if (valor.length <= 7) {
-        valor = '(' + valor.slice(0,2) + ')' + valor.slice(2);
-    } else {
-        valor = '(' + valor.slice(0,2) + ')' + valor.slice(2,7) + '-' + valor.slice(7);
-    }
+			// Se estiver vazio, não faz nada
+			if (valor.length === 0) {
+				input.value = '';
+				return;
+			}
 
-    input.value = valor;
-}
+			// Aplica a máscara dinâmica
+			if (valor.length <= 2) {
+				valor = '(' + valor;
+			} else if (valor.length <= 6) {
+				// Se tem até 6 dígitos, formata como (XX)XXXX (para celular ou fixo)
+				valor = '(' + valor.slice(0,2) + ') ' + valor.slice(2);
+			} else if (valor.length === 7) {
+				// Se tem 7, força o formato (XX)XXXX-XXXX
+				valor = '(' + valor.slice(0,2) + ') ' + valor.slice(2, 6) + '-' + valor.slice(6);
+			} else if (valor.length <= 10) {
+				// Se tem de 8 a 10, é telefone fixo (XX)XXXX-XXXX
+				valor = '(' + valor.slice(0,2) + ') ' + valor.slice(2, 6) + '-' + valor.slice(6);
+			} else {
+				// Se tem 11, é celular (XX)XXXXX-XXXX
+				valor = '(' + valor.slice(0,2) + ') ' + valor.slice(2, 7) + '-' + valor.slice(7);
+			}
+
+			input.value = valor;
+		}
 
 // Validação antes de enviar o formulário
 document.querySelector('form').addEventListener('submit', function(e) {
@@ -1536,6 +1550,28 @@ document.addEventListener("DOMContentLoaded", function () {
 				}
 		);
 
+	</script>
+  <!--Mascara no cnae -->
+	<script>
+		document.addEventListener("input", function (e) {
+			if (e.target.id === "cnae") {
+				let value = e.target.value.replace(/\D/g, ""); // Remove tudo que não é número
+
+				// Limita a 7 números
+				if (value.length > 7) {
+					value = value.slice(0, 7);
+				}
+
+				// Aplica a máscara 0000-0/00
+				if (value.length > 5) {
+					value = value.replace(/^(\d{4})(\d)(\d{1,2})/, "$1-$2/$3");
+				} else if (value.length > 4) {
+					value = value.replace(/^(\d{4})(\d)/, "$1-$2");
+				}
+
+				e.target.value = value;
+			}
+		});
 	</script>
 
 </th:block>

@@ -12,16 +12,7 @@
     </select>
 </div>
 
-<div th:fragment="filtroLinhas(filtro)" class="col-md-1 input-group-sm">
-    <label class="form-label  text-secondary fw-semibold">Linhas</label>
-    <select name="size" class="form-select">
-        <option value="10" th:selected="${filtro.size == 10}">10</option>
-        <option value="15" th:selected="${filtro.size == 15}">15</option>
-        <option value="20" th:selected="${filtro.size == 20}">20</option>
-        <option value="25" th:selected="${filtro.size == 25}">25</option>
-        <option value="30" th:selected="${filtro.size == 30}">30</option>
-    </select>
-</div>
+
 <!--Mensagem de erro -->
 <div th:fragment="msgs" class="col-12">
     <div th:if="${msgOk}"

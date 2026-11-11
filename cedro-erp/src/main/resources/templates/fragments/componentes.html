@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ===== Botões de Filtro (Limpar + Aplicar) ===== -->
+<div th:fragment="botoesFiltro(urlLimpar, coluna)"
+     th:class="'d-flex justify-content-end align-items-end gap-2 mt-1 ' + ${coluna}">
+    <a th:href="@{${urlLimpar}}" class="btn btn-light btn-modern btn-sm">
+        <i class="fa-duotone fa-solid fa-eraser me-1"></i> Limpar
+    </a>
+    <button type="submit" class="btn btn-primary btn-modern btn-sm">
+        <i class="fa-duotone fa-solid fa-magnifying-glass me-1"></i> Aplicar Filtros
+    </button>
+</div>
+<div th:fragment="filtroLinhas(filtro, coluna)"
+     th:class="'input-group-sm ' + ${coluna}">
+    <label class="form-label text-secondary fw-semibold">Linhas</label>
+    <select name="size" class="form-select">
+        <option value="10" th:selected="${filtro.size == 10}">10</option>
+        <option value="15" th:selected="${filtro.size == 15}">15</option>
+        <option value="20" th:selected="${filtro.size == 20}">20</option>
+        <option value="25" th:selected="${filtro.size == 25}">25</option>
+        <option value="30" th:selected="${filtro.size == 30}">30</option>
+    </select>
+</div>
+<div th:fragment="filtroStatus(filtro, coluna)"
+     th:with="colunaFinal=${coluna != null and coluna != '' ? coluna : 'col-md-1'}"
+     th:class="'input-group-sm ' + ${colunaFinal}">
+    <label class="form-label text-secondary fw-semibold"> Status </label>
+    <select name="filtroStatus" class="form-select">
+        <option value="1" th:selected="${filtro.filtroStatus == 1}"> Ativos </option>
+        <option value="0" th:selected="${filtro.filtroStatus == 0}"> Inativos </option>
+        <option value=""  th:selected="${filtro.filtroStatus == null}">Todos </option>
+    </select>
+</div>
+
+<!-- ===== Alertas (msgOk / msgErro) ===== -->
+<div th:fragment="alertas">
+    <!-- Mensagem OK -->
+    <div th:if="${msgOk}"
+         class="alert alert-success alert-dismissible fade show auto-close d-flex align-items-center"
+         role="alert" id="successAlert">
+        <i class="fa-duotone fa-solid fa-thumbs-up me-2"></i>
+        <span th:text="${msgOk}"></span>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Mensagem Erro -->
+    <div th:if="${msgErro}"
+         class="alert alert-danger alert-dismissible fade show auto-close d-flex align-items-center"
+         role="alert" id="errorAlert">
+        <i class="fa-duotone fa-solid fa-triangle-exclamation me-2"></i>
+        <span th:text="${msgErro}"></span>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</div>
+
+<!-- ===== Empty State (tabela vazia) ===== -->
+<div th:fragment="emptyState(mensagem)" class="empty-state text-center py-5">
+    <i class="fa-duotone fa-solid fa-inbox fs-1 text-muted"></i>
+    <p class="mt-3 mb-0 text-muted" th:text="${mensagem}"></p>
+</div>
+
+<!-- ===== Badge de Status (Ativo/Inativo) ===== -->
+<th:block th:fragment="badgeStatus(ativo)">
+    <span th:if="${ativo}" class="badge badge-soft-success badge-lg">
+        <i class="fa-duotone fa-solid fa-circle-check me-1"></i> Ativo
+    </span>
+    <span th:if="${!ativo}" class="badge badge-soft-danger badge-lg">
+        <i class="fa-duotone fa-solid fa-circle-xmark me-1"></i> Inativo
+    </span>
+</th:block>
+
+
+<th:block th:fragment="badgeStatusInternacao(status)">
+    <span  th:if="${status == 'ATIVA'}" class="badge badge-soft-success badge-lg">
+        <i class="fa-duotone fa-solid fa-circle-check me-1"></i> Ativo
+    </span>
+    <!-- FINALIZADA -->
+    <span th:if="${status == 'FINALIZADA'}" class="badge badge-soft-primary badge-lg">
+        <i class="fa-duotone fa-solid fa-thumbs-up me-1"></i> Finalizada
+    </span>
+    <!-- CANCELADA -->
+    <span th:if="${status == 'CANCELADA'}" class="badge badge-soft-danger badge-lg">
+       <i class="fa-duotone fa-solid fa-circle-xmark me-1"></i> Cancelada
+    </span>
+    <!-- TRANSFERIDA -->
+    <span th:if="${status == 'TRANSFERIDA'}" class="badge badge-soft-warning badge-lg">
+       <i class="fa-duotone fa-solid fa-arrow-up-arrow-down me-1"></i> Transferida
+    </span>
+</th:block>
+
+
+
+<!-- ===== Botões de Ação (Detalhes / Editar / Excluir) ===== -->
+<div th:fragment="acoes(id, baseUrl, queryParams, entidade)" class="btn-group-actions">
+
+    <!-- Detalhes -->
+    <a th:href="@{${baseUrl} + '/detalhes/' + ${id} + '?' + ${queryParams}}"
+       class="btn-icon btn-icon-info" data-bs-toggle="tooltip" title="Detalhes">
+        <i class="fa-duotone fa-solid fa-eye"></i>
+    </a>
+
+    <!-- Editar -->
+    <a
+       th:href="@{${baseUrl} + '/editar/' + ${id} + '?' + ${queryParams}}"
+       class="btn-icon btn-icon-warning" data-bs-toggle="tooltip" title="Editar">
+        <i class="fa-duotone fa-solid fa-pen-to-square"></i>
+    </a>
+
+
+    <!-- Excluir -->
+    <a
+       th:href="@{${baseUrl} + '/excluir/' + ${id} + '?' + ${queryParams}}"
+       class="btn-icon btn-icon-danger js-confirmar-exclusao"
+       th:attr="data-entidade=${entidade}"
+       data-bs-toggle="tooltip" title="Excluir">
+        <i class="fa-duotone fa-solid fa-trash"></i>
+    </a>
+
+
+</div>
+
+<!-- ===== Card Header (título + botão Novo) ===== -->
+<div th:fragment="cardHeader(titulo, subtitulo, icone, urlNovo, entidade, queryParams)"
+     class="card-header card-header-modern d-flex justify-content-between align-items-center">
+
+    <!-- Título com ícone -->
+    <div class="d-flex align-items-center gap-2">
+        <div class="header-icon">
+            <i th:class="'fa-duotone fa-solid fa-' + ${icone}"></i>
+        </div>
+        <div>
+            <h5 class="mb-0 fw-semibold" th:text="${titulo}"></h5>
+            <small class="text-muted" th:text="${subtitulo}"></small>
+        </div>
+    </div>
+
+    <!-- Botão Novo (habilitado) -->
+    <a
+       th:with="urlFinal=${(queryParams != null and queryParams != '')
+                          ? urlNovo + '?' + queryParams
+                          : urlNovo}"
+       th:href="@{${urlFinal}}"
+       class="btn btn-primary btn-modern btn-sm d-flex align-items-center gap-2"
+       data-bs-toggle="tooltip" th:title="'Novo ' + ${entidade}">
+        <i class="fa-duotone fa-solid fa-plus"></i>
+        <span class="d-none d-sm-inline">Novo</span>
+    </a>
+
+
+</div>
+
+<!-- ===== Botões de Ação (Histórico de Atendimentos) ===== -->
+<div th:fragment="acoesHistorico(idAtendimento, encerramento, urlDetalhes, urlEditar)" class="btn-group-actions">
+
+    <!-- Botão de Detalhes (Sempre visível) -->
+    <a th:href="${urlDetalhes}"
+       class="btn-icon btn-icon-info" data-bs-toggle="tooltip" title="Detalhes do Atendimento">
+        <i class="fa-duotone fa-solid fa-eye"></i>
+    </a>
+
+    <!-- Botão de Editar (Regras de permissão) -->
+    <th:block th:with="podeEditar=${encerramento?.name() == 'EM_OBSERVACAO' or encerramento?.name() == 'NECESSITA_REAVALIACAO'}">
+
+        <!-- Se pode editar (Em Observação ou Necessita Reavaliação) -->
+        <a th:if="${podeEditar}"
+           th:href="${urlEditar}"
+           class="btn-icon btn-icon-warning" data-bs-toggle="tooltip" title="Finalizar / Editar Atendimento">
+            <i class="fa-duotone fa-solid fa-pen-to-square"></i>
+        </a>
+
+        <!-- Se NÃO pode editar (Resolvido, Encaminhado, Necessita Acompanhamento) -->
+        <button th:if="${!podeEditar}" class="btn-icon btn-icon-warning" disabled
+                data-bs-toggle="tooltip" title="Atendimento já finalizado ou em acompanhamento. Não pode ser editado.">
+            <i class="fa-duotone fa-solid fa-pen-to-square"></i>
+        </button>
+
+    </th:block>
+
+</div>
+
+
+</body>
+</html>
