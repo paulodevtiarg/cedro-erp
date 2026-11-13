@@ -171,7 +171,120 @@ public class ClienteController {
         model.addAttribute("activeMenu", "cadastros");
     }
 
+    /*
+     * EDITAR CLIENTE (GET)
+     */
+    @GetMapping("/editar/{id}")
+    public String editar(@PathVariable Long id,
+                         @ModelAttribute("filtro") ClienteDTO filtro,
+                         @RequestParam(defaultValue = "0") int page,
+                         Model model,
+                         RedirectAttributes redirectAttributes) {
 
+        if (!usuarioLogadoService.podeGerenciarCadastros()) {
+            redirectAttributes.addFlashAttribute("msgErro", "Você não possui permissão para editar clientes.");
+            return "redirect:/clientes";
+        }
+
+        Long idEmpresa = usuarioLogadoService.getEmpresaId();
+        // Garante que o cliente existe e é da empresa logada
+        ClienteDTO dto = clienteService.buscarPorId(id, idEmpresa);
+
+        prepararFormulario(dto, model);
+
+        String queryParams = urlUtils.clienteQuery(filtro, page);
+        model.addAttribute("queryParams", queryParams);
+
+        return "clientes/form";
+    }
+
+    /*
+     * ATUALIZAR (POST)
+     */
+    @PostMapping("/editar/{id}")
+    public String atualizar(@PathVariable Long id,
+                            @Valid @ModelAttribute("cliente") ClienteDTO dto,
+                            BindingResult resulCliente,
+                            @ModelAttribute("filtro") ClienteDTO filtro,
+                            @RequestParam(defaultValue = "0") int page,
+                            Model model,
+                            RedirectAttributes redirectAttributes) {
+
+        // Regra de permissão
+        if (!usuarioLogadoService.podeGerenciarCadastros()) {
+            redirectAttributes.addFlashAttribute("msgErro", "Você não possui permissão para editar clientes.");
+            return "redirect:/clientes";
+        }
+
+        dto.setId(id);
+        String queryParams = urlUtils.clienteQuery(filtro, page);
+
+        // Se der erro de validação (campos vazios), volta pro form com os Enums e Municípios
+        if (resulCliente.hasErrors()) {
+            model.addAttribute("queryParams", queryParams);
+            prepararFormulario(dto, model);
+            return "clientes/form";
+        }
+
+        try {
+            Long idEmpresa = usuarioLogadoService.getEmpresaId();
+            clienteService.atualizar(id, dto, idEmpresa);
+
+            redirectAttributes.addFlashAttribute("msgOk", "Cliente atualizado com sucesso!");
+            return "redirect:/clientes?" + queryParams;
+
+        } catch (ClienteJaCadastradoException e) {
+            resulCliente.rejectValue(e.getCampo(), "erro." + e.getCampo(), e.getMessage());
+            if (e.getIdClienteExistente() != null) {
+                model.addAttribute("idClienteExistente", e.getIdClienteExistente());
+            }
+            model.addAttribute("queryParams", queryParams);
+            prepararFormulario(dto, model);
+            return "clientes/form";
+
+        } catch (IllegalArgumentException | EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("msgErro", e.getMessage());
+            return "redirect:/clientes?" + queryParams;
+        }
+    }
+
+    /*
+     * EXCLUIR CLIENTE
+     */
+    @PostMapping("/excluir/{id}")
+    public String excluir(
+            @PathVariable Long id,
+            @ModelAttribute("filtro") ClienteDTO filtro,
+            @RequestParam(defaultValue = "0") int page,
+            RedirectAttributes redirectAttributes) {
+
+        String queryParams = urlUtils.clienteQuery(filtro, page);
+
+        // 1. Regra de permissão
+        if (!usuarioLogadoService.podeGerenciarCadastros()) {
+            redirectAttributes.addFlashAttribute("msgErro", "Você não possui permissão para excluir clientes.");
+            return "redirect:/clientes?" + queryParams;
+        }
+
+        try {
+            Long idEmpresa = usuarioLogadoService.getEmpresaId();
+
+            // 2. Tenta excluir no service (que verifica se o cliente é da empresa logada)
+            clienteService.excluir(id, idEmpresa);
+
+            redirectAttributes.addFlashAttribute("msgOk", "Cliente excluído com sucesso!");
+
+        } catch (IllegalArgumentException e) {
+            // Captura regras de negócio (ex: se no futuro o cliente tiver pedidos e não puder ser excluído)
+            redirectAttributes.addFlashAttribute("msgErro", e.getMessage());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("msgErro", "Erro ao excluir o registro.");
+        }
+
+        return "redirect:/clientes?" + queryParams;
+    }
 
 
 }

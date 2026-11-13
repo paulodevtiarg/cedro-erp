@@ -93,6 +93,7 @@
 
 
 <!-- ===== Botões de Ação (Detalhes / Editar / Excluir) ===== -->
+<!-- ===== Botões de Ação (Detalhes / Editar / Excluir) ===== -->
 <div th:fragment="acoes(id, baseUrl, queryParams, entidade)" class="btn-group-actions">
 
     <!-- Detalhes -->
@@ -102,22 +103,17 @@
     </a>
 
     <!-- Editar -->
-    <a
-       th:href="@{${baseUrl} + '/editar/' + ${id} + '?' + ${queryParams}}"
+    <a th:href="@{${baseUrl} + '/editar/' + ${id} + '?' + ${queryParams}}"
        class="btn-icon btn-icon-warning" data-bs-toggle="tooltip" title="Editar">
         <i class="fa-duotone fa-solid fa-pen-to-square"></i>
     </a>
 
-
-    <!-- Excluir -->
-    <a
-       th:href="@{${baseUrl} + '/excluir/' + ${id} + '?' + ${queryParams}}"
-       class="btn-icon btn-icon-danger js-confirmar-exclusao"
-       th:attr="data-entidade=${entidade}"
+    <!-- Excluir (Agora aponta para detalhes com acao=excluir) -->
+    <a th:href="@{${baseUrl} + '/detalhes/' + ${id} + '?acao=excluir&' + ${queryParams}}"
+       class="btn-icon btn-icon-danger"
        data-bs-toggle="tooltip" title="Excluir">
         <i class="fa-duotone fa-solid fa-trash"></i>
     </a>
-
 
 </div>
 
