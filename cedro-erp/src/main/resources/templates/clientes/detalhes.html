@@ -81,7 +81,7 @@
 								<!-- MODO EXCLUSÃO -> EXCLUIR  -->
 								<!-- ========================= -->
 
-								<form th:if="${podeGerenciarCadastros == true and (modoExclusao != null  and modoExclusao == true)}"  th:action="@{'/clientes/excluir/' + ${usuario.id}
+								<form th:if="${podeGerenciarCadastros == true and (modoExclusao != null  and modoExclusao == true)}"  th:action="@{'/clientes/excluir/' + ${cliente.id}
 								+ '?' + ${queryParams}}" method="post" class="d-inline">
 									<button type="submit" data-bs-toggle="tooltip" class="btn btn-danger btn-modern btn-sm d-flex align-items-center gap-2"
 									        th:title="${podeGerenciarCadastros} ? 'Excluir Registro' : 'Sem permissão para excluir'">

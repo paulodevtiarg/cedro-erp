@@ -159,7 +159,9 @@
 											<td>
 												<div class="fw-semibold text-dark d-flex align-items-center gap-1">
 													<span th:text="${cliente.celular}"></span>
-													<i class="fa-brands fa-whatsapp text-success ms-1"
+													<!-- O ícone só aparece se o flag for verdadeiro -->
+													<i th:if="${cliente.whatsapp == true}"
+													   class="fa-brands fa-whatsapp text-success ms-1"
 													   title="WhatsApp"></i>
 												</div>
 											</td>

@@ -2,6 +2,7 @@ package br.com.dpsistemas.cedroerp.controllers;
 
 import br.com.dpsistemas.cedroerp.dtos.DepartamentoDTO;
 import br.com.dpsistemas.cedroerp.dtos.UsuarioDTO;
+import br.com.dpsistemas.cedroerp.dtos.UsuarioSessaoDTO;
 import br.com.dpsistemas.cedroerp.enumerators.PerfilEnum;
 import br.com.dpsistemas.cedroerp.services.CloudinaryService;
 import br.com.dpsistemas.cedroerp.services.DepartamentoService;
@@ -160,13 +161,20 @@ public class UsuarioController {
             @ModelAttribute("filtro") UsuarioDTO filtro,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = false) String acao,
-            Model model) {
+            Model model,  HttpSession session) {
         Long idEmpresa = usuarioLogadoService.getEmpresaId();
         UsuarioDTO dto = usuarioService.buscarPorId(id,idEmpresa );
 
         model.addAttribute("usuario", dto);
         if ("excluir".equals(acao)) {
-            model.addAttribute("modoExclusao",true);
+            // Regra: Não pode excluir o próprio usuário logado ou o último ADMIN
+            UsuarioSessaoDTO usuarioLogado = (UsuarioSessaoDTO) session.getAttribute("usuarioLogado");
+            boolean usuarioEmUso = false;
+            if (usuarioLogado.getIdUsuario().equals(id)) {
+                usuarioEmUso = true; // Não pode excluir a si mesmo
+            }
+            model.addAttribute("modoExclusao", true);
+            model.addAttribute("usuarioEmUso", usuarioEmUso);
         }
 
         model.addAttribute("pageTitle", "Usuarios:Detalhes - Cedro ERP");
