@@ -67,12 +67,12 @@ public interface UsuarioRepository
 
     AND (
         :nome IS NULL
-        OR LOWER(u.nome) LIKE LOWER(CONCAT('%', :nome, '%'))
+        OR LOWER(u.nome) LIKE LOWER(CAST('%' || CAST(:nome AS string) || '%' AS string))
     )
 
     AND (
         :cpf IS NULL
-        OR u.cpf LIKE CONCAT('%', :cpf, '%')
+        OR u.cpf LIKE CAST('%' || CAST(:cpf AS string) || '%' AS string)
     )
 
     AND (
