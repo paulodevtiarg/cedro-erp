@@ -782,10 +782,19 @@
 
 							// 2. ENDEREÇO
 							if (data.cep) {
-								// A API manda o CEP limpo (ex: 77827180). Vamos preencher e disparar o blur para o ViaCEP rodar
 								const cepInput = document.getElementById('cepPj');
-								cepInput.value = data.cep; // Se tiver máscara, o oninput cuida de formatar
-								cepInput.dispatchEvent(new Event('blur')); // Dispara a busca do ViaCEP para carregar a cidade
+
+								// 1º: Joga o valor cru (77827180)
+								cepInput.value = data.cep;
+
+								// 2º: Força a formatação manualmente (77827-180)
+								let valorCep = cepInput.value.replace(/\D/g, "");
+								if (valorCep.length > 2) valorCep = valorCep.replace(/^(\d{2})(\d)/, "$1.$2");
+								if (valorCep.length > 6) valorCep = valorCep.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2-$3");
+								cepInput.value = valorCep.substring(0, 10);
+
+								// 3º: Dispara o blur para o ViaCEP buscar os dados e carregar a cidade
+								cepInput.dispatchEvent(new Event('blur'));
 							}
 							if (data.logradouro) {
 								// Junta o tipo de logradouro (RUA) com o nome (DAS MACIEIRAS)
