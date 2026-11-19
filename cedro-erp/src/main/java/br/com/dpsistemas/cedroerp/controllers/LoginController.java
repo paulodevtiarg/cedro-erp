@@ -111,6 +111,16 @@ public class LoginController {
 		return "redirect:/home";
 	}
 
+	@GetMapping("/")
+	public String raiz(HttpSession session) {
+		// Se o usuário já estiver logado, manda direto para a home
+		if (session.getAttribute("usuarioLogado") != null) {
+			return "redirect:/home";
+		}
+		// Se não estiver logado, manda para a tela de login
+		return "redirect:/login";
+	}
+
 	@GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
