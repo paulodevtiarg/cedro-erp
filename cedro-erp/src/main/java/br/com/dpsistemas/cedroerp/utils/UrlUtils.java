@@ -1,8 +1,6 @@
 package br.com.dpsistemas.cedroerp.utils;
 
-import br.com.dpsistemas.cedroerp.dtos.ClienteDTO;
-import br.com.dpsistemas.cedroerp.dtos.DepartamentoDTO;
-import br.com.dpsistemas.cedroerp.dtos.UsuarioDTO;
+import br.com.dpsistemas.cedroerp.dtos.*;
 import org.springframework.stereotype.Component;
 
 import java.net.URLEncoder;
@@ -97,6 +95,41 @@ public class UrlUtils {
         return URLEncoder.encode(
                 valor,
                 StandardCharsets.UTF_8
+        );
+    }
+
+    public String especieQuery(
+            EspecieMadeiraDTO filtro,
+            int page) {
+
+        return String.format(
+                "filtroNome=%s&filtroStatus=%s&size=%s&page=%d",
+
+                encode(
+                        filtro.getFiltroNome() != null
+                                ? filtro.getFiltroNome()
+                                : ""
+                ),
+
+                filtro.getFiltroStatus() != null
+                        ? filtro.getFiltroStatus()
+                        : "",
+
+                filtro.getSize() != null
+                        ? filtro.getSize()
+                        : 10,
+
+                page
+        );
+    }
+
+    public String tipoProdutoQuery(TipoProdutoDTO filtro, int page) {
+        return String.format(
+                "filtroNome=%s&filtroStatus=%s&size=%s&page=%d",
+                encode(filtro.getFiltroNome() != null ? filtro.getFiltroNome() : ""),
+                filtro.getFiltroStatus() != null ? filtro.getFiltroStatus() : "",
+                filtro.getSize() != null ? filtro.getSize() : 10,
+                page
         );
     }
 }

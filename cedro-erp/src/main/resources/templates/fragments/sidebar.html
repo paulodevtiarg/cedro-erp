@@ -53,28 +53,34 @@
 		</li>
 
 		<!-- Nav Item - Pages Collapse Menu -->
-		<li class="nav-item"  th:classappend="${activeMenu == 'estoque' ? 'active' : ''}">
+		<!-- Nav Item - Gestão de Estoque -->
+		<!-- Nav Item - Gestão de Estoque -->
+		<li class="nav-item" th:classappend="${activeMenu == 'estoque' ? 'active' : ''}">
 			<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseEstoque"
-			   aria-expanded="true" aria-controls="collapseTwo"><i class="fa-sharp-duotone fa-solid fa-boxes-stacked"></i> <span>Gestão de Estoque</span>
-		</a>
+			   aria-expanded="true" aria-controls="collapseEstoque">
+				<i class="fa-sharp-duotone fa-solid fa-boxes-stacked"></i> <span>Gestão de Estoque</span>
+			</a>
 
 			<div id="collapseEstoque" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
 				<div class="bg-white py-2 collapse-inner rounded">
 
-					<a class="collapse-item"  th:href="@{/produtos}">Produtos</a>
-					<a	class="collapse-item" th:href="@{/categorias}">Categorias</a>
-					<a	class="collapse-item" th:href="@{/estoque}">Estoque Atual</a>
-					<a	class="collapse-item" th:href="@{/estoque/entradas}">Entradas</a>
-					<a	class="collapse-item" th:href="@{/estoque/saidas}">Saídas</a>
-					<a	class="collapse-item" th:href="@{/estoque/movimentacoes}">Movimentações</a>
+					<!-- Produtos e suas Variações -->
+					<a class="collapse-item" th:href="@{/produtos}">Produtos</a>
+					<a class="collapse-item" th:href="@{/especies}">Espécies de Madeira</a>
+					<a class="collapse-item" th:href="@{/tipos-produtos}">Tipos de Produto</a>
+					<a class="collapse-item" th:href="@{/unidades-medida}">Unidades de Medida</a>
 
+					<!-- Estoque e Movimentações -->
+					<a class="collapse-item" th:href="@{/estoque}">Estoque Atual</a>
+					<a class="collapse-item" th:href="@{/estoque/entradas}">Entradas</a>
+					<a class="collapse-item" th:href="@{/estoque/saidas}">Saídas</a>
+					<a class="collapse-item" th:href="@{/estoque/movimentacoes}">Movimentações</a>
 
 				</div>
 			</div>
-
 		</li>
 
-		<li class="nav-item"  th:classappend="${activeMenu == 'estoque' ? 'active' : ''}">
+		<li class="nav-item"  th:classappend="${activeMenu == 'comercial' ? 'active' : ''}">
 			<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseComercial"
 			   aria-expanded="true" aria-controls="collapseTwo"><i class="fa-sharp-duotone fa-solid fa-cart-shopping-fast"></i> <span>Comercial</span>
 			</a>
@@ -94,7 +100,7 @@
 
 		</li>
 
-		<li class="nav-item"  th:classappend="${activeMenu == 'estoque' ? 'active' : ''}">
+		<li class="nav-item"  th:classappend="${activeMenu == 'financeiro' ? 'active' : ''}">
 			<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseFinanceiro"
 			   aria-expanded="true" aria-controls="collapseTwo"><i class="fa-duotone fa-solid fa-badge-dollar"></i> <span>Financeiro</span>
 			</a>

@@ -269,13 +269,11 @@
 
 						<!-- Info à esquerda -->
 						<small class="text-muted">
-							Página <strong th:text="${clientes.number + 1}"></strong>
+							Página <strong th:text="${clientes.totalPages > 0 ? clientes.number + 1 : 0}"></strong>
 							de <strong th:text="${clientes.totalPages}"></strong>
 							&bull;
 							<span th:text="${clientes.totalElements}"></span> registro(s)
 						</small>
-
-
 
 						<!-- Paginação à direita -->
 						<nav aria-label="Paginação">
@@ -302,18 +300,20 @@
 								<li class="page-item" th:classappend="${clientes.first} ? 'disabled'">
 									<a class="page-link"
 									   th:href="@{/clientes(
-                        page=${clientes.number - 1},
-                        filtroNome=${filtro.filtroNome},
-                        filtroCpf=${filtro.filtroCpf},
-                        filtroCnpj=${filtro.filtroCnpj},
-                        filtroRazaoSocial=${filtro.filtroRazaoSocial},
-                        filtroCidade=${filtro.filtroCidade},
-                        filtroStatus=${filtro.filtroStatus},
-                        size=${filtro.size})}"
+										page=${clientes.number - 1},
+										filtroNome=${filtro.filtroNome},
+										filtroCpf=${filtro.filtroCpf},
+										filtroCnpj=${filtro.filtroCnpj},
+										filtroRazaoSocial=${filtro.filtroRazaoSocial},
+										filtroCidade=${filtro.filtroCidade},
+										filtroStatus=${filtro.filtroStatus},
+										size=${filtro.size})}"
 									   data-bs-toggle="tooltip" title="Anterior">
 										<i class="fa-duotone fa-solid fa-chevron-left"></i>
 									</a>
 								</li>
+
+
 								<th:block th:if="${clientes.totalPages > 0}">
 									<!-- Números -->
 									<li th:each="i : ${#numbers.sequence(0, clientes.totalPages - 1)}"
@@ -321,14 +321,14 @@
 									    th:classappend="${i == clientes.number} ? 'active'">
 										<a class="page-link"
 										   th:href="@{/clientes(
-                        page=${i},
-                         filtroNome=${filtro.filtroNome},
-                        filtroCpf=${filtro.filtroCpf},
-                        filtroCnpj=${filtro.filtroCnpj},
-                        filtroRazaoSocial=${filtro.filtroRazaoSocial},
-                        filtroCidade=${filtro.filtroCidade},
-                        filtroStatus=${filtro.filtroStatus},
-                        size=${filtro.size})}"
+											page=${i},
+											 filtroNome=${filtro.filtroNome},
+											filtroCpf=${filtro.filtroCpf},
+											filtroCnpj=${filtro.filtroCnpj},
+											filtroRazaoSocial=${filtro.filtroRazaoSocial},
+											filtroCidade=${filtro.filtroCidade},
+											filtroStatus=${filtro.filtroStatus},
+											size=${filtro.size})}"
 										   th:text="${i + 1}"></a>
 									</li>
 								</th:block>
@@ -336,14 +336,14 @@
 								<li class="page-item" th:classappend="${clientes.last} ? 'disabled'">
 									<a class="page-link"
 									   th:href="@{/clientes(
-                        page=${clientes.number + 1},
-                       filtroNome=${filtro.filtroNome},
-                        filtroCpf=${filtro.filtroCpf},
-                        filtroCnpj=${filtro.filtroCnpj},
-                        filtroRazaoSocial=${filtro.filtroRazaoSocial},
-                        filtroCidade=${filtro.filtroCidade},
-                        filtroStatus=${filtro.filtroStatus},
-                        size=${filtro.size})}"
+										page=${clientes.number + 1},
+									   filtroNome=${filtro.filtroNome},
+										filtroCpf=${filtro.filtroCpf},
+										filtroCnpj=${filtro.filtroCnpj},
+										filtroRazaoSocial=${filtro.filtroRazaoSocial},
+										filtroCidade=${filtro.filtroCidade},
+										filtroStatus=${filtro.filtroStatus},
+										size=${filtro.size})}"
 									   data-bs-toggle="tooltip" title="Próxima">
 										<i class="fa-duotone fa-solid fa-chevron-right"></i>
 									</a>
