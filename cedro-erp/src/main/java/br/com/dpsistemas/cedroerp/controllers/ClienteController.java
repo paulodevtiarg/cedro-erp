@@ -14,10 +14,12 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -286,5 +288,37 @@ public class ClienteController {
         return "redirect:/clientes?" + queryParams;
     }
 
+
+    /**End point para api de busca de dados por cnpj/
+     *
+     */
+    @GetMapping("/buscar-cnpj/{cnpj}")
+    @ResponseBody
+    public ResponseEntity<?> buscarCnpjs(@PathVariable String cnpj){
+        try{
+            //Limpa o cnpj
+            String cnpjLimpo = cnpj.replaceAll("\\D","");
+
+            if(cnpjLimpo.length()!=14){
+                return ResponseEntity.badRequest().body("Cnpj inválido");
+            }
+
+            //Chama a api da minhareceita
+            String url = "https://minhareceita.org/"+cnpjLimpo;
+            RestTemplate restTemplate = new RestTemplate();
+
+            //Api retorna um json
+            String jsonResponse = restTemplate.getForObject(url, String.class);
+
+            //devolve o json para o JS
+            return ResponseEntity.ok(jsonResponse);
+
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("Erro ao consltar o cnpj na Receita");
+        }
+    }
 
 }

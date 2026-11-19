@@ -400,3 +400,25 @@
     from { opacity: 0; transform: translateY(-4px); }
     to   { opacity: 1; transform: translateY(0); }
 }
+
+/* Botão de busca dentro do input-group */
+.input-group-modern .btn-busca-api {
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-left: none;
+    color: #247653;
+    border-radius: 0 8px 8px 0;
+    transition: all .2s ease;
+    z-index: 10;
+}
+.input-group-modern .btn-busca-api:hover {
+    background-color: var(--sys-primary-soft);
+    color: var(--sys-primary);
+}
+.input-group-modern .btn-busca-api:focus {
+    box-shadow: none;
+}
+.input-group-modern input.form-control {
+    border-right: none; /* Remove a borda direita para o botão colar */
+    border-radius: 8px 0 0 8px;
+}
