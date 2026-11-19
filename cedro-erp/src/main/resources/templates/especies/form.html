@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head><title>Espécie</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid p-2">
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb" style="margin-top: -25px; font-size: 0.8rem;">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/home}"><i class="fa-duotone fa-solid fa-house fs-7"></i> Home</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/especies}"><i class="fa-duotone fa-solid fa-tree"></i> Espécies - Lista</a></li>
+                        <li class="breadcrumb-item"><span class="text-muted"><i class="fa-duotone fa-solid fa-circle-plus"></i> <span th:text="${especie.id == null} ? 'Nova Espécie' : 'Editar Espécie'"></span></span></li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="col-12">
+                <form th:object="${especie}" th:action="${especie.id == null} ? @{/especies/salvar} : @{'/especies/editar/' + ${especie.id}}" method="post">
+                    <input type="hidden" th:field="*{id}">
+                    <div class="card">
+                        <div class="card-header card-header-modern d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="header-icon"><i class="fa-duotone fa-solid fa-tree"></i></div>
+                                <div>
+                                    <h5 class="mb-0 fw-semibold" th:text="${especie.id == null} ? 'Nova Espécie' : 'Editar Espécie'"></h5>
+                                    <small class="text-muted">Informe o nome da espécie da madeira.</small>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a th:href="@{/especies}" class="btn btn-light btn-modern btn-sm"><i class="fa-duotone fa-solid fa-ban"></i> Cancelar</a>
+                                <button type="submit" class="btn btn-primary btn-modern btn-sm"><i class="fa-duotone fa-solid fa-floppy-disk"></i> Salvar</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="detalhe-secao"><i class="fa-duotone fa-solid fa-circle-info me-1"></i> Informações</div>
+                            <div class="row g-3 mt-1">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-secondary mb-0">Nome da Espécie *</label>
+
+                                    <input type="text" th:field="*{nome}"
+                                           class="form-control"
+                                           placeholder="Ex: Taipa, Pinus..."
+                                           th:classappend="${#fields.hasErrors('nome')} ? 'is-invalid' : ''">
+
+                                    <!-- Aqui mostra a mensagem de erro em vermelho igualzinho ao de cliente -->
+                                    <div class="invalid-feedback d-block" style="min-height: 20px;"
+                                         th:if="${#fields.hasErrors('nome')}"
+                                         th:errors="*{nome}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="switches-row mt-4">
+                                <label class="switch-modern" for="status">
+                                    <input type="checkbox" role="switch" id="status" th:field="*{status}">
+                                    <i class="fa-duotone fa-solid fa-circle-check"></i> Espécie Ativa
+                                </label>
+                            </div>
+                        </div>
+                        <div class="card-footer card-footer-modern">
+                            <small class="text-muted"><i class="fa-duotone fa-solid fa-circle-info"></i> Campos com <span class="text-danger">*</span> são obrigatórios.</small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

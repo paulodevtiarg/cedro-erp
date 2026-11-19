@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head><title>Tipo de Produtos</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid p-2">
+        <div class="row">
+            <!-- Breadcrumb -->
+            <div class="col-12">
+                <nav aria-label="breadcrumb" style="margin-top: -25px; font-size: 0.8rem;">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/home}"><i class="fa-duotone fa-solid fa-house fs-7"></i> Home</a></li>
+                        <li class="breadcrumb-item"><span class="text-muted"><i class="fa-duotone fa-solid fa-tags"></i> Tipo de Produtos - Lista</span></li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="col-12" th:replace="~{fragments/componentes :: alertas}"></div>
+
+            <div class="col-12">
+                <div class="card">
+                    <!-- Header -->
+                    <div th:replace="~{fragments/componentes :: cardHeader(
+                        'Tipo de Produtos de Madeira', 'Gerencie os tipos de madeira', 'tags', '/tipos-produtos/novo', 'Tipo de Produto', ''
+                    )}"></div>
+
+                    <div class="card-body">
+                        <!-- Filtros -->
+                        <form th:action="@{/tipos-produtos}" method="get" class="filter-box mb-2">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold text-secondary">Nome da Tipo de Produto</label>
+                                    <div class="input-group input-group-modern">
+                                        <span class="input-group-text"><i class="fa-duotone fa-solid fa-tags"></i></span>
+                                        <input type="text" name="filtroNome" th:value="${filtro.filtroNome}" class="form-control" placeholder="Digite para buscar">
+                                    </div>
+                                </div>
+                                <div th:replace="~{fragments/componentes :: filtroStatus(${filtro}, 'col-md-2')}"></div>
+                                <div th:replace="~{fragments/componentes :: filtroLinhas(${filtro}, 'col-md-2')}"></div>
+                                <div th:replace="~{fragments/componentes :: botoesFiltro('/tipos-produtos', 'col-md-2')}"></div>
+                            </div>
+                        </form>
+
+                        <!-- Tabela Desktop -->
+                        <div class="d-none d-md-block">
+                            <table class="table table-modern align-middle mb-0">
+                                <thead>
+                                <tr>
+                                    <th class="text-center" style="width: 80px;">Cód.</th>
+                                    <th>Nome</th>
+                                    <th class="text-center" style="width: 120px;">Status</th>
+                                    <th class="text-center" style="width: 140px;">Ações</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:if="${tipos.empty}">
+                                    <td colspan="4"><div th:replace="~{fragments/componentes :: emptyState('Nenhuma Tipo de Produto encontrada.')}"></div></td>
+                                </tr>
+                                <tr th:each="e : ${tipos}">
+                                    <td class="text-center text-muted fw-semibold" th:text="${e.id}"></td>
+                                    <td class="fw-semibold text-dark" th:text="${e.nome}"></td>
+                                    <td class="text-center align-middle">
+                                        <form th:action="@{'/tipos-produtos/alterar-status/' + ${e.id}}" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-link p-0 border-0 text-decoration-none">
+                                                <i th:if="${e.status}" class="fa-duotone fa-solid fa-circle-check text-success fs-5"></i>
+                                                <i th:unless="${e.status}" class="fa-duotone fa-solid fa-circle-xmark text-danger fs-5"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                    <td class="text-center text-nowrap">
+                                        <div th:replace="~{fragments/componentes :: acoes(${e.id}, '/tipos-produtos', '', 'Tipo de Produto')}"></div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="card-footer card-footer-modern d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+
+                        <!-- Info à esquerda -->
+                        <small class="text-muted">
+                            Página <strong th:text="${tipos.totalPages > 0 ? tipos.number + 1 : 0}"></strong>
+                            de <strong th:text="${tipos.totalPages}"></strong>
+                            &bull;
+                            <span th:text="${tipos.totalElements}"></span> registro(s)
+                        </small>
+
+                        <!-- Paginação à direita -->
+                        <nav aria-label="Paginação">
+                            <ul class="pagination pagination-modern mb-0">
+
+                                <!-- Primeira -->
+                                <li class="page-item" th:classappend="${tipos.first} ? 'disabled'">
+                                    <a class="page-link"
+                                       th:href="@{/tipos-produtos(
+                                        page=0,
+                                        filtroNome=${filtro.filtroNome},
+                                       filtroStatus=${filtro.filtroStatus},
+                                       size=${filtro.size})}"
+                                       data-bs-toggle="tooltip" title="Primeira página">
+                                        <i class="fa-duotone fa-solid fa-angles-left"></i>
+                                    </a>
+                                </li>
+
+                                <!-- Anterior -->
+                                <li class="page-item" th:classappend="${tipos.first} ? 'disabled'">
+                                    <a class="page-link"
+                                       th:href="@{/tipos-produtos(
+										page=${tipos.number - 1},
+								    	filtroNome=${filtro.filtroNome},
+                                       filtroStatus=${filtro.filtroStatus},
+                                       size=${filtro.size})}"
+                                       data-bs-toggle="tooltip" title="Anterior">
+                                        <i class="fa-duotone fa-solid fa-chevron-left"></i>
+                                    </a>
+                                </li>
+
+
+                                <th:block th:if="${tipos.totalPages > 0}">
+                                    <!-- Números -->
+                                    <li th:each="i : ${#numbers.sequence(0, tipos.totalPages - 1)}"
+                                        class="page-item"
+                                        th:classappend="${i == tipos.number} ? 'active'">
+                                        <a class="page-link"
+                                           th:href="@{/tipos-produtos(
+											page=${i},
+											 filtroNome=${filtro.filtroNome},
+                                       filtroStatus=${filtro.filtroStatus},
+                                       size=${filtro.size})}"
+                                           th:text="${i + 1}"></a>
+                                    </li>
+                                </th:block>
+                                <!-- Próxima -->
+                                <li class="page-item" th:classappend="${tipos.last} ? 'disabled'">
+                                    <a class="page-link"
+                                       th:href="@{/tipos-produtos(
+										page=${tipos.number + 1},
+									   filtroNome=${filtro.filtroNome},
+                                       filtroStatus=${filtro.filtroStatus},
+                                       size=${filtro.size})}"
+                                       data-bs-toggle="tooltip" data-bs-original-title="Próxima">
+                                        <i class="fa-duotone fa-solid fa-chevron-right"></i>
+                                    </a>
+                                </li>
+
+                                <!-- Última -->
+                                <li class="page-item" th:classappend="${tipos.last} ? 'disabled'">
+                                    <a class="page-link"
+                                       th:href="@{/tipos-produtos(
+                                       filtroNome=${filtro.filtroNome},
+                                       filtroStatus=${filtro.filtroStatus},
+                                       size=${filtro.size})}"
+                                       data-bs-toggle="tooltip" title="Última página">
+                                        <i class="fa-duotone fa-solid fa-angles-right"></i>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </nav>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
