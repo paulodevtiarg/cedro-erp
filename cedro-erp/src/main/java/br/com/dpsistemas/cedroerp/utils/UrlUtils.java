@@ -132,4 +132,26 @@ public class UrlUtils {
                 page
         );
     }
+
+    public String unidadeMedidaQuery(UnidadeMedidaDTO filtro, int page) {
+        return String.format(
+                "filtroSigla=%s&filtroDescricao=%s&filtroStatus=%s&size=%s&page=%d",
+                encode(filtro.getFiltroSigla() != null ? filtro.getFiltroSigla() : ""),
+                encode(filtro.getFiltroDescricao() != null ? filtro.getFiltroDescricao() : ""),
+                filtro.getFiltroStatus() != null ? filtro.getFiltroStatus() : "",
+                filtro.getSize() != null ? filtro.getSize() : 10,
+                page
+        );
+    }
+
+    public String produtoQuery(ProdutoDTO filtro, int page) {
+        return String.format(
+                "filtroEspecie=%s&filtroTipo=%s&filtroStatus=%s&size=%s&page=%d",
+                encode(filtro.getFiltroEspecie() != null ? filtro.getFiltroEspecie() : ""),
+                encode(filtro.getFiltroTipo() != null ? filtro.getFiltroTipo() : ""),
+                filtro.getFiltroStatus() != null ? filtro.getFiltroStatus() : "",
+                filtro.getSize() != null ? filtro.getSize() : 10,
+                page
+        );
+    }
 }

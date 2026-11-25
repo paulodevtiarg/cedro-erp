@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head><title>Unidades de Medida</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid p-2">
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb" style="margin-top: -25px; font-size: 0.8rem;">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/home}"><i class="fa-duotone fa-solid fa-house fs-7"></i> Home</a></li>
+                        <li class="breadcrumb-item"><span class="text-muted"><i class="fa-duotone fa-solid fa-ruler-combined"></i> Unidades de Medida</span></li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="col-12" th:replace="~{fragments/componentes :: alertas}"></div>
+
+            <div class="col-12">
+                <div class="card">
+                    <div th:replace="~{fragments/componentes :: cardHeader(
+                        'Unidades de Medida', 'Gerencie as unidades de venda (M, M³, UN)', 'ruler-combined', '/unidades-medida/novo', 'Unidade', ${queryParams}
+                    )}"></div>
+
+                    <div class="card-body">
+                        <form th:action="@{/unidades-medida}" method="get" class="filter-box mb-2">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-semibold text-secondary">Sigla</label>
+                                    <div class="input-group input-group-modern">
+                                        <span class="input-group-text"><i class="fa-duotone fa-solid fa-ruler"></i></span>
+                                        <input type="text" name="filtroSigla" th:value="${filtro.filtroSigla}" class="form-control" placeholder="Ex: M, M3...">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-semibold text-secondary">Descrição</label>
+                                    <div class="input-group input-group-modern">
+                                        <span class="input-group-text"><i class="fa-duotone fa-solid fa-align-left"></i></span>
+                                        <input type="text" name="filtroDescricao" th:value="${filtro.filtroDescricao}" class="form-control" placeholder="Ex: Metro Linear">
+                                    </div>
+                                </div>
+                                <div th:replace="~{fragments/componentes :: filtroStatus(${filtro}, 'col-md-2')}"></div>
+                                <div th:replace="~{fragments/componentes :: filtroLinhas(${filtro}, 'col-md-2')}"></div>
+                            </div>
+                            <div class="row g-3 mt-2">
+                                <div th:replace="~{fragments/componentes :: botoesFiltro('/unidades-medida', 'col-md-12')}"></div>
+                            </div>
+                        </form>
+
+                        <div class="d-none d-md-block">
+                            <table class="table table-modern align-middle mb-0">
+                                <thead>
+                                <tr>
+                                    <th class="text-center" style="width: 80px;">Cód.</th>
+                                    <th style="width: 150px;">Sigla</th>
+                                    <th>Descrição</th>
+                                    <th class="text-center" style="width: 120px;">Status</th>
+                                    <th class="text-center" style="width: 140px;">Ações</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:if="${unidades.empty}">
+                                    <td colspan="5"><div th:replace="~{fragments/componentes :: emptyState('Nenhuma unidade encontrada.')}"></div></td>
+                                </tr>
+                                <tr th:each="u : ${unidades}">
+                                    <td class="text-center text-muted fw-semibold" th:text="${u.id}"></td>
+                                    <td class="fw-semibold text-dark" th:text="${u.sigla}"></td>
+                                    <td class="text-muted" th:text="${u.descricao}"></td>
+                                    <td class="text-center align-middle">
+                                        <form th:action="@{'/unidades-medida/alterar-status/' + ${u.id}}" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-link p-0 border-0 text-decoration-none">
+                                                <i th:if="${u.status}" class="fa-duotone fa-solid fa-circle-check text-success fs-5"></i>
+                                                <i th:unless="${u.status}" class="fa-duotone fa-solid fa-circle-xmark text-danger fs-5"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                    <td class="text-center text-nowrap">
+                                        <div th:replace="~{fragments/componentes :: acoes(${u.id}, '/unidades-medida', ${queryParams}, 'unidade')}"></div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+
+                    <div class="card-footer card-footer-modern d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+
+                        <!-- Info à esquerda -->
+                        <small class="text-muted">
+                            Página <strong th:text="${unidades.totalPages > 0 ? unidades.number + 1 : 0}"></strong>
+                            de <strong th:text="${unidades.totalPages}"></strong>
+                            &bull;
+                            <span th:text="${unidades.totalElements}"></span> registro(s)
+                        </small>
+
+                        <!-- Paginação à direita -->
+                        <nav aria-label="Paginação">
+                            <ul class="pagination pagination-modern mb-0">
+
+                                <!-- Primeira -->
+                                <li class="page-item" th:classappend="${unidades.first} ? 'disabled'">
+                                    <a class="page-link"
+                                       th:href="@{/unidades-medida(
+                                        page=0,
+                                        filtroSigla=${filtro.filtroSigla},
+                                        filtroDescricao=${filtro.filtroDescricao},
+                                       filtroStatus=${filtro.filtroStatus},
+                                       size=${filtro.size})}"
+                                       data-bs-toggle="tooltip" title="Primeira página">
+                                        <i class="fa-duotone fa-solid fa-angles-left"></i>
+                                    </a>
+                                </li>
+
+                                <!-- Anterior -->
+                                <li class="page-item" th:classappend="${unidades.first} ? 'disabled'">
+                                    <a class="page-link"
+                                       th:href="@{/unidades-medida(
+										page=${unidades.number - 1},
+									 filtroSigla=${filtro.filtroSigla},
+                                        filtroDescricao=${filtro.filtroDescricao},
+                                       filtroStatus=${filtro.filtroStatus},
+                                       size=${filtro.size})}"
+                                       data-bs-toggle="tooltip" title="Anterior">
+                                        <i class="fa-duotone fa-solid fa-chevron-left"></i>
+                                    </a>
+                                </li>
+
+
+                                <th:block th:if="${unidades.totalPages > 0}">
+                                    <!-- Números -->
+                                    <li th:each="i : ${#numbers.sequence(0, unidades.totalPages - 1)}"
+                                        class="page-item"
+                                        th:classappend="${i == unidades.number} ? 'active'">
+                                        <a class="page-link"
+                                           th:href="@{/unidades-medida(
+											page=${i},
+											  filtroSigla=${filtro.filtroSigla},
+                                        filtroDescricao=${filtro.filtroDescricao},
+                                       filtroStatus=${filtro.filtroStatus},
+                                       size=${filtro.size})}"
+                                           th:text="${i + 1}"></a>
+                                    </li>
+                                </th:block>
+                                <!-- Próxima -->
+                                <li class="page-item" th:classappend="${unidades.last} ? 'disabled'">
+                                    <a class="page-link"
+                                       th:href="@{/unidades-medida(
+										page=${unidades.number + 1},
+									    filtroSigla=${filtro.filtroSigla},
+                                        filtroDescricao=${filtro.filtroDescricao},
+                                       filtroStatus=${filtro.filtroStatus},
+                                       size=${filtro.size})}"
+                                       data-bs-toggle="tooltip" title="Próxima">
+                                        <i class="fa-duotone fa-solid fa-chevron-right"></i>
+                                    </a>
+                                </li>
+
+                                <!-- Última -->
+                                <li class="page-item" th:classappend="${unidades.last} ? 'disabled'">
+                                    <a class="page-link"
+                                       th:href="@{/unidades-medida(
+                        filtroSigla=${filtro.filtroSigla},
+                                        filtroDescricao=${filtro.filtroDescricao},
+                                       filtroStatus=${filtro.filtroStatus},
+                                       size=${filtro.size})}"
+                                       data-bs-toggle="tooltip" title="Última página">
+                                        <i class="fa-duotone fa-solid fa-angles-right"></i>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </nav>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

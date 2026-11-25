@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head><title>Detalhes do Produto</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid p-2">
+        <div class="row">
+            <!-- BREADCRUMB -->
+            <div class="col-12">
+                <nav aria-label="breadcrumb" style="margin-top: -25px; font-size: 0.8rem;">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/home}"><i class="fa-duotone fa-solid fa-house fs-7"></i> Home</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/produtos}"><i class="fa-duotone fa-solid fa-cubes-stacked"></i> Produtos - Lista</a></li>
+                        <li class="breadcrumb-item"><span class="text-muted"><i class="fa-duotone fa-solid fa-memo-circle-info"></i> Detalhes</span></li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="col-12">
+                <div class="card">
+                    <!-- HEADER -->
+                    <div class="card-header card-header-modern d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="header-icon"><i class="fa-duotone fa-solid fa-cubes-stacked"></i></div>
+                            <div>
+                                <h5 class="mb-0 fw-semibold">Detalhes do Produto <span class="badge badge-soft-secondary ms-1" th:text="'#' + ${produto.id}"></span></h5>
+                                <small class="text-muted" th:text="${produto.tipoProdutoNome + ' de ' + produto.especieMadeiraNome}"></small>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <a th:href="@{/produtos}" class="btn btn-light btn-modern btn-sm"><i class="fa-duotone fa-solid fa-rotate-left"></i> Voltar</a>
+                            <a th:if="${modoExclusao == null or !modoExclusao}" th:href="@{'/produtos/editar/' + ${produto.id}}" class="btn btn-primary btn-modern btn-sm"><i class="fa-solid fa-pen"></i> Editar</a>
+                            <form th:if="${modoExclusao != null and modoExclusao}" th:action="@{'/produtos/excluir/' + ${produto.id}}" method="post">
+                                <button type="submit" class="btn btn-danger btn-modern btn-sm"><i class="fa-duotone fa-solid fa-trash"></i> Confirmar Exclusão</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- BODY -->
+                    <div class="card-body">
+
+                        <!-- BLOCO 1: FOTO E CARACTERÍSTICAS PRINCIPAIS -->
+                        <div class="row g-4 mb-2">
+                            <!-- Foto -->
+                            <div class="col-md-3 text-center">
+                                <div th:if="${produto.imagem != null and !produto.imagem.isEmpty()}">
+                                    <img th:src="${produto.imagem}" alt="Imagem do Produto"
+                                         class="rounded-3 shadow-sm border w-100"
+                                         style="object-fit: cover; max-height: 220px;">
+                                </div>
+                                <div th:if="${produto.imagem == null or produto.imagem.isEmpty()}"
+                                     class="bg-light rounded-3 border d-flex flex-column align-items-center justify-content-center mx-auto"
+                                     style="width: 100%; height: 200px;">
+                                    <i class="fa-duotone fa-solid fa-image fs-1 text-muted"></i>
+                                    <span class="small text-muted mt-2">Sem imagem</span>
+                                </div>
+                            </div>
+
+                            <!-- Características -->
+                            <div class="col-md-9">
+                                <div class="detalhe-secao">
+                                    <i class="fa-duotone fa-solid fa-circle-info me-1"></i> Características Principais
+                                </div>
+                                <div class="row g-3 mt-1">
+                                    <div class="col-md-6">
+                                        <div class="detalhe-item">
+                                            <span class="detalhe-label">Tipo</span>
+                                            <span class="detalhe-valor" th:text="${produto.tipoProdutoNome}"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="detalhe-item">
+                                            <span class="detalhe-label">Espécie</span>
+                                            <span class="detalhe-valor" th:text="${produto.especieMadeiraNome}"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="detalhe-item">
+                                            <span class="detalhe-label">Largura x Espessura</span>
+                                            <span class="detalhe-valor" th:text="${produto.larguraCm + ' x ' + produto.espessuraCm + ' cm'}"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="detalhe-item">
+                                            <span class="detalhe-label">Venda / Status</span>
+                                            <span class="detalhe-valor">
+                                                <span class="badge bg-primary me-1" th:text="${produto.unidadeMedidaSigla}"></span>
+                                                <span class="badge" th:classappend="${produto.status ? 'bg-success' : 'bg-danger'}" th:text="${produto.status ? 'ATIVO' : 'INATIVO'}"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- BLOCO 2: MEDIDAS -->
+                        <div class="detalhe-secao mt-4">
+                            <i class="fa-duotone fa-solid fa-ruler-combined me-1"></i> Tamanhos Cadastrados
+                        </div>
+                        <div class="table-responsive mt-1">
+                            <table class="table table-modern align-middle">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">Comprimento</th>
+                                    <th class="text-center">SKU</th>
+                                    <th class="text-end">Preço Sugerido</th>
+                                    <th class="text-center">Estoque</th>
+                                    <th class="text-center">Status</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="m : ${produto.medidas}">
+                                    <td class="text-center fw-bold" th:text="${m.comprimentoM != null ? m.comprimentoM + ' m' : 'Volume (m³)'}"></td>
+                                    <td class="text-center text-muted" th:text="${m.sku != null ? m.sku : '---'}"></td>
+                                    <td class="text-end fw-semibold text-success" th:text="'R$ ' + ${#numbers.formatDecimal(m.precoVenda, 1, 'POINT', 2, 'COMMA')}"></td>
+                                    <td class="text-center" th:text="${#numbers.formatDecimal(m.quantidadeEstoque, 1, 'POINT', 3, 'COMMA')}"></td>
+                                    <td class="text-center">
+                                        <i th:if="${m.status}" class="fa-duotone fa-solid fa-circle-check text-success"></i>
+                                        <i th:unless="${m.status}" class="fa-duotone fa-solid fa-circle-xmark text-danger"></i>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(produto.medidas)}">
+                                    <td colspan="5" class="text-center text-muted py-3">Nenhum tamanho cadastrado para este produto.</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- BLOCO 3: AUDITORIA -->
+                        <div class="detalhe-secao mt-4">
+                            <i class="fa-duotone fa-solid fa-clock-rotate-left me-1"></i> Auditoria
+                        </div>
+                        <div class="row g-3 mt-1">
+                            <div class="col-md-6">
+                                <div class="detalhe-item">
+                                    <span class="detalhe-label">Data de Cadastro</span>
+                                    <span class="detalhe-valor" th:text="${produto.dataCadastroFormatada}"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detalhe-item">
+                                    <span class="detalhe-label">Última Alteração</span>
+                                    <span class="detalhe-valor" th:text="${produto.dataAlteracaoFormatada != '' ? produto.dataAlteracaoFormatada : 'Nunca alterado'}"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FOOTER -->
+                    <div class="card-footer card-footer-modern">
+                        <div th:if="${modoExclusao == null or !modoExclusao}" class="d-flex justify-content-end">
+                            <h6 class="mb-0 text-muted small"><i class="fa-duotone fa-solid fa-circle-info me-1"></i> Clique no botão EDITAR para alterar.</h6>
+                        </div>
+                        <div th:if="${modoExclusao != null and modoExclusao}" class="alert alert-warning mb-0 w-100">
+                            <i class="fa-duotone fa-solid fa-triangle-exclamation me-2"></i> <strong>Atenção!</strong> A exclusão do produto apagará todos os seus tamanhos e é definitiva.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

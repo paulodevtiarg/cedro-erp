@@ -1,4 +1,4 @@
-package br.com.dpsistemas.cedroerp.specifications;
+package br.com.dpsistemas.cedroerp.utils;
 
 import br.com.dpsistemas.cedroerp.models.TipoProduto;
 import org.springframework.data.jpa.domain.Specification;
