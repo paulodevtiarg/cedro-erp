@@ -1,6 +1,8 @@
 package br.com.dpsistemas.cedroerp.dtos;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +22,16 @@ public class ProdutoDTO {
 
     private BigDecimal larguraCm;
     private BigDecimal espessuraCm;
-    private Boolean status;
+    private Boolean status = true;
+
+    private LocalDateTime dataCadastro;
+    private LocalDateTime dataAlteracao;
+
+
+    private String imagem;
+
+    public String getImagem() { return imagem; }
+    public void setImagem(String imagem) { this.imagem = imagem; }
 
     // FILTROS
     private String filtroNome; // Vamos usar para buscar pelo nome da espécie ou tipo
@@ -171,4 +182,32 @@ public class ProdutoDTO {
     public void setMedidas(List<ProdutoMedidaDTO> medidas) {
         this.medidas = medidas;
     }
+
+    public LocalDateTime getDataCadastro() {
+        return dataCadastro;
+    }
+
+    public void setDataCadastro(LocalDateTime dataCadastro) {
+        this.dataCadastro = dataCadastro;
+    }
+
+    public LocalDateTime getDataAlteracao() {
+        return dataAlteracao;
+    }
+
+    public void setDataAlteracao(LocalDateTime dataAlteracao) {
+        this.dataAlteracao = dataAlteracao;
+    }
+
+    public String getDataCadastroFormatada() {
+        if (dataCadastro == null) return "";
+        return dataCadastro.format(FORMATO_DATA_HORA);
+    }
+
+    public String getDataAlteracaoFormatada() {
+        if (dataAlteracao == null) return "";
+        return dataAlteracao.format(FORMATO_DATA_HORA);
+    }
+
+    private static final DateTimeFormatter FORMATO_DATA_HORA = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 }

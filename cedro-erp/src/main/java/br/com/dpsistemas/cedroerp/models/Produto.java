@@ -61,4 +61,10 @@ public class Produto extends BaseEntity {
 
     public List<ProdutoMedida> getMedidas() { return medidas; }
     public void setMedidas(List<ProdutoMedida> medidas) { this.medidas = medidas; }
+
+    @Column(length = 255)
+    private String imagem;
+
+    public String getImagem() { return imagem; }
+    public void setImagem(String imagem) { this.imagem = imagem; }
 }

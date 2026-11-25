@@ -1,11 +1,17 @@
 package br.com.dpsistemas.cedroerp.dtos;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class UnidadeMedidaDTO {
 
     private Long id;
     private String sigla;
     private String descricao;
-    private Boolean status;
+    private Boolean status = true;
+
+    private LocalDateTime dataCadastro;
+    private LocalDateTime dataAlteracao;
 
     // FILTROS
     private String filtroSigla;
@@ -41,4 +47,32 @@ public class UnidadeMedidaDTO {
 
     public Integer getSize() { return size; }
     public void setSize(Integer size) { this.size = size; }
+
+    public LocalDateTime getDataCadastro() {
+        return dataCadastro;
+    }
+
+    public void setDataCadastro(LocalDateTime dataCadastro) {
+        this.dataCadastro = dataCadastro;
+    }
+
+    public LocalDateTime getDataAlteracao() {
+        return dataAlteracao;
+    }
+
+    public void setDataAlteracao(LocalDateTime dataAlteracao) {
+        this.dataAlteracao = dataAlteracao;
+    }
+
+    public String getDataCadastroFormatada() {
+        if (dataCadastro == null) return "";
+        return dataCadastro.format(FORMATO_DATA_HORA);
+    }
+
+    public String getDataAlteracaoFormatada() {
+        if (dataAlteracao == null) return "";
+        return dataAlteracao.format(FORMATO_DATA_HORA);
+    }
+
+    private static final DateTimeFormatter FORMATO_DATA_HORA = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 }

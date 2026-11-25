@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head><title>Produto</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid p-2">
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb" style="margin-top: -25px; font-size: 0.8rem;">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/home}"><i class="fa-duotone fa-solid fa-house fs-7"></i> Home</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/produtos}"><i class="fa-duotone fa-solid fa-cubes-stacked"></i> Produtos - Lista</a></li>
+                        <li class="breadcrumb-item"><span class="text-muted"><i class="fa-duotone fa-solid fa-circle-plus"></i> <span th:text="${produto.id == null} ? 'Novo Produto' : 'Editar Produto'"></span></span></li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="col-12">
+                <form th:object="${produto}" enctype="multipart/form-data"
+                      th:action="${produto.id == null} ? @{/produtos/salvar} : @{'/produtos/editar/' + ${produto.id}}" method="post">
+                    <input type="hidden" th:field="*{id}">
+
+                    <div class="card">
+                        <!-- HEADER -->
+                        <div class="card-header card-header-modern d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="header-icon"><i class="fa-duotone fa-solid fa-cubes-stacked"></i></div>
+                                <div>
+                                    <h5 class="mb-0 fw-semibold" th:text="${produto.id == null} ? 'Novo Produto' : 'Editar Produto'"></h5>
+                                    <small class="text-muted">Preencha as dimensões base e adicione os tamanhos.</small>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a th:href="@{/produtos}" class="btn btn-light btn-modern btn-sm"><i class="fa-duotone fa-solid fa-ban"></i> Cancelar</a>
+                                <button type="submit" class="btn btn-primary btn-modern btn-sm"><i class="fa-duotone fa-solid fa-floppy-disk"></i> Salvar Produto</button>
+                            </div>
+                        </div>
+
+                        <!-- BODY -->
+                        <div class="card-body">
+
+                            <!-- BLOCO SUPERIOR: FOTO E CARACTERÍSTICAS -->
+                            <div class="row g-4 mb-4">
+
+                                <!-- COLUNA ESQUERDA: FOTO -->
+                                <div class="col-md-3">
+                                    <div style="width: 100%; max-width: 160px; height: 160px; margin: 0 auto; position: relative; overflow: hidden; border-radius: 12px; border: 1px solid #dee2e6; background-color: #f8f9fa;">
+
+                                        <!-- Placeholder -->
+                                        <div th:if="${produto.imagem == null or produto.imagem.isEmpty()}"
+                                             id="produtoPreviewPlaceholder"
+                                             class="w-100 h-100 d-flex flex-column align-items-center justify-content-center">
+                                            <i class="fa-duotone fa-solid fa-image fs-1 text-muted"></i>
+                                            <span class="small text-muted mt-1">Sem imagem</span>
+                                        </div>
+
+                                        <!-- Imagem Atual (Edição) -->
+                                        <img th:if="${produto.imagem != null and !produto.imagem.isEmpty()}"
+                                             th:src="${produto.imagem}" id="produtoImagemAtual"
+                                             class="w-100 h-100"
+                                             style="object-fit: cover; position: absolute; top: 0; left: 0;">
+
+                                        <!-- Preview da Nova Imagem -->
+                                        <img id="produtoPreviewImg"
+                                             class="w-100 h-100"
+                                             style="display: none; object-fit: cover; position: absolute; top: 0; left: 0;">
+                                    </div>
+
+                                    <!-- Input de Upload abaixo da foto -->
+                                    <div class="mt-2 text-center">
+                                        <input type="file" name="arquivoImagem" id="arquivoImagem"
+                                               class="form-control form-control-sm" accept="image/png, image/jpeg, image/jpg"
+                                               onchange="previewImagemProduto(this)">
+                                        <small class="text-muted d-block mt-1" style="font-size: 0.7rem;">JPG ou PNG</small>
+                                    </div>
+                                </div>
+
+                                <!-- COLUNA DIREITA: CARACTERÍSTICAS -->
+                                <div class="col-md-9">
+                                    <div class="detalhe-secao mt-0">
+                                        <i class="fa-duotone fa-solid fa-circle-info me-1"></i> Características Principais
+                                    </div>
+
+                                    <div class="row g-3 mt-1">
+                                        <div class="col-md-4">
+                                            <label class="form-label fw-semibold text-secondary mb-0">Tipo de Produto *</label>
+                                            <select class="form-select" th:field="*{tipoProdutoId}" th:classappend="${#fields.hasErrors('tipoProdutoId')} ? 'is-invalid' : ''">
+                                                <option value="">Selecione</option>
+                                                <option th:each="t : ${tipos}" th:value="${t.id}" th:text="${t.nome}"></option>
+                                            </select>
+                                            <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('tipoProdutoId')}" th:errors="*{tipoProdutoId}"></div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label class="form-label fw-semibold text-secondary mb-0">Espécie *</label>
+                                            <select class="form-select" th:field="*{especieMadeiraId}" th:classappend="${#fields.hasErrors('especieMadeiraId')} ? 'is-invalid' : ''">
+                                                <option value="">Selecione</option>
+                                                <option th:each="e : ${especies}" th:value="${e.id}" th:text="${e.nome}"></option>
+                                            </select>
+                                            <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('especieMadeiraId')}" th:errors="*{especieMadeiraId}"></div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label class="form-label fw-semibold text-secondary mb-0">Unidade de Venda *</label>
+                                            <select class="form-select" th:field="*{unidadeMedidaId}" id="unidadeMedida" th:classappend="${#fields.hasErrors('unidadeMedidaId')} ? 'is-invalid' : ''">
+                                                <option value="">Selecione</option>
+                                                <option th:each="u : ${unidades}" th:value="${u.id}" th:text="${u.sigla + ' (' + u.descricao + ')'}"></option>
+                                            </select>
+                                            <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('unidadeMedidaId')}" th:errors="*{unidadeMedidaId}"></div>
+                                        </div>
+
+                                        <div class="col-md-4 mt-3">
+                                            <label class="form-label fw-semibold text-secondary mb-0">Largura (cm) *</label>
+                                            <input type="number" step="0.01" th:field="*{larguraCm}" class="form-control" placeholder="Ex: 2.00" th:classappend="${#fields.hasErrors('larguraCm')} ? 'is-invalid' : ''">
+                                            <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('larguraCm')}" th:errors="*{larguraCm}"></div>
+                                        </div>
+
+                                        <div class="col-md-4 mt-3">
+                                            <label class="form-label fw-semibold text-secondary mb-0">Espessura (cm) *</label>
+                                            <input type="number" step="0.01" th:field="*{espessuraCm}" class="form-control" placeholder="Ex: 30.00" th:classappend="${#fields.hasErrors('espessuraCm')} ? 'is-invalid' : ''">
+                                            <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('espessuraCm')}" th:errors="*{espessuraCm}"></div>
+                                        </div>
+
+                                        <div class="col-md-4 mt-3 d-flex align-items-end">
+                                            <label class="switch-modern w-100 justify-content-center mb-0" for="status">
+                                                <input type="checkbox" role="switch" id="status" th:field="*{status}">
+                                                <i class="fa-duotone fa-solid fa-circle-check"></i> Produto Ativo
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="pr-hr my-4"/>
+
+                            <!-- TABELA DE MEDIDAS -->
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="detalhe-secao mb-0"><i class="fa-duotone fa-solid fa-ruler-combined me-1"></i> Tamanhos e Estoque</div>
+                                <button type="button" class="btn btn-outline-sistema btn-sm" id="btnAdicionarMedida">
+                                    <i class="fa-duotone fa-solid fa-plus"></i> Adicionar Tamanho
+                                </button>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-sm align-middle" id="tabelaMedidas">
+                                    <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 25%;">Comprimento (m)</th>
+                                        <th style="width: 25%;">Preço Tabela (R$)</th>
+                                        <th style="width: 20%;">Estoque (Qtd)</th>
+                                        <th style="width: 20%;">SKU</th>
+                                        <th class="text-center" style="width: 10%;">Ações</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="corpoMedidas">
+                                    <!-- Linhas existentes (Edição) -->
+                                    <tr th:each="m, stat : *{medidas}">
+                                        <td>
+                                            <input type="hidden" th:field="*{medidas[__${stat.index}__].id}" />
+                                            <input type="number" step="0.01" th:field="*{medidas[__${stat.index}__].comprimentoM}" class="form-control form-control-sm comprimento-medida" placeholder="Ex: 3.0" />
+                                        </td>
+                                        <td>
+                                            <input type="number" step="0.01" th:field="*{medidas[__${stat.index}__].precoVenda}" class="form-control form-control-sm" placeholder="0.00" />
+                                        </td>
+                                        <td>
+                                            <input type="number" step="0.001" th:field="*{medidas[__${stat.index}__].quantidadeEstoque}" class="form-control form-control-sm" placeholder="0.000" />
+                                        </td>
+                                        <td>
+                                            <input type="text" th:field="*{medidas[__${stat.index}__].sku}" class="form-control form-control-sm" placeholder="SKU (opcional)" />
+                                        </td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-sm btn-outline-danger remover-medida"><i class="fa-duotone fa-solid fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="text-muted small mt-2">
+                                <i class="fa-duotone fa-solid fa-circle-info"></i> Se a venda for em M³, você pode deixar o comprimento em branco.
+                            </div>
+
+                        </div>
+
+                        <!-- FOOTER -->
+                        <div class="card-footer card-footer-modern">
+                            <small class="text-muted"><i class="fa-duotone fa-solid fa-circle-info"></i> Campos com <span class="text-danger">*</span> são obrigatórios.</small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script para a tabela dinâmica -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const corpoMedidas = document.getElementById('corpoMedidas');
+            const btnAdicionar = document.getElementById('btnAdicionarMedida');
+
+            let index = corpoMedidas.querySelectorAll('tr').length;
+
+            function adicionarLinha() {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <input type="hidden" name="medidas[${index}].id" />
+                        <input type="number" step="0.01" name="medidas[${index}].comprimentoM" class="form-control form-control-sm" placeholder="Ex: 3.0" />
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" name="medidas[${index}].precoVenda" class="form-control form-control-sm" placeholder="0.00" />
+                    </td>
+                    <td>
+                        <input type="number" step="0.001" name="medidas[${index}].quantidadeEstoque" class="form-control form-control-sm" placeholder="0.000" />
+                    </td>
+                    <td>
+                        <input type="text" name="medidas[${index}].sku" class="form-control form-control-sm" placeholder="SKU" />
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-sm btn-outline-danger remover-medida"><i class="fa-duotone fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                corpoMedidas.appendChild(tr);
+                index++;
+                bindRemover();
+            }
+
+            function bindRemover() {
+                document.querySelectorAll('.remover-medida').forEach(btn => {
+                    btn.onclick = function() {
+                        this.closest('tr').remove();
+                    };
+                });
+            }
+
+            btnAdicionar.addEventListener('click', adicionarLinha);
+            bindRemover();
+        });
+    </script>
+
+    <!-- Script para o preview da imagem -->
+    <script>
+        function previewImagemProduto(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const placeholder = document.getElementById('produtoPreviewPlaceholder');
+                    const imagemAtual = document.getElementById('produtoImagemAtual');
+                    const previewImg = document.getElementById('produtoPreviewImg');
+
+                    if (placeholder) placeholder.style.display = 'none';
+                    if (imagemAtual) imagemAtual.style.display = 'none';
+
+                    previewImg.src = e.target.result;
+                    previewImg.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+</div>
+</body>
+</html>

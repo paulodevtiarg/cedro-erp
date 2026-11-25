@@ -5,7 +5,7 @@ import br.com.dpsistemas.cedroerp.mappers.TipoProdutoMapper;
 import br.com.dpsistemas.cedroerp.models.Empresa;
 import br.com.dpsistemas.cedroerp.models.TipoProduto;
 import br.com.dpsistemas.cedroerp.repositorys.TipoProdutoRepository;
-import br.com.dpsistemas.cedroerp.specifications.TipoProdutoSpecification;
+import br.com.dpsistemas.cedroerp.utils.TipoProdutoSpecification;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
