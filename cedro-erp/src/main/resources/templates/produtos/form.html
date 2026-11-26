@@ -7,6 +7,7 @@
 <div layout:fragment="content">
     <div class="container-fluid p-2">
         <div class="row">
+            <!-- BREADCRUMB -->
             <div class="col-12">
                 <nav aria-label="breadcrumb" style="margin-top: -25px; font-size: 0.8rem;">
                     <ol class="breadcrumb">
@@ -20,7 +21,9 @@
             <div class="col-12">
                 <form th:object="${produto}" enctype="multipart/form-data"
                       th:action="${produto.id == null} ? @{/produtos/salvar} : @{'/produtos/editar/' + ${produto.id}}" method="post">
+
                     <input type="hidden" th:field="*{id}">
+                    <input type="hidden" th:field="*{imagem}">
 
                     <div class="card">
                         <!-- HEADER -->
@@ -29,7 +32,7 @@
                                 <div class="header-icon"><i class="fa-duotone fa-solid fa-cubes-stacked"></i></div>
                                 <div>
                                     <h5 class="mb-0 fw-semibold" th:text="${produto.id == null} ? 'Novo Produto' : 'Editar Produto'"></h5>
-                                    <small class="text-muted">Preencha as dimensões base e adicione os tamanhos.</small>
+                                    <small class="text-muted">Preencha as características e adicione as variações.</small>
                                 </div>
                             </div>
                             <div class="d-flex gap-2">
@@ -41,50 +44,33 @@
                         <!-- BODY -->
                         <div class="card-body">
 
-                            <!-- BLOCO SUPERIOR: FOTO E CARACTERÍSTICAS -->
+                            <!-- BLOCO SUPERIOR -->
                             <div class="row g-4 mb-4">
-
-                                <!-- COLUNA ESQUERDA: FOTO -->
+                                <!-- FOTO -->
                                 <div class="col-md-3">
                                     <div style="width: 100%; max-width: 160px; height: 160px; margin: 0 auto; position: relative; overflow: hidden; border-radius: 12px; border: 1px solid #dee2e6; background-color: #f8f9fa;">
-
-                                        <!-- Placeholder -->
-                                        <div th:if="${produto.imagem == null or produto.imagem.isEmpty()}"
-                                             id="produtoPreviewPlaceholder"
-                                             class="w-100 h-100 d-flex flex-column align-items-center justify-content-center">
+                                        <div th:if="${produto.imagem == null or produto.imagem.isEmpty()}" id="produtoPreviewPlaceholder" class="w-100 h-100 d-flex flex-column align-items-center justify-content-center">
                                             <i class="fa-duotone fa-solid fa-image fs-1 text-muted"></i>
                                             <span class="small text-muted mt-1">Sem imagem</span>
                                         </div>
-
-                                        <!-- Imagem Atual (Edição) -->
-                                        <img th:if="${produto.imagem != null and !produto.imagem.isEmpty()}"
-                                             th:src="${produto.imagem}" id="produtoImagemAtual"
-                                             class="w-100 h-100"
-                                             style="object-fit: cover; position: absolute; top: 0; left: 0;">
-
-                                        <!-- Preview da Nova Imagem -->
-                                        <img id="produtoPreviewImg"
-                                             class="w-100 h-100"
-                                             style="display: none; object-fit: cover; position: absolute; top: 0; left: 0;">
+                                        <img th:if="${produto.imagem != null and !produto.imagem.isEmpty()}" th:src="${produto.imagem}" id="produtoImagemAtual" class="w-100 h-100" style="object-fit: cover; position: absolute; top: 0; left: 0;">
+                                        <img id="produtoPreviewImg" class="w-100 h-100" style="display: none; object-fit: cover; position: absolute; top: 0; left: 0;">
                                     </div>
 
-                                    <!-- Input de Upload abaixo da foto -->
                                     <div class="mt-2 text-center">
-                                        <input type="file" name="arquivoImagem" id="arquivoImagem"
-                                               class="form-control form-control-sm" accept="image/png, image/jpeg, image/jpg"
-                                               onchange="previewImagemProduto(this)">
+                                        <input type="file" name="arquivoImagem" id="arquivoImagem" class="form-control form-control-sm" accept="image/png, image/jpeg, image/jpg" onchange="previewImagemProduto(this)">
                                         <small class="text-muted d-block mt-1" style="font-size: 0.7rem;">JPG ou PNG</small>
                                     </div>
                                 </div>
 
-                                <!-- COLUNA DIREITA: CARACTERÍSTICAS -->
+                                <!-- CARACTERÍSTICAS -->
                                 <div class="col-md-9">
                                     <div class="detalhe-secao mt-0">
                                         <i class="fa-duotone fa-solid fa-circle-info me-1"></i> Características Principais
                                     </div>
 
                                     <div class="row g-3 mt-1">
-                                        <div class="col-md-4">
+                                        <div class="col-md-5">
                                             <label class="form-label fw-semibold text-secondary mb-0">Tipo de Produto *</label>
                                             <select class="form-select" th:field="*{tipoProdutoId}" th:classappend="${#fields.hasErrors('tipoProdutoId')} ? 'is-invalid' : ''">
                                                 <option value="">Selecione</option>
@@ -93,8 +79,8 @@
                                             <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('tipoProdutoId')}" th:errors="*{tipoProdutoId}"></div>
                                         </div>
 
-                                        <div class="col-md-4">
-                                            <label class="form-label fw-semibold text-secondary mb-0">Espécie *</label>
+                                        <div class="col-md-5">
+                                            <label class="form-label fw-semibold text-secondary mb-0">Espécie da Madeira *</label>
                                             <select class="form-select" th:field="*{especieMadeiraId}" th:classappend="${#fields.hasErrors('especieMadeiraId')} ? 'is-invalid' : ''">
                                                 <option value="">Selecione</option>
                                                 <option th:each="e : ${especies}" th:value="${e.id}" th:text="${e.nome}"></option>
@@ -102,31 +88,10 @@
                                             <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('especieMadeiraId')}" th:errors="*{especieMadeiraId}"></div>
                                         </div>
 
-                                        <div class="col-md-4">
-                                            <label class="form-label fw-semibold text-secondary mb-0">Unidade de Venda *</label>
-                                            <select class="form-select" th:field="*{unidadeMedidaId}" id="unidadeMedida" th:classappend="${#fields.hasErrors('unidadeMedidaId')} ? 'is-invalid' : ''">
-                                                <option value="">Selecione</option>
-                                                <option th:each="u : ${unidades}" th:value="${u.id}" th:text="${u.sigla + ' (' + u.descricao + ')'}"></option>
-                                            </select>
-                                            <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('unidadeMedidaId')}" th:errors="*{unidadeMedidaId}"></div>
-                                        </div>
-
-                                        <div class="col-md-4 mt-3">
-                                            <label class="form-label fw-semibold text-secondary mb-0">Largura (cm) *</label>
-                                            <input type="number" step="0.01" th:field="*{larguraCm}" class="form-control" placeholder="Ex: 2.00" th:classappend="${#fields.hasErrors('larguraCm')} ? 'is-invalid' : ''">
-                                            <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('larguraCm')}" th:errors="*{larguraCm}"></div>
-                                        </div>
-
-                                        <div class="col-md-4 mt-3">
-                                            <label class="form-label fw-semibold text-secondary mb-0">Espessura (cm) *</label>
-                                            <input type="number" step="0.01" th:field="*{espessuraCm}" class="form-control" placeholder="Ex: 30.00" th:classappend="${#fields.hasErrors('espessuraCm')} ? 'is-invalid' : ''">
-                                            <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('espessuraCm')}" th:errors="*{espessuraCm}"></div>
-                                        </div>
-
-                                        <div class="col-md-4 mt-3 d-flex align-items-end">
+                                        <div class="col-md-2 mt-3 d-flex align-items-end">
                                             <label class="switch-modern w-100 justify-content-center mb-0" for="status">
                                                 <input type="checkbox" role="switch" id="status" th:field="*{status}">
-                                                <i class="fa-duotone fa-solid fa-circle-check"></i> Produto Ativo
+                                                <i class="fa-duotone fa-solid fa-circle-check"></i> Ativo
                                             </label>
                                         </div>
                                     </div>
@@ -135,51 +100,70 @@
 
                             <hr class="pr-hr my-4"/>
 
-                            <!-- TABELA DE MEDIDAS -->
+                            <!-- CONTAINER DE VARIAÇÕES BASE -->
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <div class="detalhe-secao mb-0"><i class="fa-duotone fa-solid fa-ruler-combined me-1"></i> Tamanhos e Estoque</div>
-                                <button type="button" class="btn btn-outline-sistema btn-sm" id="btnAdicionarMedida">
-                                    <i class="fa-duotone fa-solid fa-plus"></i> Adicionar Tamanho
+                                <div class="detalhe-secao mb-0"><i class="fa-duotone fa-solid fa-layer-group me-1"></i> Tamanhos Bases e Comprimentos</div>
+                                <button type="button" class="btn btn-outline-sistema btn-sm" id="btnAdicionarBase">
+                                    <i class="fa-duotone fa-solid fa-plus"></i> Adicionar Variação Base
                                 </button>
                             </div>
 
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-sm align-middle" id="tabelaMedidas">
-                                    <thead class="table-light">
-                                    <tr>
-                                        <th style="width: 25%;">Comprimento (m)</th>
-                                        <th style="width: 25%;">Preço Tabela (R$)</th>
-                                        <th style="width: 20%;">Estoque (Qtd)</th>
-                                        <th style="width: 20%;">SKU</th>
-                                        <th class="text-center" style="width: 10%;">Ações</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody id="corpoMedidas">
-                                    <!-- Linhas existentes (Edição) -->
-                                    <tr th:each="m, stat : *{medidas}">
-                                        <td>
-                                            <input type="hidden" th:field="*{medidas[__${stat.index}__].id}" />
-                                            <input type="number" step="0.01" th:field="*{medidas[__${stat.index}__].comprimentoM}" class="form-control form-control-sm comprimento-medida" placeholder="Ex: 3.0" />
-                                        </td>
-                                        <td>
-                                            <input type="number" step="0.01" th:field="*{medidas[__${stat.index}__].precoVenda}" class="form-control form-control-sm" placeholder="0.00" />
-                                        </td>
-                                        <td>
-                                            <input type="number" step="0.001" th:field="*{medidas[__${stat.index}__].quantidadeEstoque}" class="form-control form-control-sm" placeholder="0.000" />
-                                        </td>
-                                        <td>
-                                            <input type="text" th:field="*{medidas[__${stat.index}__].sku}" class="form-control form-control-sm" placeholder="SKU (opcional)" />
-                                        </td>
-                                        <td class="text-center">
-                                            <button type="button" class="btn btn-sm btn-outline-danger remover-medida"><i class="fa-duotone fa-solid fa-trash"></i></button>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                            <div id="containerBases">
+                                <!-- Linhas existentes (Edição) -->
+                                <div th:each="base, statBase : *{variacoesBase}" class="card mb-3 border-secondary shadow-sm base-item" th:attr="data-index=${statBase.index}">
+                                    <div class="card-header bg-light d-flex align-items-center gap-3">
+                                        <input type="hidden" th:field="*{variacoesBase[__${statBase.index}__].id}" class="base-id" />
 
-                            <div class="text-muted small mt-2">
-                                <i class="fa-duotone fa-solid fa-circle-info"></i> Se a venda for em M³, você pode deixar o comprimento em branco.
+                                        <div class="flex-grow-1 row g-2">
+                                            <div class="col-md-3">
+                                                <label class="small text-muted mb-0">Largura (cm) *</label>
+                                                <input type="number" step="0.01" th:field="*{variacoesBase[__${statBase.index}__].larguraCm}" class="form-control form-control-sm base-largura" />
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="small text-muted mb-0">Espessura (cm) *</label>
+                                                <input type="number" step="0.01" th:field="*{variacoesBase[__${statBase.index}__].espessuraCm}" class="form-control form-control-sm base-espessura" />
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="small text-muted mb-0">Unidade *</label>
+                                                <select th:field="*{variacoesBase[__${statBase.index}__].unidadeMedidaId}" class="form-select form-select-sm base-unidade">
+                                                    <option value="">Selecione</option>
+                                                    <option th:each="u : ${unidades}" th:value="${u.id}" th:text="${u.sigla}"></option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <button type="button" class="btn btn-outline-danger btn-sm remover-base" title="Remover Variação"><i class="fa-duotone fa-solid fa-trash"></i></button>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <table class="table table-sm mb-0 align-middle tabela-medidas">
+                                            <thead class="table-light">
+                                            <tr class="small text-muted">
+                                                <th style="width: 25%;">Comprimento (m)</th>
+                                                <th style="width: 20%;">Preço (R$)</th>
+                                                <th style="width: 20%;">Estoque</th>
+                                                <th style="width: 25%;">SKU</th>
+                                                <th class="text-center" style="width: 10%;"></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody class="corpo-medidas">
+                                            <!-- Medidas existentes -->
+                                            <tr th:each="medida, statMedida : *{variacoesBase[__${statBase.index}__].medidas}">
+                                                <td>
+                                                    <input type="hidden" th:field="*{variacoesBase[__${statBase.index}__].medidas[__${statMedida.index}__].id}" />
+                                                    <input type="number" step="0.01" th:field="*{variacoesBase[__${statBase.index}__].medidas[__${statMedida.index}__].comprimentoM}" class="form-control form-control-sm" placeholder="Ex: 3.0" />
+                                                </td>
+                                                <td><input type="number" step="0.01" th:field="*{variacoesBase[__${statBase.index}__].medidas[__${statMedida.index}__].precoVenda}" class="form-control form-control-sm" /></td>
+                                                <td><input type="number" step="0.001" th:field="*{variacoesBase[__${statBase.index}__].medidas[__${statMedida.index}__].quantidadeEstoque}" class="form-control form-control-sm" /></td>
+                                                <td><input type="text" th:field="*{variacoesBase[__${statBase.index}__].medidas[__${statMedida.index}__].sku}" class="form-control form-control-sm" /></td>
+                                                <td class="text-center"><button type="button" class="btn btn-sm btn-outline-danger remover-medida"><i class="fa-duotone fa-solid fa-trash"></i></button></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                        <div class="p-2 bg-light text-end border-top">
+                                            <button type="button" class="btn btn-sm btn-outline-primary add-medida"><i class="fa-duotone fa-solid fa-plus"></i> Adicionar Comprimento</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                         </div>
@@ -194,54 +178,150 @@
         </div>
     </div>
 
-    <!-- Script para a tabela dinâmica -->
+    <!-- Select Oculto para o JS ler as Unidades -->
+    <select id="templateUnidades" class="d-none">
+        <option value="">Selecione</option>
+        <option th:each="u : ${unidades}" th:value="${u.id}" th:text="${u.sigla}"></option>
+    </select>
+
+    <!-- SCRIPT DA ÁRVORE DINÂMICA -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const corpoMedidas = document.getElementById('corpoMedidas');
-            const btnAdicionar = document.getElementById('btnAdicionarMedida');
+            const containerBases = document.getElementById('containerBases');
+            const btnAdicionarBase = document.getElementById('btnAdicionarBase');
+            const templateUnidades = document.getElementById('templateUnidades').innerHTML;
 
-            let index = corpoMedidas.querySelectorAll('tr').length;
+            let indexBase = containerBases.querySelectorAll('.base-item').length;
 
-            function adicionarLinha() {
+            // Função para atualizar os names (index) das linhas quando excluir uma base
+            function reindexarBases() {
+                const bases = containerBases.querySelectorAll('.base-item');
+                bases.forEach((base, bIndex) => {
+                    base.setAttribute('data-index', bIndex);
+
+                    // Atualiza os IDs/Names da Base
+                    base.querySelectorAll('input, select').forEach(el => {
+                        if (el.name) {
+                            el.name = el.name.replace(/variacoesBase\[\d+\]/, `variacoesBase[${bIndex}]`);
+                        }
+                    });
+
+                    // Atualiza os IDs/Names das Medidas
+                    const medidas = base.querySelectorAll('.corpo-medidas tr');
+                    medidas.forEach((tr, mIndex) => {
+                        tr.querySelectorAll('input').forEach(el => {
+                            if (el.name) {
+                                el.name = el.name.replace(/medidas\[\d+\]/, `medidas[${mIndex}]`);
+                            }
+                        });
+                    });
+                });
+                indexBase = bases.length;
+            }
+
+            // Cria o bloco de uma nova Base
+            function criarBase() {
+                const div = document.createElement('div');
+                div.className = 'card mb-3 border-secondary shadow-sm base-item';
+                div.setAttribute('data-index', indexBase);
+                div.innerHTML = `
+                    <div class="card-header bg-light d-flex align-items-center gap-3">
+                        <input type="hidden" name="variacoesBase[${indexBase}].id" class="base-id" />
+                        <div class="flex-grow-1 row g-2">
+                            <div class="col-md-3">
+                                <label class="small text-muted mb-0">Largura (cm) *</label>
+                                <input type="number" step="0.01" name="variacoesBase[${indexBase}].larguraCm" class="form-control form-control-sm base-largura" required />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="small text-muted mb-0">Espessura (cm) *</label>
+                                <input type="number" step="0.01" name="variacoesBase[${indexBase}].espessuraCm" class="form-control form-control-sm base-espessura" required />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="small text-muted mb-0">Unidade *</label>
+                                <select name="variacoesBase[${indexBase}].unidadeMedidaId" class="form-select form-select-sm base-unidade" required>
+                                    ${templateUnidades}
+                                </select>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-danger btn-sm remover-base"><i class="fa-duotone fa-solid fa-trash"></i></button>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-sm mb-0 align-middle tabela-medidas">
+                            <thead class="table-light">
+                                <tr class="small text-muted">
+                                    <th style="width: 25%;">Comprimento (m)</th>
+                                    <th style="width: 20%;">Preço (R$)</th>
+                                    <th style="width: 20%;">Estoque</th>
+                                    <th style="width: 25%;">SKU</th>
+                                    <th class="text-center" style="width: 10%;"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="corpo-medidas"></tbody>
+                        </table>
+                        <div class="p-2 bg-light text-end border-top">
+                            <button type="button" class="btn btn-sm btn-outline-primary add-medida"><i class="fa-duotone fa-solid fa-plus"></i> Adicionar Comprimento</button>
+                        </div>
+                    </div>
+                `;
+                containerBases.appendChild(div);
+                indexBase++;
+                bindEvents(div);
+                adicionarMedida(div); // Já cria uma linha vazia por padrão
+            }
+
+            // Cria o bloco de uma nova Medida dentro da Base
+            function adicionarMedida(baseItem) {
+                const corpo = baseItem.querySelector('.corpo-medidas');
+                const baseIndex = baseItem.getAttribute('data-index');
+                const mIndex = corpo.querySelectorAll('tr').length;
+
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>
-                        <input type="hidden" name="medidas[${index}].id" />
-                        <input type="number" step="0.01" name="medidas[${index}].comprimentoM" class="form-control form-control-sm" placeholder="Ex: 3.0" />
+                        <input type="hidden" name="variacoesBase[${baseIndex}].medidas[${mIndex}].id" />
+                        <input type="number" step="0.01" name="variacoesBase[${baseIndex}].medidas[${mIndex}].comprimentoM" class="form-control form-control-sm" placeholder="Ex: 3.0" />
                     </td>
-                    <td>
-                        <input type="number" step="0.01" name="medidas[${index}].precoVenda" class="form-control form-control-sm" placeholder="0.00" />
-                    </td>
-                    <td>
-                        <input type="number" step="0.001" name="medidas[${index}].quantidadeEstoque" class="form-control form-control-sm" placeholder="0.000" />
-                    </td>
-                    <td>
-                        <input type="text" name="medidas[${index}].sku" class="form-control form-control-sm" placeholder="SKU" />
-                    </td>
-                    <td class="text-center">
-                        <button type="button" class="btn btn-sm btn-outline-danger remover-medida"><i class="fa-duotone fa-solid fa-trash"></i></button>
-                    </td>
+                    <td><input type="number" step="0.01" name="variacoesBase[${baseIndex}].medidas[${mIndex}].precoVenda" class="form-control form-control-sm" placeholder="0.00" /></td>
+                    <td><input type="number" step="0.001" name="variacoesBase[${baseIndex}].medidas[${mIndex}].quantidadeEstoque" class="form-control form-control-sm" placeholder="0.000" /></td>
+                    <td><input type="text" name="variacoesBase[${baseIndex}].medidas[${mIndex}].sku" class="form-control form-control-sm" placeholder="Automático" /></td>
+                    <td class="text-center"><button type="button" class="btn btn-sm btn-outline-danger remover-medida"><i class="fa-duotone fa-solid fa-trash"></i></button></td>
                 `;
-                corpoMedidas.appendChild(tr);
-                index++;
-                bindRemover();
+                corpo.appendChild(tr);
             }
 
-            function bindRemover() {
-                document.querySelectorAll('.remover-medida').forEach(btn => {
-                    btn.onclick = function() {
+            // Binds de eventos
+            function bindEvents(container) {
+                // Remover Base Inteira
+                container.querySelector('.remover-base').addEventListener('click', function() {
+                    if (confirm('Tem certeza que deseja remover esta variação e todos os seus tamanhos?')) {
+                        container.remove();
+                        reindexarBases();
+                    }
+                });
+
+                // Adicionar Comprimento na Base
+                container.querySelector('.add-medida').addEventListener('click', function() {
+                    adicionarMedida(container);
+                    reindexarBases();
+                });
+
+                // Remover Comprimento
+                container.querySelectorAll('.remover-medida').forEach(btn => {
+                    btn.addEventListener('click', function() {
                         this.closest('tr').remove();
-                    };
+                        reindexarBases();
+                    });
                 });
             }
 
-            btnAdicionar.addEventListener('click', adicionarLinha);
-            bindRemover();
-        });
-    </script>
+            // Evento de Adicionar Base
+            btnAdicionarBase.addEventListener('click', criarBase);
 
-    <!-- Script para o preview da imagem -->
-    <script>
+            // Inicializa os binds nas bases que já existem (Edição)
+            document.querySelectorAll('.base-item').forEach(bindEvents);
+        });
+
+        // Preview da Imagem
         function previewImagemProduto(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();

@@ -2,6 +2,7 @@ package br.com.dpsistemas.cedroerp.services;
 
 import br.com.dpsistemas.cedroerp.dtos.ProdutoDTO;
 import br.com.dpsistemas.cedroerp.dtos.ProdutoMedidaDTO;
+import br.com.dpsistemas.cedroerp.dtos.ProdutoVariacaoBaseDTO;
 import br.com.dpsistemas.cedroerp.mappers.ProdutoMapper;
 import br.com.dpsistemas.cedroerp.models.*;
 import br.com.dpsistemas.cedroerp.repositorys.*;
@@ -16,6 +17,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +32,10 @@ public class ProdutoService {
     @Autowired private UnidadeMedidaRepository unidadeRepository;
     @Autowired private ProdutoMapper mapper;
     @Autowired private EmpresaService empresaService;
-    @Autowired private ProdutoMedidaRepository produtoMedidaRepository;
 
+    // ==================================================
+    // LISTAR E BUSCAR
+    // ==================================================
     @Transactional(readOnly = true)
     public Page<ProdutoDTO> listar(ProdutoDTO filtro, Long idEmpresa) {
         Pageable pageable = PageRequest.of(filtro.getPage(), filtro.getSize(), Sort.by("id").descending());
@@ -51,6 +55,9 @@ public class ProdutoService {
         return mapper.toDTO(entity);
     }
 
+    // ==================================================
+    // SALVAR (NOVO)
+    // ==================================================
     @Transactional
     public ProdutoDTO salvar(ProdutoDTO dto, Long idEmpresa) {
         validarDuplicidade(dto, idEmpresa, null);
@@ -59,49 +66,68 @@ public class ProdutoService {
         Empresa empresa = empresaService.buscarPorId(idEmpresa);
         entity.setEmpresa(empresa);
 
-        // Seta os relacionamentos buscando no banco
+        // Seta os relacionamentos do Produto
         entity.setTipoProduto(tipoProdutoRepository.findById(dto.getTipoProdutoId()).orElseThrow());
         entity.setEspecieMadeira(especieRepository.findById(dto.getEspecieMadeiraId()).orElseThrow());
-        entity.setUnidadeMedida(unidadeRepository.findById(dto.getUnidadeMedidaId()).orElseThrow());
 
-        // Processa as Medidas
-        // Processa as Medidas
-        if (dto.getMedidas() != null && !dto.getMedidas().isEmpty()) {
-            List<ProdutoMedida> medidas = new ArrayList<>();
-            List<String> skusGerados = new ArrayList<>(); // Para validar duplicidade na mesma tela
+        // Processa as Variações Base (Mães) e Medidas (Filhos)
+        if (dto.getVariacoesBase() != null && !dto.getVariacoesBase().isEmpty()) {
+            List<ProdutoVariacaoBase> bases = new ArrayList<>();
 
-            for (ProdutoMedidaDTO mDto : dto.getMedidas()) {
-                ProdutoMedida medida = new ProdutoMedida();
-                medida.setComprimentoM(mDto.getComprimentoM());
-                medida.setPrecoVenda(mDto.getPrecoVenda());
-                medida.setQuantidadeEstoque(mDto.getQuantidadeEstoque());
-                medida.setStatus(mDto.getStatus() != null ? mDto.getStatus() : true);
-                medida.setEmpresa(empresa);
-                medida.setProduto(entity);
+            for (ProdutoVariacaoBaseDTO baseDto : dto.getVariacoesBase()) {
+                ProdutoVariacaoBase base = new ProdutoVariacaoBase();
+                base.setLarguraCm(baseDto.getLarguraCm());
+                base.setEspessuraCm(baseDto.getEspessuraCm());
+                base.setEmpresa(empresa);
+                base.setProduto(entity);
 
-                // 🔥 REGRA DO SKU: Usuário digitou? Usa o dele. Tá em branco? Gera automático.
-                String skuFinal;
-                if (mDto.getSku() == null || mDto.getSku().trim().isBlank()) {
-                    skuFinal = gerarSku(entity, medida);
-                } else {
-                    skuFinal = mDto.getSku().trim().toUpperCase();
+                UnidadeMedida unidade = unidadeRepository.findById(baseDto.getUnidadeMedidaId())
+                        .orElseThrow(() -> new EntityNotFoundException("Unidade não encontrada."));
+                base.setUnidadeMedida(unidade);
+
+                // Processa as Medidas (Filhos) desta Base
+                List<ProdutoMedida> medidas = new ArrayList<>();
+                List<String> skusGerados = new ArrayList<>();
+
+                if (baseDto.getMedidas() != null) {
+                    for (ProdutoMedidaDTO medidaDto : baseDto.getMedidas()) {
+                        ProdutoMedida medida = new ProdutoMedida();
+                        medida.setComprimentoM(medidaDto.getComprimentoM());
+                        medida.setPrecoVenda(medidaDto.getPrecoVenda());
+                        medida.setQuantidadeEstoque(medidaDto.getQuantidadeEstoque());
+                        medida.setStatus(medidaDto.getStatus() != null ? medidaDto.getStatus() : true);
+                        medida.setEmpresa(empresa);
+                        medida.setVariacaoBase(base);
+
+                        // Gera o SKU
+                        String skuFinal;
+                        if (medidaDto.getSku() == null || medidaDto.getSku().trim().isBlank()) {
+                            skuFinal = gerarSku(entity, base, medida);
+                        } else {
+                            skuFinal = medidaDto.getSku().trim().toUpperCase();
+                        }
+
+                        if (skusGerados.contains(skuFinal)) {
+                            throw new IllegalArgumentException("O SKU '" + skuFinal + "' está duplicado nos tamanhos informados.");
+                        }
+                        skusGerados.add(skuFinal);
+                        medida.setSku(skuFinal);
+
+                        medidas.add(medida);
+                    }
                 }
-
-                // Valida se o SKU já não foi usado na linha de cima do mesmo formulário
-                if (skusGerados.contains(skuFinal)) {
-                    throw new IllegalArgumentException("O SKU '" + skuFinal + "' está duplicado nos tamanhos informados. Verifique o preenchimento.");
-                }
-
-                skusGerados.add(skuFinal);
-                medida.setSku(skuFinal);
-                medidas.add(medida);
+                base.setMedidas(medidas);
+                bases.add(base);
             }
-            entity.setMedidas(medidas);
+            entity.setVariacoesBase(bases);
         }
 
         return mapper.toDTO(produtoRepository.save(entity));
     }
 
+    // ==================================================
+    // ATUALIZAR
+    // ==================================================
     @Transactional
     public ProdutoDTO atualizar(Long id, ProdutoDTO dto, Long idEmpresa) {
         Produto entity = produtoRepository.findByIdAndEmpresa_Id(id, idEmpresa)
@@ -109,77 +135,89 @@ public class ProdutoService {
 
         validarDuplicidade(dto, idEmpresa, id);
 
-        // Atualiza os dados do Produto
-        entity.setLarguraCm(dto.getLarguraCm());
-        entity.setEspessuraCm(dto.getEspessuraCm());
         entity.setStatus(dto.getStatus());
-
+        entity.setImagem(dto.getImagem());
         entity.setTipoProduto(tipoProdutoRepository.findById(dto.getTipoProdutoId()).orElseThrow());
         entity.setEspecieMadeira(especieRepository.findById(dto.getEspecieMadeiraId()).orElseThrow());
-        entity.setUnidadeMedida(unidadeRepository.findById(dto.getUnidadeMedidaId()).orElseThrow());
 
-        // ========================================================
-        // 🔥 CORREÇÃO: Atualiza as Medidas existentes em vez de recriar
-        // ========================================================
-        if (dto.getMedidas() != null) {
-            List<String> skusGerados = new ArrayList<>();
+        // Lógica de Atualização em Árvore
+        if (dto.getVariacoesBase() != null) {
+            Map<Long, ProdutoVariacaoBase> basesExistentes = entity.getVariacoesBase().stream()
+                    .collect(Collectors.toMap(ProdutoVariacaoBase::getId, b -> b));
 
-            // Mapeia as medidas que já existem no banco por ID
-            Map<Long, ProdutoMedida> medidasExistentes = entity.getMedidas().stream()
-                    .collect(Collectors.toMap(ProdutoMedida::getId, m -> m));
+            List<ProdutoVariacaoBase> novasBasesList = new ArrayList<>();
 
-            List<ProdutoMedida> novasMedidasList = new ArrayList<>();
-
-            for (ProdutoMedidaDTO mDto : dto.getMedidas()) {
-                ProdutoMedida medida;
-
-                // Se a medida veio com ID, significa que ela já existe no banco
-                if (mDto.getId() != null && medidasExistentes.containsKey(mDto.getId())) {
-                    medida = medidasExistentes.get(mDto.getId());
+            for (ProdutoVariacaoBaseDTO baseDto : dto.getVariacoesBase()) {
+                ProdutoVariacaoBase base;
+                if (baseDto.getId() != null && basesExistentes.containsKey(baseDto.getId())) {
+                    base = basesExistentes.get(baseDto.getId());
                 } else {
-                    // Se não tem ID, é uma nova medida sendo adicionada na tela
-                    medida = new ProdutoMedida();
-                    medida.setEmpresa(entity.getEmpresa());
-                    medida.setProduto(entity);
+                    base = new ProdutoVariacaoBase();
+                    base.setEmpresa(entity.getEmpresa());
+                    base.setProduto(entity);
                 }
 
-                medida.setComprimentoM(mDto.getComprimentoM());
-                medida.setPrecoVenda(mDto.getPrecoVenda());
-                medida.setQuantidadeEstoque(mDto.getQuantidadeEstoque());
-                medida.setStatus(mDto.getStatus() != null ? mDto.getStatus() : true);
+                base.setLarguraCm(baseDto.getLarguraCm());
+                base.setEspessuraCm(baseDto.getEspessuraCm());
+                base.setUnidadeMedida(unidadeRepository.findById(baseDto.getUnidadeMedidaId()).orElseThrow());
 
-                // Regra do SKU
-                String skuFinal;
-                if (mDto.getSku() == null || mDto.getSku().trim().isBlank()) {
-                    skuFinal = gerarSku(entity, medida);
-                } else {
-                    skuFinal = mDto.getSku().trim().toUpperCase();
+                // Lógica para as Medidas Filhas
+                Map<Long, ProdutoMedida> medidasExistentes = base.getMedidas().stream()
+                        .collect(Collectors.toMap(ProdutoMedida::getId, m -> m));
+
+                List<ProdutoMedida> novasMedidasList = new ArrayList<>();
+                List<String> skusGerados = new ArrayList<>();
+
+                for (ProdutoMedidaDTO medidaDto : baseDto.getMedidas()) {
+                    ProdutoMedida medida;
+                    if (medidaDto.getId() != null && medidasExistentes.containsKey(medidaDto.getId())) {
+                        medida = medidasExistentes.get(medidaDto.getId());
+                    } else {
+                        medida = new ProdutoMedida();
+                        medida.setEmpresa(entity.getEmpresa());
+                        medida.setVariacaoBase(base);
+                    }
+
+                    medida.setComprimentoM(medidaDto.getComprimentoM());
+                    medida.setPrecoVenda(medidaDto.getPrecoVenda());
+                    medida.setQuantidadeEstoque(medidaDto.getQuantidadeEstoque());
+                    medida.setStatus(medidaDto.getStatus() != null ? medidaDto.getStatus() : true);
+
+                    String skuFinal = (medidaDto.getSku() == null || medidaDto.getSku().trim().isBlank())
+                            ? gerarSku(entity, base, medida)
+                            : medidaDto.getSku().trim().toUpperCase();
+
+                    if (skusGerados.contains(skuFinal)) {
+                        throw new IllegalArgumentException("O SKU '" + skuFinal + "' está duplicado.");
+                    }
+                    skusGerados.add(skuFinal);
+                    medida.setSku(skuFinal);
+
+                    novasMedidasList.add(medida);
                 }
 
-                // Validação de SKU duplicado
-                if (skusGerados.contains(skuFinal)) {
-                    throw new IllegalArgumentException("O SKU '" + skuFinal + "' está duplicado nos tamanhos informados.");
+                // Remove as medidas que não estão mais na lista nova
+                base.getMedidas().removeIf(m -> !novasMedidasList.contains(m));
+                for (ProdutoMedida m : novasMedidasList) {
+                    if (!base.getMedidas().contains(m)) base.getMedidas().add(m);
                 }
-                skusGerados.add(skuFinal);
-                medida.setSku(skuFinal);
 
-                novasMedidasList.add(medida);
+                novasBasesList.add(base);
             }
 
-            // Remove da lista apenas as medidas que o usuário deletou na tela
-            entity.getMedidas().removeIf(m -> !novasMedidasList.contains(m));
-
-            // Adiciona as novas (se houver)
-            for (ProdutoMedida m : novasMedidasList) {
-                if (!entity.getMedidas().contains(m)) {
-                    entity.getMedidas().add(m);
-                }
+            // Remove as bases que não estão mais na lista nova
+            entity.getVariacoesBase().removeIf(b -> !novasBasesList.contains(b));
+            for (ProdutoVariacaoBase b : novasBasesList) {
+                if (!entity.getVariacoesBase().contains(b)) entity.getVariacoesBase().add(b);
             }
         }
 
         return mapper.toDTO(produtoRepository.save(entity));
     }
 
+    // ==================================================
+    // MÉTODOS AUXILIARES
+    // ==================================================
     @Transactional
     public void atualizarImagem(Long idProduto, Long idEmpresa, String urlImagem) {
         Produto produto = produtoRepository.findByIdAndEmpresa_Id(idProduto, idEmpresa)
@@ -191,14 +229,14 @@ public class ProdutoService {
     private void validarDuplicidade(ProdutoDTO dto, Long idEmpresa, Long idIgnorar) {
         boolean existe;
         if (idIgnorar == null) {
-            existe = produtoRepository.existsByTipoProduto_IdAndEspecieMadeira_IdAndLarguraCmAndEspessuraCmAndEmpresa_Id(
-                    dto.getTipoProdutoId(), dto.getEspecieMadeiraId(), dto.getLarguraCm(), dto.getEspessuraCm(), idEmpresa);
+            existe = produtoRepository.existsByTipoProduto_IdAndEspecieMadeira_IdAndEmpresa_Id(
+                    dto.getTipoProdutoId(), dto.getEspecieMadeiraId(), idEmpresa);
         } else {
-            existe = produtoRepository.existsByTipoProduto_IdAndEspecieMadeira_IdAndLarguraCmAndEspessuraCmAndEmpresa_IdAndIdNot(
-                    dto.getTipoProdutoId(), dto.getEspecieMadeiraId(), dto.getLarguraCm(), dto.getEspessuraCm(), idEmpresa, idIgnorar);
+            existe = produtoRepository.existsByTipoProduto_IdAndEspecieMadeira_IdAndEmpresa_IdAndIdNot(
+                    dto.getTipoProdutoId(), dto.getEspecieMadeiraId(), idEmpresa, idIgnorar);
         }
         if (existe) {
-            throw new IllegalArgumentException("Já existe um produto com essa combinação de Tipo, Espécie, Largura e Espessura.");
+            throw new IllegalArgumentException("Já existe um produto cadastrado com esse Tipo e Espécie.");
         }
     }
 
@@ -214,7 +252,7 @@ public class ProdutoService {
     public void excluir(Long id, Long idEmpresa) {
         Produto entity = produtoRepository.findByIdAndEmpresa_Id(id, idEmpresa)
                 .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado."));
-        produtoRepository.delete(entity);
+        produtoRepository.delete(entity); // O cascade apagará Bases e Medidas
     }
 
     private Boolean converterStatus(Integer status) {
@@ -224,25 +262,18 @@ public class ProdutoService {
         return null;
     }
 
-    private String gerarSku(Produto produto, ProdutoMedida medida) {
-        // 1. Pega as iniciais do Tipo e da Espécie
+    private String gerarSku(Produto produto, ProdutoVariacaoBase base, ProdutoMedida medida) {
         String tipo = produto.getTipoProduto().getNome().replaceAll("[^a-zA-Z]", "").toUpperCase();
         String especie = produto.getEspecieMadeira().getNome().replaceAll("[^a-zA-Z]", "").toUpperCase();
-
-        // Garante que tem pelo menos 3 letras, se não tiver, usa a palavra inteira
         tipo = tipo.length() >= 3 ? tipo.substring(0, 3) : tipo;
         especie = especie.length() >= 3 ? especie.substring(0, 3) : especie;
 
-        // 2. Formata as dimensões (Remove os ".0" desnecessários)
-        String largura = produto.getLarguraCm().stripTrailingZeros().toPlainString();
-        String espessura = produto.getEspessuraCm().stripTrailingZeros().toPlainString();
-
-        // 3. Formata o comprimento (ou M3 se for nulo)
+        String largura = base.getLarguraCm().stripTrailingZeros().toPlainString();
+        String espessura = base.getEspessuraCm().stripTrailingZeros().toPlainString();
         String comprimento = (medida.getComprimentoM() != null)
                 ? medida.getComprimentoM().stripTrailingZeros().toPlainString()
                 : "M3";
 
-        // 4. Monta o SKU: EX: TAB-TAI-2X30-3.0
         return String.format("%s-%s-%sX%s-%s", tipo, especie, largura, espessura, comprimento).toUpperCase();
     }
 }
