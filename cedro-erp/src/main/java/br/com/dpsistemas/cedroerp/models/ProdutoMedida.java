@@ -11,15 +11,18 @@ public class ProdutoMedida extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Agora a Medida aponta para a Variação Base, e não mais para o Produto direto
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "produto_id", nullable = false)
-    private Produto produto;
+    @JoinColumn(name = "produto_variacao_base_id", nullable = false)
+    private ProdutoVariacaoBase variacaoBase;
+
+    // 🔥 A EMPRESA AQUI
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_empresa", nullable = false)
+    private Empresa empresa;
 
     @Column(name = "comprimento_m")
-    private BigDecimal comprimentoM; // Pode ser nulo
-
-    @Column(length = 50, unique = true)
-    private String sku;
+    private BigDecimal comprimentoM; // Nulo se for venda em m³
 
     @Column(name = "preco_venda", nullable = false)
     private BigDecimal precoVenda;
@@ -27,29 +30,62 @@ public class ProdutoMedida extends BaseEntity {
     @Column(name = "quantidade_estoque", nullable = false)
     private BigDecimal quantidadeEstoque;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_empresa", nullable = false)
-    private Empresa empresa;
+    @Column(length = 50, unique = true)
+    private String sku;
 
-    // Getters e Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public Produto getProduto() { return produto; }
-    public void setProduto(Produto produto) { this.produto = produto; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public BigDecimal getComprimentoM() { return comprimentoM; }
-    public void setComprimentoM(BigDecimal comprimentoM) { this.comprimentoM = comprimentoM; }
+    public ProdutoVariacaoBase getVariacaoBase() {
+        return variacaoBase;
+    }
 
-    public String getSku() { return sku; }
-    public void setSku(String sku) { this.sku = sku; }
+    public void setVariacaoBase(ProdutoVariacaoBase variacaoBase) {
+        this.variacaoBase = variacaoBase;
+    }
 
-    public BigDecimal getPrecoVenda() { return precoVenda; }
-    public void setPrecoVenda(BigDecimal precoVenda) { this.precoVenda = precoVenda; }
+    public Empresa getEmpresa() {
+        return empresa;
+    }
 
-    public BigDecimal getQuantidadeEstoque() { return quantidadeEstoque; }
-    public void setQuantidadeEstoque(BigDecimal quantidadeEstoque) { this.quantidadeEstoque = quantidadeEstoque; }
+    public void setEmpresa(Empresa empresa) {
+        this.empresa = empresa;
+    }
 
-    public Empresa getEmpresa() { return empresa; }
-    public void setEmpresa(Empresa empresa) { this.empresa = empresa; }
+    public BigDecimal getComprimentoM() {
+        return comprimentoM;
+    }
+
+    public void setComprimentoM(BigDecimal comprimentoM) {
+        this.comprimentoM = comprimentoM;
+    }
+
+    public BigDecimal getPrecoVenda() {
+        return precoVenda;
+    }
+
+    public void setPrecoVenda(BigDecimal precoVenda) {
+        this.precoVenda = precoVenda;
+    }
+
+    public BigDecimal getQuantidadeEstoque() {
+        return quantidadeEstoque;
+    }
+
+    public void setQuantidadeEstoque(BigDecimal quantidadeEstoque) {
+        this.quantidadeEstoque = quantidadeEstoque;
+    }
+
+    public String getSku() {
+        return sku;
+    }
+
+    public void setSku(String sku) {
+        this.sku = sku;
+    }
 }

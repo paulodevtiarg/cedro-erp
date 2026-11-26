@@ -12,12 +12,9 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long>, JpaSpec
 
     Optional<Produto> findByIdAndEmpresa_Id(Long id, Long idEmpresa);
 
-    // Verifica se já existe um produto com a mesma combinação (Tipo + Espécie + Largura + Espessura)
-    boolean existsByTipoProduto_IdAndEspecieMadeira_IdAndLarguraCmAndEspessuraCmAndEmpresa_Id(
-            Long tipoProdutoId, Long especieMadeiraId, java.math.BigDecimal larguraCm, java.math.BigDecimal espessuraCm, Long idEmpresa
-    );
+    boolean existsByTipoProduto_IdAndEspecieMadeira_IdAndEmpresa_Id(
+            Long tipoProdutoId, Long especieMadeiraId, Long idEmpresa);
 
-    boolean existsByTipoProduto_IdAndEspecieMadeira_IdAndLarguraCmAndEspessuraCmAndEmpresa_IdAndIdNot(
-            Long tipoProdutoId, Long especieMadeiraId, java.math.BigDecimal larguraCm, java.math.BigDecimal espessuraCm, Long idEmpresa, Long id
-    );
+    boolean existsByTipoProduto_IdAndEspecieMadeira_IdAndEmpresa_IdAndIdNot(
+            Long tipoProdutoId, Long especieMadeiraId, Long idEmpresa, Long id);
 }

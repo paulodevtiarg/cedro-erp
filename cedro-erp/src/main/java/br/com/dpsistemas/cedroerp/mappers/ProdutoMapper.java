@@ -2,8 +2,10 @@ package br.com.dpsistemas.cedroerp.mappers;
 
 import br.com.dpsistemas.cedroerp.dtos.ProdutoDTO;
 import br.com.dpsistemas.cedroerp.dtos.ProdutoMedidaDTO;
+import br.com.dpsistemas.cedroerp.dtos.ProdutoVariacaoBaseDTO;
 import br.com.dpsistemas.cedroerp.models.Produto;
 import br.com.dpsistemas.cedroerp.models.ProdutoMedida;
+import br.com.dpsistemas.cedroerp.models.ProdutoVariacaoBase;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,13 +14,20 @@ import java.util.stream.Collectors;
 @Component
 public class ProdutoMapper {
 
+    // ==================================================
+    // PRODUTO (O PAI)
+    // ==================================================
     public ProdutoDTO toDTO(Produto entity) {
         if (entity == null) return null;
 
         ProdutoDTO dto = new ProdutoDTO();
         dto.setId(entity.getId());
+        dto.setStatus(entity.getStatus());
+        dto.setDataCadastro(entity.getDataCadastro());
+        dto.setDataAlteracao(entity.getDataAlteracao());
+        dto.setImagem(entity.getImagem());
 
-        // Dados achatados
+        // Dados achatados do Tipo e Espécie
         if (entity.getTipoProduto() != null) {
             dto.setTipoProdutoId(entity.getTipoProduto().getId());
             dto.setTipoProdutoNome(entity.getTipoProduto().getNome());
@@ -27,25 +36,13 @@ public class ProdutoMapper {
             dto.setEspecieMadeiraId(entity.getEspecieMadeira().getId());
             dto.setEspecieMadeiraNome(entity.getEspecieMadeira().getNome());
         }
-        if (entity.getUnidadeMedida() != null) {
-            dto.setUnidadeMedidaId(entity.getUnidadeMedida().getId());
-            dto.setUnidadeMedidaSigla(entity.getUnidadeMedida().getSigla());
-        }
 
-        dto.setLarguraCm(entity.getLarguraCm());
-        dto.setEspessuraCm(entity.getEspessuraCm());
-        dto.setStatus(entity.getStatus());
-        dto.setDataCadastro(entity.getDataCadastro());
-        dto.setDataAlteracao(entity.getDataAlteracao());
-
-        dto.setImagem(entity.getImagem());
-
-        // Converte a lista de Medidas (se existir)
-        if (entity.getMedidas() != null) {
-            List<ProdutoMedidaDTO> medidasDto = entity.getMedidas().stream()
-                    .map(this::toMedidaDTO)
+        // Converte a lista de Variações Base (As Mães)
+        if (entity.getVariacoesBase() != null) {
+            List<ProdutoVariacaoBaseDTO> basesDto = entity.getVariacoesBase().stream()
+                    .map(this::toVariacaoBaseDTO)
                     .collect(Collectors.toList());
-            dto.setMedidas(medidasDto);
+            dto.setVariacoesBase(basesDto);
         }
 
         return dto;
@@ -56,17 +53,46 @@ public class ProdutoMapper {
 
         Produto entity = new Produto();
         entity.setId(dto.getId());
-        entity.setLarguraCm(dto.getLarguraCm());
-        entity.setEspessuraCm(dto.getEspessuraCm());
         entity.setStatus(dto.getStatus());
+        entity.setImagem(dto.getImagem());
 
-        // Os relacionamentos (Tipo, Espécie, Unidade) não são setados aqui.
-        // O Service vai buscar no banco e setar na Entity.
+        // Os relacionamentos (Tipo, Espécie) são setados no Service
         return entity;
     }
 
+    // ==================================================
+    // PRODUTO VARIAÇÃO BASE (A MÃE)
+    // ==================================================
+    public ProdutoVariacaoBaseDTO toVariacaoBaseDTO(ProdutoVariacaoBase entity) {
+        if (entity == null) return null;
+
+        ProdutoVariacaoBaseDTO dto = new ProdutoVariacaoBaseDTO();
+        dto.setId(entity.getId());
+        dto.setLarguraCm(entity.getLarguraCm());
+        dto.setEspessuraCm(entity.getEspessuraCm());
+
+        if (entity.getUnidadeMedida() != null) {
+            dto.setUnidadeMedidaId(entity.getUnidadeMedida().getId());
+            dto.setUnidadeMedidaSigla(entity.getUnidadeMedida().getSigla());
+        }
+
+        // Converte a lista de Medidas (Os Filhos)
+        if (entity.getMedidas() != null) {
+            List<ProdutoMedidaDTO> medidasDto = entity.getMedidas().stream()
+                    .map(this::toMedidaDTO)
+                    .collect(Collectors.toList());
+            dto.setMedidas(medidasDto);
+        }
+
+        return dto;
+    }
+
+    // ==================================================
+    // PRODUTO MEDIDA (O FILHO)
+    // ==================================================
     public ProdutoMedidaDTO toMedidaDTO(ProdutoMedida entity) {
         if (entity == null) return null;
+
         ProdutoMedidaDTO dto = new ProdutoMedidaDTO();
         dto.setId(entity.getId());
         dto.setComprimentoM(entity.getComprimentoM());
@@ -74,6 +100,7 @@ public class ProdutoMapper {
         dto.setPrecoVenda(entity.getPrecoVenda());
         dto.setQuantidadeEstoque(entity.getQuantidadeEstoque());
         dto.setStatus(entity.getStatus());
+
         return dto;
     }
 }

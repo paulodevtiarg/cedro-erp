@@ -127,7 +127,7 @@ public class ProdutoController {
     }
 
     // ==================================================
-    // ATUALIZAR (POST) - MANTIDO APENAS ESTE
+    // ATUALIZAR (POST)
     // ==================================================
     @PostMapping("/editar/{id}")
     public String atualizar(@PathVariable Long id, @Valid @ModelAttribute("produto") ProdutoDTO dto,
@@ -194,6 +194,7 @@ public class ProdutoController {
             ProdutoDTO dto = produtoService.buscarPorId(id, usuarioLogadoService.getEmpresaId());
             model.addAttribute("produto", dto);
             if ("excluir".equals(acao)) model.addAttribute("modoExclusao", true);
+
             model.addAttribute("pageTitle", "Detalhes do Produto - Cedro ERP");
             model.addAttribute("activeMenu", "estoque");
             return "produtos/detalhes";

@@ -7,6 +7,7 @@
 <div layout:fragment="content">
     <div class="container-fluid p-2">
         <div class="row">
+            <!-- BREADCRUMB -->
             <div class="col-12">
                 <nav aria-label="breadcrumb" style="margin-top: -25px; font-size: 0.8rem;">
                     <ol class="breadcrumb">
@@ -20,12 +21,13 @@
 
             <div class="col-12">
                 <div class="card">
+                    <!-- HEADER -->
                     <div th:replace="~{fragments/componentes :: cardHeader(
                         'Produtos', 'Gerencie o catálogo de produtos e tamanhos', 'cubes-stacked', '/produtos/novo', 'Produto', ${queryParams}
                     )}"></div>
 
                     <div class="card-body">
-                        <!-- Filtros -->
+                        <!-- FILTROS -->
                         <form th:action="@{/produtos}" method="get" class="filter-box mb-2">
                             <div class="row g-3">
                                 <div class="col-md-4">
@@ -50,47 +52,45 @@
                             </div>
                         </form>
 
-                        <!-- Tabela Desktop -->
+                        <!-- TABELA DESKTOP -->
                         <div class="d-none d-md-block">
                             <table class="table table-modern align-middle mb-0">
                                 <thead>
                                 <tr>
-                                    <th class="text-center" style="width: 70px;">Cód.</th>
+                                    <th class="text-center" style="width: 70px;">Foto</th>
                                     <th>Produto</th>
-                                    <th>Dimensões (L x E)</th>
-                                    <th class="text-center">Unid.</th>
+                                    <th class="text-center">Detalhes / Tamanhos</th>
                                     <th class="text-center" style="width: 120px;">Status</th>
                                     <th class="text-center" style="width: 140px;">Ações</th>
                                 </tr>
                                 </thead>
                                 <tbody>
+                                <!-- EMPTY STATE -->
                                 <tr th:if="${produtos.empty}">
-                                    <td colspan="6"><div th:replace="~{fragments/componentes :: emptyState('Nenhum produto encontrado.')}"></div></td>
+                                    <td colspan="5">
+                                        <div th:replace="~{fragments/componentes :: emptyState('Nenhum produto encontrado com os filtros atuais.')}"></div>
+                                    </td>
                                 </tr>
-                                <tr th:each="p : ${produtos}">
-                                    <td class="text-center text-muted fw-semibold" th:text="${p.id}"></td>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-3">
-                                            <!-- Miniatura -->
-                                            <div th:if="${p.imagem != null and !p.imagem.isEmpty()}" class="flex-shrink-0">
-                                                <img th:src="${p.imagem}" alt="Produto" class="rounded shadow-sm border" style="width: 45px; height: 45px; object-fit: cover;">
-                                            </div>
-                                            <div th:if="${p.imagem == null or p.imagem.isEmpty()}" class="flex-shrink-0 bg-light rounded border d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
-                                                <i class="fa-duotone fa-solid fa-box text-muted"></i>
-                                            </div>
 
-                                            <!-- Nome -->
-                                            <div class="min-w-0">
-                                                <div class="fw-semibold text-dark text-truncate" th:text="${p.tipoProdutoNome + ' de ' + p.especieMadeiraNome}"></div>
-                                                <small class="text-muted d-block" th:text="${p.larguraCm + ' x ' + p.espessuraCm + ' cm'}"></small>
-                                            </div>
+                                <!-- LINHAS -->
+                                <tr th:each="p : ${produtos}">
+                                    <td class="text-center">
+                                        <img th:if="${p.imagem != null}" th:src="${p.imagem}" class="rounded border" style="width: 45px; height: 45px; object-fit: cover;">
+                                        <div th:if="${p.imagem == null}" class="bg-light rounded border d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                                            <i class="fa-duotone fa-solid fa-image text-muted"></i>
                                         </div>
                                     </td>
-                                    <td class="text-secondary small" th:text="${p.larguraCm + 'cm x ' + p.espessuraCm + 'cm'}"></td>
-                                    <td class="text-center fw-bold text-primary" th:text="${p.unidadeMedidaSigla}"></td>
+                                    <td class="fw-semibold text-dark" th:text="${p.tipoProdutoNome + ' de ' + p.especieMadeiraNome}"></td>
+                                    <td class="text-center">
+                                        <!-- BOTÃO QUE ABRE O MODAL -->
+                                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" th:data-bs-target="'#modalVariacoes' + ${p.id}">
+                                            <i class="fa-duotone fa-solid fa-ruler-combined me-1"></i>
+                                            <span th:text="${p.variacoesBase.size()} + ' Variações'"></span>
+                                        </button>
+                                    </td>
                                     <td class="text-center align-middle">
                                         <form th:action="@{'/produtos/alterar-status/' + ${p.id}}" method="post" class="d-inline">
-                                            <button type="submit" class="btn btn-link p-0 border-0 text-decoration-none">
+                                            <button type="submit" class="btn btn-link p-0 border-0 text-decoration-none" data-bs-toggle="tooltip" th:title="${p.status ? 'Inativar' : 'Ativar'}">
                                                 <i th:if="${p.status}" class="fa-duotone fa-solid fa-circle-check text-success fs-5"></i>
                                                 <i th:unless="${p.status}" class="fa-duotone fa-solid fa-circle-xmark text-danger fs-5"></i>
                                             </button>
@@ -103,102 +103,170 @@
                                 </tbody>
                             </table>
                         </div>
+
+                        <!-- CARDS MOBILE -->
+                        <div class="d-md-none">
+                            <div th:if="${produtos.empty}">
+                                <div th:replace="~{fragments/componentes :: emptyState('Nenhum produto encontrado com os filtros atuais.')}"></div>
+                            </div>
+
+                            <div class="d-flex flex-column gap-2">
+                                <div th:each="p : ${produtos}" class="card card-mobile-modern">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <img th:if="${p.imagem != null}" th:src="${p.imagem}" class="rounded border" style="width: 50px; height: 50px; object-fit: cover;">
+                                            <div th:if="${p.imagem == null}" class="bg-light rounded border d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                                <i class="fa-duotone fa-solid fa-image text-muted"></i>
+                                            </div>
+
+                                            <div class="min-w-0 flex-grow-1">
+                                                <div class="fw-semibold text-dark text-truncate" th:text="${p.tipoProdutoNome + ' de ' + p.especieMadeiraNome}"></div>
+                                                <small class="text-muted">#<span th:text="${p.id}"></span></small>
+                                            </div>
+
+                                            <div class="flex-shrink-0">
+                                                <form th:action="@{'/produtos/alterar-status/' + ${p.id}}" method="post" class="d-inline">
+                                                    <button type="submit" class="btn btn-link p-0 border-0">
+                                                        <i th:if="${p.status}" class="fa-duotone fa-solid fa-circle-check text-success fs-5"></i>
+                                                        <i th:unless="${p.status}" class="fa-duotone fa-solid fa-circle-xmark text-danger fs-5"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+
+                                        <button type="button" class="btn btn-outline-primary btn-sm w-100 mb-2" data-bs-toggle="modal" th:data-bs-target="'#modalVariacoes' + ${p.id}">
+                                            <i class="fa-duotone fa-solid fa-ruler-combined me-1"></i> Ver Tamanhos (<span th:text="${p.variacoesBase.size()}"></span>)
+                                        </button>
+
+                                        <div class="d-flex justify-content-end pt-2 border-top">
+                                            <div th:replace="~{fragments/componentes :: acoes(${p.id}, '/produtos', ${queryParams}, 'produto')}"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
-                    <!-- Footer Paginação -->
+                    <!-- FOOTER PAGINAÇÃO -->
                     <div class="card-footer card-footer-modern d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
-
-                        <!-- Info à esquerda -->
                         <small class="text-muted">
                             Página <strong th:text="${produtos.totalPages > 0 ? produtos.number + 1 : 0}"></strong>
                             de <strong th:text="${produtos.totalPages}"></strong>
-                            &bull;
-                            <span th:text="${produtos.totalElements}"></span> registro(s)
+                            &bull; <span th:text="${produtos.totalElements}"></span> registro(s)
                         </small>
 
-                        <!-- Paginação à direita -->
                         <nav aria-label="Paginação">
                             <ul class="pagination pagination-modern mb-0">
-
-                                <!-- Primeira -->
                                 <li class="page-item" th:classappend="${produtos.first} ? 'disabled'">
-                                    <a class="page-link"
-                                       th:href="@{/produtos(
-                                        page=0,
-                                        filtroEspecie=${filtro.filtroEspecie},
-                                        filtroTipo=${filtro.filtroTipo},
-                                       filtroStatus=${filtro.filtroStatus},
-                                       size=${filtro.size})}"
-                                       data-bs-toggle="tooltip" title="Primeira página">
+                                    <a class="page-link" th:href="@{/produtos(page=0, filtroEspecie=${filtro.filtroEspecie}, filtroTipo=${filtro.filtroTipo}, filtroStatus=${filtro.filtroStatus}, size=${filtro.size})}" title="Primeira">
                                         <i class="fa-duotone fa-solid fa-angles-left"></i>
                                     </a>
                                 </li>
-
-                                <!-- Anterior -->
                                 <li class="page-item" th:classappend="${produtos.first} ? 'disabled'">
-                                    <a class="page-link"
-                                       th:href="@{/produtos(
-										page=${produtos.number - 1},
-									 filtroEspecie=${filtro.filtroEspecie},
-									 filtroTipo=${filtro.filtroTipo},
-                                       filtroStatus=${filtro.filtroStatus},
-                                       size=${filtro.size})}"
-                                       data-bs-toggle="tooltip" title="Anterior">
+                                    <a class="page-link" th:href="@{/produtos(page=${produtos.number - 1}, filtroEspecie=${filtro.filtroEspecie}, filtroTipo=${filtro.filtroTipo}, filtroStatus=${filtro.filtroStatus}, size=${filtro.size})}" title="Anterior">
                                         <i class="fa-duotone fa-solid fa-chevron-left"></i>
                                     </a>
                                 </li>
 
-
                                 <th:block th:if="${produtos.totalPages > 0}">
-                                    <!-- Números -->
-                                    <li th:each="i : ${#numbers.sequence(0, produtos.totalPages - 1)}"
-                                        class="page-item"
-                                        th:classappend="${i == produtos.number} ? 'active'">
-                                        <a class="page-link"
-                                           th:href="@{/produtos(
-											page=${i},
-											 filtroEspecie=${filtro.filtroEspecie},
-											 filtroTipo=${filtro.filtroTipo},
-                                       filtroStatus=${filtro.filtroStatus},
-                                       size=${filtro.size})}"
-                                           th:text="${i + 1}"></a>
+                                    <li th:each="i : ${#numbers.sequence(0, produtos.totalPages - 1)}" class="page-item" th:classappend="${i == produtos.number} ? 'active'">
+                                        <a class="page-link" th:href="@{/produtos(page=${i}, filtroEspecie=${filtro.filtroEspecie}, filtroTipo=${filtro.filtroTipo}, filtroStatus=${filtro.filtroStatus}, size=${filtro.size})}" th:text="${i + 1}"></a>
                                     </li>
                                 </th:block>
-                                <!-- Próxima -->
+
                                 <li class="page-item" th:classappend="${produtos.last} ? 'disabled'">
-                                    <a class="page-link"
-                                       th:href="@{/produtos(
-										page=${produtos.number + 1},
-									    filtroEspecie=${filtro.filtroEspecie},
-									    filtroTipo=${filtro.filtroTipo},
-                                       filtroStatus=${filtro.filtroStatus},
-                                       size=${filtro.size})}"
-                                       data-bs-toggle="tooltip" title="Próxima">
+                                    <a class="page-link" th:href="@{/produtos(page=${produtos.number + 1}, filtroEspecie=${filtro.filtroEspecie}, filtroTipo=${filtro.filtroTipo}, filtroStatus=${filtro.filtroStatus}, size=${filtro.size})}" title="Próxima">
                                         <i class="fa-duotone fa-solid fa-chevron-right"></i>
                                     </a>
                                 </li>
-
-                                <!-- Última -->
                                 <li class="page-item" th:classappend="${produtos.last} ? 'disabled'">
-                                    <a class="page-link"
-                                       th:href="@{/produtos(
-                                       filtroEspecie=${filtro.filtroEspecie},
-									    filtroTipo=${filtro.filtroTipo},
-                                       filtroStatus=${filtro.filtroStatus},
-                                       size=${filtro.size})}"
-                                       data-bs-toggle="tooltip" title="Última página">
+                                    <a class="page-link" th:href="@{/produtos(page=${produtos.totalPages - 1}, filtroEspecie=${filtro.filtroEspecie}, filtroTipo=${filtro.filtroTipo}, filtroStatus=${filtro.filtroStatus}, size=${filtro.size})}" title="Última">
                                         <i class="fa-duotone fa-solid fa-angles-right"></i>
                                     </a>
                                 </li>
-
                             </ul>
                         </nav>
-
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- MODAIS FORA DA TABELA -->
+    <th:block th:each="p : ${produtos}">
+        <div class="modal fade" th:id="'modalVariacoes' + ${p.id}" tabindex="-1">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header  text-white"  style="background-color: var(--sys-primary);">
+                        <h5 class="modal-title">
+                            <i class="fa-duotone fa-solid fa-ruler-combined me-2"></i>
+                            Variações de <span th:text="${p.tipoProdutoNome + ' de ' + p.especieMadeiraNome}"></span>
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body bg-light">
+
+                        <!-- ACORDEÃO DE VARIAÇÕES BASE -->
+                        <div class="accordion" th:id="'accordionProduto' + ${p.id}">
+
+                            <div class="accordion-item mb-2 border rounded" th:each="base, iter : ${p.variacoesBase}">
+                                <h2 class="accordion-header" th:id="'headingBase' + ${base.id}">
+                                    <button class="accordion-button collapsed bg-white shadow-none" type="button" data-bs-toggle="collapse"
+                                            th:data-bs-target="'#collapseBase' + ${base.id}" aria-expanded="false">
+                                        <div class="d-flex justify-content-between w-100 pe-3">
+                                            <strong th:text="${base.larguraCm + ' x ' + base.espessuraCm + ' cm'}"></strong>
+                                            <span class="badge bg-secondary" th:text="${base.medidas.size()} + ' opções'"></span>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div th:id="'collapseBase' + ${base.id}" class="accordion-collapse collapse" th:attr="aria-labelledby='headingBase' + ${base.id}" th:data-bs-parent="'#accordionProduto' + ${p.id}">
+                                    <div class="accordion-body p-0">
+                                        <table class="table table-sm table-striped mb-0">
+                                            <thead class="table-light">
+                                            <tr class="small text-muted">
+                                                <th>Comprimento</th>
+                                                <th>Unid.</th>
+                                                <th>SKU</th>
+                                                <th class="text-end">Preço</th>
+                                                <th class="text-center">Estoque</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr th:each="m : ${base.medidas}">
+                                                <td class="fw-semibold" th:text="${m.comprimentoM != null ? m.comprimentoM + ' m' : 'Volume (m³)'}"></td>
+                                                <td><span class="badge badge-soft-primary" th:text="${base.unidadeMedidaSigla}"></span></td>
+                                                <td class="text-muted small" th:text="${m.sku}"></td>
+                                                <td class="text-end fw-bold text-success" th:text="'R$ ' + ${#numbers.formatDecimal(m.precoVenda, 1, 'POINT', 2, 'COMMA')}"></td>
+                                                <td class="text-center" th:text="${#numbers.formatDecimal(m.quantidadeEstoque, 1, 'POINT', 3, 'COMMA')}"></td>
+                                            </tr>
+                                            <tr th:if="${#lists.isEmpty(base.medidas)}">
+                                                <td colspan="5" class="text-center text-muted py-2">Nenhum tamanho cadastrado.</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Se não tiver variações -->
+                            <div th:if="${#lists.isEmpty(p.variacoesBase)}" class="text-center text-muted py-4 bg-white rounded">
+                                Nenhuma variação cadastrada.
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary   btn-sm btn-modern" data-bs-dismiss="modal">  <i class="fa-duotone fa-solid fa-circle-xmark ME-1"></i>  Fechar</button>
+
+
+
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </th:block>
 </div>
 </body>
 </html>
