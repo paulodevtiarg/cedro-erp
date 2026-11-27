@@ -1,6 +1,7 @@
 package br.com.dpsistemas.cedroerp.controllers;
 
 import br.com.dpsistemas.cedroerp.dtos.ProdutoDTO;
+import br.com.dpsistemas.cedroerp.enumerators.ClassificacaoProdutoEnum;
 import br.com.dpsistemas.cedroerp.services.*;
 import br.com.dpsistemas.cedroerp.utils.UrlUtils;
 import jakarta.validation.Valid;
@@ -224,5 +225,6 @@ public class ProdutoController {
         model.addAttribute("tipos", tipoService.listar(new br.com.dpsistemas.cedroerp.dtos.TipoProdutoDTO(), idEmpresa).getContent());
         model.addAttribute("especies", especieService.listar(new br.com.dpsistemas.cedroerp.dtos.EspecieMadeiraDTO(), idEmpresa).getContent());
         model.addAttribute("unidades", unidadeService.listar(new br.com.dpsistemas.cedroerp.dtos.UnidadeMedidaDTO(), idEmpresa).getContent());
+        model.addAttribute("classificacoes", ClassificacaoProdutoEnum.values()); // <--- NOVO
     }
 }

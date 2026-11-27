@@ -153,9 +153,8 @@
 										<input type="text" th:field="*{dataNascimentoInicio}" id="dataNascimentoInicio"
 										       placeholder="DD/MM/AAAA" maxlength="10"
 										       oninput="mascaraData(this)" class="form-control mask-data"
-										       th:classappend="${#fields.hasErrors('dataNascimentoValida')} ? 'is-invalid' : ''">
-										<div class="invalid-feedback d-block" style="min-height: 20px;"
-										     th:if="${#fields.hasErrors('dataNascimentoValida')}" th:errors="*{dataNascimentoValida}"></div>
+										      >
+
 									</div>
 
 									<div class="col-md-6">
@@ -287,9 +286,8 @@
 										<input type="text" th:field="*{dataNascimentoInicio}" id="dataNascimentoInicioPj"
 										       placeholder="DD/MM/AAAA" maxlength="10"
 										       oninput="mascaraData(this)" class="form-control mask-data"
-										       th:classappend="${#fields.hasErrors('dataNascimentoValidaPj')} ? 'is-invalid' : ''">
-										<div class="invalid-feedback d-block" style="min-height: 20px;"
-										     th:if="${#fields.hasErrors('dataNascimentoValidaPj')}" th:errors="*{dataNascimentoValidaPj}"></div>
+										       >
+
 									</div>
 
 

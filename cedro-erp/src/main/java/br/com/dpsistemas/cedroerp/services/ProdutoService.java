@@ -43,6 +43,7 @@ public class ProdutoService {
         Specification<Produto> spec = ProdutoSpecification.empresaIgual(idEmpresa)
                 .and(ProdutoSpecification.especieContem(filtro.getFiltroEspecie()))
                 .and(ProdutoSpecification.tipoContem(filtro.getFiltroTipo()))
+                .and(ProdutoSpecification.classificacaoIgual(filtro.getFiltroClassificacao()))
                 .and(ProdutoSpecification.statusIgual(converterStatus(filtro.getFiltroStatus())));
 
         return produtoRepository.findAll(spec, pageable).map(mapper::toDTO);

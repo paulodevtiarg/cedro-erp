@@ -1,5 +1,6 @@
 package br.com.dpsistemas.cedroerp.models;
 
+import br.com.dpsistemas.cedroerp.enumerators.ClassificacaoProdutoEnum;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
@@ -30,6 +31,13 @@ public class Produto extends BaseEntity {
     // Relacionamento com as Bases (Mães)
     @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProdutoVariacaoBase> variacoesBase;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "classificacao", nullable = false, length = 30)
+    private ClassificacaoProdutoEnum classificacao;
+
+    public ClassificacaoProdutoEnum getClassificacao() { return classificacao; }
+    public void setClassificacao(ClassificacaoProdutoEnum classificacao) { this.classificacao = classificacao; }
 
     public Long getId() {
         return id;

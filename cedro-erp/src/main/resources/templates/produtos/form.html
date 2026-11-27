@@ -70,7 +70,7 @@
                                     </div>
 
                                     <div class="row g-3 mt-1">
-                                        <div class="col-md-5">
+                                        <div class="col-md-4">
                                             <label class="form-label fw-semibold text-secondary mb-0">Tipo de Produto *</label>
                                             <select class="form-select" th:field="*{tipoProdutoId}" th:classappend="${#fields.hasErrors('tipoProdutoId')} ? 'is-invalid' : ''">
                                                 <option value="">Selecione</option>
@@ -79,13 +79,21 @@
                                             <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('tipoProdutoId')}" th:errors="*{tipoProdutoId}"></div>
                                         </div>
 
-                                        <div class="col-md-5">
+                                        <div class="col-md-4">
                                             <label class="form-label fw-semibold text-secondary mb-0">Espécie da Madeira *</label>
                                             <select class="form-select" th:field="*{especieMadeiraId}" th:classappend="${#fields.hasErrors('especieMadeiraId')} ? 'is-invalid' : ''">
                                                 <option value="">Selecione</option>
                                                 <option th:each="e : ${especies}" th:value="${e.id}" th:text="${e.nome}"></option>
                                             </select>
                                             <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('especieMadeiraId')}" th:errors="*{especieMadeiraId}"></div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label fw-semibold text-secondary mb-0">Classificação *</label>
+                                            <select class="form-select" th:field="*{classificacao}" th:classappend="${#fields.hasErrors('classificacao')} ? 'is-invalid' : ''">
+                                                <option value="">Selecione</option>
+                                                <option th:each="c : ${classificacoes}" th:value="${c}" th:text="${c.descricao}"></option>
+                                            </select>
+                                            <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('classificacao')}" th:errors="*{classificacao}"></div>
                                         </div>
 
                                         <div class="col-md-2 mt-3 d-flex align-items-end">
