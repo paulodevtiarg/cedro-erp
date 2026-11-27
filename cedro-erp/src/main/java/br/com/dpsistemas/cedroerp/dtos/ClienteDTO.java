@@ -45,7 +45,7 @@ public class ClienteDTO {
     private Boolean whatsapp;
 
     // ENDEREÇO
-    @NotBlank(message = "O CEP é obrigatório.")
+
     private String cep;
     @NotBlank(message = "O Logradouro é obrigatório.")
     private String logradouro;
@@ -66,7 +66,7 @@ public class ClienteDTO {
 
 
     // PESSOA FÍSICA
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
+
     private LocalDate dataNascimentoInicio;
     private GeneroEnum genero;
     private EstadoCivilEnum estadoCivil;

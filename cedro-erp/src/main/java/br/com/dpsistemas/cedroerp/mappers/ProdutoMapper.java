@@ -26,7 +26,7 @@ public class ProdutoMapper {
         dto.setDataCadastro(entity.getDataCadastro());
         dto.setDataAlteracao(entity.getDataAlteracao());
         dto.setImagem(entity.getImagem());
-
+        dto.setClassificacao(entity.getClassificacao());
         // Dados achatados do Tipo e Espécie
         if (entity.getTipoProduto() != null) {
             dto.setTipoProdutoId(entity.getTipoProduto().getId());
@@ -55,6 +55,7 @@ public class ProdutoMapper {
         entity.setId(dto.getId());
         entity.setStatus(dto.getStatus());
         entity.setImagem(dto.getImagem());
+        entity.setClassificacao(dto.getClassificacao());
 
         // Os relacionamentos (Tipo, Espécie) são setados no Service
         return entity;

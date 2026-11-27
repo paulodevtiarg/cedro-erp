@@ -1,5 +1,7 @@
 package br.com.dpsistemas.cedroerp.dtos;
 
+import br.com.dpsistemas.cedroerp.enumerators.ClassificacaoProdutoEnum;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -22,6 +24,8 @@ public class ProdutoDTO {
 
     // 🔥 A LISTA DE VARIAÇÕES BASE (As Mães)
     private List<ProdutoVariacaoBaseDTO> variacoesBase = new ArrayList<>();
+    private ClassificacaoProdutoEnum classificacao;
+
 
     // Auditoria
     private LocalDateTime dataCadastro;
@@ -31,6 +35,7 @@ public class ProdutoDTO {
     private String filtroEspecie;
     private String filtroTipo;
     private Integer filtroStatus = 1;
+    private String filtroClassificacao; // Para o filtro da tela
     private Integer page = 0;
     private Integer size = 10;
 
@@ -88,5 +93,21 @@ public class ProdutoDTO {
 
     public String getDataAlteracaoFormatada() {
         return dataAlteracao == null ? "" : dataAlteracao.format(FORMATO_DATA_HORA);
+    }
+
+    public ClassificacaoProdutoEnum getClassificacao() {
+        return classificacao;
+    }
+
+    public void setClassificacao(ClassificacaoProdutoEnum classificacao) {
+        this.classificacao = classificacao;
+    }
+
+    public String getFiltroClassificacao() {
+        return filtroClassificacao;
+    }
+
+    public void setFiltroClassificacao(String filtroClassificacao) {
+        this.filtroClassificacao = filtroClassificacao;
     }
 }
