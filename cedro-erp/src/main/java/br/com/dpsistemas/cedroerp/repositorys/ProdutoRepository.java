@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -17,4 +18,9 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long>, JpaSpec
 
     boolean existsByTipoProduto_IdAndEspecieMadeira_IdAndEmpresa_IdAndIdNot(
             Long tipoProdutoId, Long especieMadeiraId, Long idEmpresa, Long id);
+
+    // 🔥 MÉTODO ADICIONADO AQUI
+    List<Produto> findAllByEmpresa_IdAndStatusTrue(Long idEmpresa);
+
+
 }

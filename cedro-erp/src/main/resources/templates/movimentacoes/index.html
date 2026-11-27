@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head><title>Movimentações de Estoque</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid p-2">
+        <div class="row">
+            <!-- BREADCRUMB -->
+            <div class="col-12">
+                <nav aria-label="breadcrumb" style="margin-top: -25px; font-size: 0.8rem;">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/home}"><i class="fa-duotone fa-solid fa-house fs-7"></i> Home</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/produtos}"><i class="fa-duotone fa-solid fa-cubes-stacked"></i> Produtos</a></li>
+                        <li class="breadcrumb-item"><span class="text-muted"><i class="fa-duotone fa-solid fa-arrow-right-arrow-left"></i> Movimentações</span></li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="col-12" th:replace="~{fragments/componentes :: alertas}"></div>
+
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header card-header-modern d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="header-icon"><i class="fa-duotone fa-solid fa-arrow-right-arrow-left"></i></div>
+                            <div>
+                                <h5 class="mb-0 fw-semibold">Movimentações de Estoque</h5>
+                                <small class="text-muted">Histórico de entradas, saídas e ajustes.</small>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary btn-modern btn-sm d-flex align-items-center gap-2"
+                                data-bs-toggle="modal" data-bs-target="#modalLancamento">
+                            <i class="fa-duotone fa-solid fa-plus"></i> Lançar Movimentação
+                        </button>
+                    </div>
+
+                    <div class="card-body p-0">
+                        <!-- FILTROS -->
+                        <div class="p-3 border-bottom bg-light">
+                            <form th:action="@{/estoque/movimentacoes}" method="get">
+                                <div class="row g-3">
+                                    <!-- Produto / SKU -->
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-semibold text-secondary">Produto / SKU</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text bg-white"><i class="fa-duotone fa-solid fa-cube"></i></span>
+                                            <input type="text" name="filtroProduto" th:value="${filtro.filtroProduto}" class="form-control" placeholder="Ex: Tábua, SKU...">
+                                        </div>
+                                    </div>
+
+                                    <!-- Tipo -->
+                                    <div class="col-md-2">
+                                        <label class="form-label small fw-semibold text-secondary">Tipo</label>
+                                        <select name="filtroTipo" class="form-select form-select-sm">
+                                            <option value="">Todos</option>
+                                            <option th:each="t : ${tiposMovimentacao}"
+                                                    th:value="${t.name()}"
+                                                    th:text="${t.descricao}"
+                                                    th:selected="${filtro.filtroTipo == t.name()}">
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Data Início -->
+                                    <div class="col-md-2">
+                                        <label class="form-label small fw-semibold text-secondary">Data Inicial</label>
+                                        <input type="date" name="dataInicio" class="form-control form-control-sm" th:value="${filtro.dataInicio}">
+                                    </div>
+
+                                    <!-- Data Fim -->
+                                    <div class="col-md-2">
+                                        <label class="form-label small fw-semibold text-secondary">Data Final</label>
+                                        <input type="date" name="dataFim" class="form-control form-control-sm" th:value="${filtro.dataFim}">
+                                    </div>
+
+                                    <!-- Linhas -->
+                                    <div th:replace="~{fragments/componentes :: filtroLinhas(${filtro}, 'col-md-2')}"></div>
+                                </div>
+
+                                <!-- Botões -->
+                                <div class="row g-3 mt-2">
+                                    <div th:replace="~{fragments/componentes :: botoesFiltro('/estoque/movimentacoes', 'col-md-12')}"></div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- TABELA -->
+                        <table class="table table-modern align-middle mb-0">
+                            <thead>
+                            <tr>
+                                <th style="width: 15%;">Data</th>
+                                <th>Tipo</th>
+                                <th>Produto / SKU</th>
+                                <th class="text-center">Qtd.</th>
+                                <th>Motivo / Documento</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:if="${movimentacoes.empty}">
+                                <td colspan="5"><div th:replace="~{fragments/componentes :: emptyState('Nenhuma movimentação encontrada.')}"></div></td>
+                            </tr>
+                            <tr th:each="m : ${movimentacoes}">
+                                <td class="text-muted small" th:text="${m.dataMovimentacaoFormatada}"></td>
+                                <td>
+                                    <span th:if="${m.tipoMovimentacao.name() == 'ENTRADA'}" class="badge badge-soft-success">Entrada</span>
+                                    <span th:if="${m.tipoMovimentacao.name() == 'SAIDA'}" class="badge badge-soft-danger">Saída</span>
+                                    <span th:if="${m.tipoMovimentacao.name() == 'AJUSTE'}" class="badge badge-soft-warning">Ajuste</span>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold text-dark" th:text="${m.produtoNome}"></div>
+                                    <small class="text-muted" th:text="${m.sku}"></small>
+                                </td>
+                                <td class="text-center fw-bold" th:classappend="${m.tipoMovimentacao.name() == 'ENTRADA' ? 'text-success' : (m.tipoMovimentacao.name() == 'SAIDA' ? 'text-danger' : 'text-warning')}">
+                                    <span th:if="${m.tipoMovimentacao.name() == 'ENTRADA'}">+ </span>
+                                    <span th:if="${m.tipoMovimentacao.name() == 'SAIDA'}">- </span>
+                                    <span th:text="${#numbers.formatDecimal(m.quantidade, 1, 'POINT', 3, 'COMMA')}"></span>
+                                    <small class="text-muted" th:text="${m.unidadeSigla}"></small>
+                                </td>
+                                <td class="text-secondary small" th:text="${m.motivo}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- PAGINAÇÃO COMPLETA -->
+                    <div class="card-footer card-footer-modern d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+                        <small class="text-muted">
+                            Página <strong th:text="${movimentacoes.totalPages > 0 ? movimentacoes.number + 1 : 0}"></strong>
+                            de <strong th:text="${movimentacoes.totalPages}"></strong>
+                            &bull; <span th:text="${movimentacoes.totalElements}"></span> registro(s)
+                        </small>
+
+                        <nav aria-label="Paginação">
+                            <ul class="pagination pagination-modern mb-0">
+                                <!-- Primeira -->
+                                <li class="page-item" th:classappend="${movimentacoes.first} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/estoque/movimentacoes(
+                                        page=0,
+                                        filtroProduto=${filtro.filtroProduto},
+                                        filtroTipo=${filtro.filtroTipo},
+                                        dataInicio=${filtro.dataInicio},
+                                        dataFim=${filtro.dataFim},
+                                        size=${filtro.size})}" title="Primeira">
+                                        <i class="fa-duotone fa-solid fa-angles-left"></i>
+                                    </a>
+                                </li>
+                                <!-- Anterior -->
+                                <li class="page-item" th:classappend="${movimentacoes.first} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/estoque/movimentacoes(
+                                        page=${movimentacoes.number - 1},
+                                        filtroProduto=${filtro.filtroProduto},
+                                        filtroTipo=${filtro.filtroTipo},
+                                        dataInicio=${filtro.dataInicio},
+                                        dataFim=${filtro.dataFim},
+                                        size=${filtro.size})}" title="Anterior">
+                                        <i class="fa-duotone fa-solid fa-chevron-left"></i>
+                                    </a>
+                                </li>
+
+                                <!-- Números -->
+                                <th:block th:if="${movimentacoes.totalPages > 0}">
+                                    <li th:each="i : ${#numbers.sequence(0, movimentacoes.totalPages - 1)}"
+                                        class="page-item"
+                                        th:classappend="${i == movimentacoes.number} ? 'active'">
+                                        <a class="page-link" th:href="@{/estoque/movimentacoes(
+                                            page=${i},
+                                            filtroProduto=${filtro.filtroProduto},
+                                            filtroTipo=${filtro.filtroTipo},
+                                            dataInicio=${filtro.dataInicio},
+                                            dataFim=${filtro.dataFim},
+                                            size=${filtro.size})}" th:text="${i + 1}"></a>
+                                    </li>
+                                </th:block>
+
+                                <!-- Próxima -->
+                                <li class="page-item" th:classappend="${movimentacoes.last} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/estoque/movimentacoes(
+                                        page=${movimentacoes.number + 1},
+                                        filtroProduto=${filtro.filtroProduto},
+                                        filtroTipo=${filtro.filtroTipo},
+                                        dataInicio=${filtro.dataInicio},
+                                        dataFim=${filtro.dataFim},
+                                        size=${filtro.size})}" title="Próxima">
+                                        <i class="fa-duotone fa-solid fa-chevron-right"></i>
+                                    </a>
+                                </li>
+                                <!-- Última -->
+                                <li class="page-item" th:classappend="${movimentacoes.last} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/estoque/movimentacoes(
+                                        page=${movimentacoes.totalPages - 1},
+                                        filtroProduto=${filtro.filtroProduto},
+                                        filtroTipo=${filtro.filtroTipo},
+                                        dataInicio=${filtro.dataInicio},
+                                        dataFim=${filtro.dataFim},
+                                        size=${filtro.size})}" title="Última">
+                                        <i class="fa-duotone fa-solid fa-angles-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE LANÇAMENTO -->
+    <div class="modal fade" id="modalLancamento" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form th:action="@{/estoque/movimentacoes/lancar}" method="post" th:object="${movimentacao}">
+                    <div class="modal-header text-white" style="background-color: var(--sys-primary);">
+                        <h5 class="modal-title"><i class="fa-duotone fa-solid fa-plus me-2"></i> Lançar Movimentação</h5>
+                        <button type="button" class="btn btn-link text-white p-0 m-0 border-0" data-bs-dismiss="modal">
+                            <i class="fa-duotone fa-solid fa-circle-xmark fs-4"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tipo de Movimentação *</label>
+                            <select class="form-select" th:field="*{tipoMovimentacao}" required>
+                                <option value="">Selecione</option>
+                                <option th:each="t : ${tiposMovimentacao}" th:value="${t}" th:text="${t.descricao}"></option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Produto / Tamanho (SKU) *</label>
+                            <select class="form-select" th:field="*{produtoMedidaId}" required>
+                                <option value="">Selecione o produto e o tamanho...</option>
+
+                                <!-- Itera sobre o Mapa Agrupado -->
+                                <th:block th:each="grupo : ${medidasAgrupadas}">
+                                    <optgroup th:label="${grupo.key}">
+                                        <option th:each="medida : ${grupo.value}" th:value="${medida.id}"
+                                                th:text="${(medida.comprimentoM != null ? medida.comprimentoM + ' m' : 'Volume (m³)') + ' - SKU: ' + medida.sku}">
+                                        </option>
+                                    </optgroup>
+                                </th:block>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Quantidade *</label>
+                            <input type="number" step="0.001" class="form-control" th:field="*{quantidade}" required placeholder="0.000">
+                            <small class="text-muted">Para ajustes, digite a quantidade REAL em estoque.</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Motivo / Documento *</label>
+                            <input type="text" class="form-control" th:field="*{motivo}" required placeholder="Ex: NF 1234, Pedido #99, Ajuste de Inventário">
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-light btn-modern" data-bs-dismiss="modal"> <i class="fa-duotone fa-solid fa-ban me-2"></i>Cancelar</button>
+                        <button type="submit" class="btn btn-sm btn-primary btn-modern"><i class="fa-duotone fa-solid fa-floppy-disk me-2"></i> Salvar Lançamento</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

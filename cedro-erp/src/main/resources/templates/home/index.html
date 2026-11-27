@@ -123,48 +123,92 @@
 
                         <!-- ================= SEGUNDA FILEIRA DE CARDS ================= -->
                         <div class="row">
-                            <!-- Estoque de Toras -->
-                            <div class="col-xl-3 col-md-6 mb-4">
-                                <div class="card border-left-info shadow h-100 py-2">
+                            <!-- CARD MADEIRA SERRADA -->
+                            <div class="col-xl-6 col-md-12 mb-4">
+                                <div class="card border-left-success shadow h-100 py-2">
                                     <div class="card-body">
                                         <div class="row no-gutters align-items-center">
                                             <div class="col mr-2">
-                                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                                    Estoque de Toras
+                                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                    Estoque de Madeira Serrada
                                                 </div>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                    <span th:text="${estoqueToras}">0</span> m³
-                                                    <small class="text-muted" style="font-size: 0.7rem;" th:text="'neste mês (' + ${anoSelecionado} + ')'"></small>
-                                                </div>
-                                                <div class="mt-1">
-                                                    <small class="text-muted d-block" style="font-size: 0.75rem;">
-                                                        <i class="fa-solid fa-warehouse"></i> Pátio Principal: <strong th:text="${estoquePatio}">0</strong> m³
-                                                    </small>
+
+                                                <!-- Aqui fazemos a iteração nas unidades que vieram do banco -->
+                                                <div class="d-flex flex-wrap gap-3 mt-2">
+                                                    <!-- Percorre as unidades (M3, ML, UN) que existem para Serrada -->
+                                                    <th:block th:with="estoqueSerrada=${resumoEstoque['MADEIRA_SERRADA']}">
+
+                                                        <!-- M³ -->
+                                                        <div>
+                                <span class="h5 mb-0 font-weight-bold text-gray-800"
+                                      th:text="${estoqueSerrada['M3'] != null ? #numbers.formatDecimal(estoqueSerrada['M3'], 1, 'POINT', 2, 'COMMA') : '0,00'}">
+                                </span> <small class="text-muted">m³</small>
+                                                        </div>
+
+                                                        <!-- ML (Metro Linear) -->
+                                                        <div>
+                                <span class="h5 mb-0 font-weight-bold text-gray-800"
+                                      th:text="${estoqueSerrada['ML'] != null ? #numbers.formatDecimal(estoqueSerrada['ML'], 1, 'POINT', 2, 'COMMA') : '0,00'}">
+                                </span> <small class="text-muted">ML</small>
+                                                        </div>
+
+                                                        <!-- UN (Unidades) -->
+                                                        <div>
+                                <span class="h5 mb-0 font-weight-bold text-gray-800"
+                                      th:text="${estoqueSerrada['UN'] != null ? #numbers.formatDecimal(estoqueSerrada['UN'], 1, 'POINT', 0, 'COMMA') : '0'}">
+                                </span> <small class="text-muted">un</small>
+                                                        </div>
+
+                                                    </th:block>
                                                 </div>
                                             </div>
                                             <div class="col-auto">
-                                                <i class="fa-duotone fa-solid fa-tree fa-2x text-gray-500"></i>
+                                                <i class="fa-duotone fa-solid fa-layer-group fa-2x text-gray-300"></i>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Madeira Serrada -->
-                            <div class="col-xl-3 col-md-6 mb-4">
-                                <div class="card border-left-warning shadow h-100 py-2 opacity-75">
+                            <!-- CARD MADEIRA BRUTA -->
+                            <div class="col-xl-6 col-md-12 mb-4">
+                                <div class="card border-left-warning shadow h-100 py-2">
                                     <div class="card-body">
                                         <div class="row no-gutters align-items-center">
                                             <div class="col mr-2">
                                                 <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                                    Madeira Serrada
+                                                    Estoque de Madeira Bruta
                                                 </div>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                    <span th:text="${estoqueSerrada}">0</span> m³
+
+                                                <div class="d-flex flex-wrap gap-3 mt-2">
+                                                    <th:block th:with="estoqueBruta=${resumoEstoque['MADEIRA_BRUTA']}">
+
+                                                        <!-- M³ -->
+                                                        <div>
+                                <span class="h5 mb-0 font-weight-bold text-gray-800"
+                                      th:text="${estoqueBruta['M3'] != null ? #numbers.formatDecimal(estoqueBruta['M3'], 1, 'POINT', 2, 'COMMA') : '0,00'}">
+                                </span> <small class="text-muted">m³</small>
+                                                        </div>
+
+                                                        <!-- ML -->
+                                                        <div>
+                                <span class="h5 mb-0 font-weight-bold text-gray-800"
+                                      th:text="${estoqueBruta['ML'] != null ? #numbers.formatDecimal(estoqueBruta['ML'], 1, 'POINT', 2, 'COMMA') : '0,00'}">
+                                </span> <small class="text-muted">ML</small>
+                                                        </div>
+
+                                                        <!-- UN -->
+                                                        <div>
+                                <span class="h5 mb-0 font-weight-bold text-gray-800"
+                                      th:text="${estoqueBruta['UN'] != null ? #numbers.formatDecimal(estoqueBruta['UN'], 1, 'POINT', 0, 'COMMA') : '0'}">
+                                </span> <small class="text-muted">un</small>
+                                                        </div>
+
+                                                    </th:block>
                                                 </div>
                                             </div>
                                             <div class="col-auto">
-                                                <i class="fa-duotone fa-solid fa-layer-group fa-2x text-gray-300"></i>
+                                                <i class="fa-duotone fa-solid fa-tree fa-2x text-gray-300"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -235,7 +279,69 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- ================= TERCEIRA FILEIRA (BARRAS E CIDADES) ================= -->
 
+                        <div class="row">
+
+                            <!-- CARD MADEIRA BRUTA (ESQUERDA) -->
+                            <div class="col-xl-6 col-lg-6 mb-4">
+                                <div class="card shadow h-100">
+                                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                                        <h6 class="m-0 font-weight-bold text-warning"><i class="fa-duotone fa-solid fa-tree me-1"></i> Top Madeiras Brutas (Pátio)</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div th:each="item : ${topProdutos['BRUTA']}" class="mb-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <span class="fw-semibold text-dark" th:text="${item['nome']}"></span>
+                                                <span class="fw-bold text-dark">
+                                                    <span th:text="${#numbers.formatDecimal(item['quantidade'], 1, 'POINT', 2, 'COMMA')}"></span>
+                                                    <small class="text-muted" th:text="${item['unidade']}"></small>
+                                                </span>
+                                            </div>
+                                            <div class="progress" style="height: 10px;">
+                                                <div class="progress-bar" role="progressbar"
+                                                     th:style="'width: ' + ${item.porcentagem} + '%; background-color: #f6c23e !important;'">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div th:if="${#lists.isEmpty(topProdutos['BRUTA'])}" class="text-center text-muted py-4">
+                                            Nenhum produto bruto em estoque.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CARD MADEIRA SERRADA (DIREITA) -->
+                            <div class="col-xl-6 col-lg-6 mb-4">
+                                <div class="card shadow h-100">
+                                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                                        <h6 class="m-0 font-weight-bold text-success"><i class="fa-duotone fa-solid fa-layer-group me-1"></i> Top Madeiras Serradas (Pátio)</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div th:each="item : ${topProdutos['SERRADA']}" class="mb-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <span class="fw-semibold text-dark" th:text="${item['nome']}"></span>
+                                                <span class="fw-bold text-dark">
+                                                    <span th:text="${#numbers.formatDecimal(item['quantidade'], 1, 'POINT', 2, 'COMMA')}"></span>
+                                                    <small class="text-muted" th:text="${item['unidade']}"></small>
+                                                </span>
+                                            </div>
+                                            <div class="progress" style="height: 10px;">
+                                                <div class="progress-bar" role="progressbar"
+                                                     th:style="'width: ' + ${item.porcentagem} + '%; background-color: #1cc88a !important;'">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div th:if="${#lists.isEmpty(topProdutos['SERRADA'])}" class="text-center text-muted py-4">
+                                            Nenhum produto serrado em estoque.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                         <!-- ================= GRÁFICOS ================= -->
                         <div class="row">
                             <!-- GRAFICO LINHA (Faturamento) -->
@@ -306,92 +412,10 @@
                             </div>
                         </div>
 
-                        <!-- ================= TERCEIRA FILEIRA (BARRAS E CIDADES) ================= -->
-                        <div class="row">
-                            <!-- Estoque em Barras -->
-                            <div class="col-xl-6 col-lg-6 d-flex">
-                                <div class="card shadow mb-4 w-100">
-                                    <div class="card-header py-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">Nível de Estoque (Pátio)</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <ul class="nav nav-tabs mb-2">
-                                            <li class="nav-item">
-                                                <button class="nav-link active" data-bs-toggle="tab" href="#cse-norte-fx-etaria">
-                                                    Madeira Bruta
-                                                </button>
-                                            </li>
-                                            <li class="nav-item">
-                                                <button class="nav-link" data-bs-toggle="tab" href="#geral-fx-etaria">
-                                                    Madeira Processada
-                                                </button>
-                                            </li>
-                                        </ul>
-                                        <div class="tab-content flex-grow-1">
-                                            <div class="tab-pane fade show active h-100" id="cse-norte-fx-etaria">
-                                                <div th:each="item, iterStat : ${idadeUnidade}">
-                                                    <h4 class="small font-weight-bold">
-                                                        <span th:text="${item.key}"></span>
-                                                        <span class="float-right" th:text="${item.value}"></span>
-                                                    </h4>
-                                                    <div class="progress mb-4">
-                                                        <div class="progress-bar" th:class="${coresUnidade[iterStat.index]}" th:style="'width:' + ${item.value} + '%'"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="tab-pane fade h-100" id="geral-fx-etaria">
-                                                <div th:each="item, iterStat : ${idadeGeral}">
-                                                    <h4 class="small font-weight-bold">
-                                                        <span th:text="${item.key}"></span>
-                                                        <span class="float-right" th:text="${item.value}"></span>
-                                                    </h4>
-                                                    <div class="progress mb-4">
-                                                        <div class="progress-bar" th:class="${coresGeral[iterStat.index]}" th:style="'width:' + ${item.value} + '%'"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <!-- Gráfico Cidades (Top Clientes) -->
-                            <div class="col-xl-6 col-lg-6 d-flex">
-                                <div class="card shadow mb-4 w-100">
-                                    <div class="card-header py-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">Top 5 Cidades (Compradores)</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <ul class="nav nav-tabs mb-2">
-                                            <li class="nav-item">
-                                                <button class="nav-link active" data-bs-toggle="tab" href="#cse-norte-cidade">
-                                                    Por Volume (m³)
-                                                </button>
-                                            </li>
-                                            <li class="nav-item">
-                                                <button class="nav-link" data-bs-toggle="tab" href="#geral-cidade">
-                                                    Por Faturamento (R$)
-                                                </button>
-                                            </li>
-                                        </ul>
-                                        <div class="tab-content flex-grow-1">
-                                            <div class="tab-pane fade show active h-100" id="cse-norte-cidade">
-                                                <div id="graficoCidadeUnidade" th:data-valores="${cidadeUnidadeJson}" style="display:none;"></div>
-                                                <div style="height:300px;">
-                                                    <canvas id="chartCidadeUnidade"></canvas>
-                                                </div>
-                                            </div>
-                                            <div class="tab-pane fade h-100" id="geral-cidade">
-                                                <div id="graficoCidadeGeral" th:data-valores="${cidadeGeralJson}" style="display:none;"></div>
-                                                <div style="height:300px;">
-                                                    <canvas id="chartCidadeGeral"></canvas>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
+
+
                     </div>
                 </div>
             </div>

@@ -4,6 +4,7 @@ package br.com.dpsistemas.cedroerp.controllers;
 import br.com.dpsistemas.cedroerp.dtos.UsuarioSessaoDTO;
 import br.com.dpsistemas.cedroerp.models.Usuario;
 import br.com.dpsistemas.cedroerp.services.ClienteService;
+import br.com.dpsistemas.cedroerp.services.ProdutoService;
 import br.com.dpsistemas.cedroerp.services.UsuarioLogadoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpSession;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,10 +25,11 @@ import java.util.Map;
 @Controller
 @RequestMapping("/home")
 public class HomeController {
-	@Autowired
-	private ClienteService clienteService; // Injete o ClienteService
-	@Autowired
-	private UsuarioLogadoService usuarioLogadoService;
+	@Autowired	private ClienteService clienteService; // Injete o ClienteService
+	@Autowired	private UsuarioLogadoService usuarioLogadoService;
+	@Autowired private ProdutoService produtoService;
+
+
 	@GetMapping
 	public String home( @RequestParam(required = false) Integer ano,
 	                    HttpSession session,
@@ -43,21 +46,28 @@ public class HomeController {
 		// Pega o ID da empresa (ajuste o nome do atributo se no seu sistema for diferente)
 		Long idEmpresa = usuarioLogadoService.getEmpresaId(); // ou usuario.getIdEmpresa()
 
+
+		// Dentro do método home():
+		Map<String, Map<String, BigDecimal>> resumoEstoque = produtoService.obterResumoEstoque(idEmpresa);
+		model.addAttribute("resumoEstoque", resumoEstoque);
+
+
+		Map<String, List<Map<String, Object>>> topProdutos = produtoService.obterTopProdutosEstoque(idEmpresa);
+		model.addAttribute("topProdutos", topProdutos);
+
 		// Busca a contagem real no banco
 		long totalClientes = clienteService.contarPorEmpresa(idEmpresa);
 		// ==========================================
 		// MOCK DE DADOS PARA A DASHBOARD (MADEIREIRA)
 		// ==========================================
-		model.addAttribute("faturamentoMes", "45.500,00");
-		model.addAttribute("volumeMes", 120);
-		model.addAttribute("pedidosPendentes", 8);
+		model.addAttribute("faturamentoMes", "00.000,00");
+		model.addAttribute("volumeMes", 000);
+		model.addAttribute("pedidosPendentes", 0);
 		model.addAttribute("totalClientes", totalClientes); //ja dinamico
-		model.addAttribute("estoqueToras", 450);
-		model.addAttribute("estoquePatio", 300);
-		model.addAttribute("estoqueSerrada", 200);
-		model.addAttribute("perdasMes", 5);
-		model.addAttribute("cargasTransito", 3);
-		model.addAttribute("totalTodasAno", 1450);
+
+		model.addAttribute("perdasMes", 0);
+		model.addAttribute("cargasTransito", 0);
+		model.addAttribute("totalTodasAno", 0000);
 
 		// Gráfico de Linha (Vendas em m³ no ano)
 		String vendasJson = "{\"1\":50, \"2\":80, \"3\":120, \"4\":90, \"5\":150, \"6\":200, " +
