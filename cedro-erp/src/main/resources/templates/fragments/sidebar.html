@@ -64,16 +64,14 @@
 			<div id="collapseEstoque" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
 				<div class="bg-white py-2 collapse-inner rounded">
 
-					<!-- Produtos e suas Variações -->
+					<!-- Cadastros Base -->
 					<a class="collapse-item" th:href="@{/produtos}">Produtos</a>
 					<a class="collapse-item" th:href="@{/especies}">Espécies de Madeira</a>
 					<a class="collapse-item" th:href="@{/tipos-produtos}">Tipos de Produto</a>
 					<a class="collapse-item" th:href="@{/unidades-medida}">Unidades de Medida</a>
 
-					<!-- Estoque e Movimentações -->
-					<a class="collapse-item" th:href="@{/estoque}">Estoque Atual</a>
-					<a class="collapse-item" th:href="@{/estoque/entradas}">Entradas</a>
-					<a class="collapse-item" th:href="@{/estoque/saidas}">Saídas</a>
+					<!-- Gestão de Estoque -->
+					<a class="collapse-item" th:href="@{/estoque}">Estoque Atual (Saldo)</a>
 					<a class="collapse-item" th:href="@{/estoque/movimentacoes}">Movimentações</a>
 
 				</div>
@@ -194,11 +192,22 @@
 		<!-- Sidebar Message -->
 		<div class="sidebar-card d-none d-lg-flex">
 			<img class="sidebar-card-illustration mb-2"
-				th:src="@{/img/logo-sistema.png}" alt="...">
+			     th:src="@{/img/logo-sistema.png}" alt="...">
 			<p class="text-center mb-2">
-				<strong>Cedro-ERP - Versão: 01.AAA2026</strong>, Sistema de Gestão, 2026. Todos os Direitos Rservados <br/>
-			<a class="btn btn-success btn-sm mt-2"
-				th:href="@{/logout-landing}">Saiba Mais</a>
+				<strong>Cedro-ERP</strong>, Sistema de Gestão, 2026. Todos os Direitos Reservados <br/>
+
+				<!-- BOTÃO DA VERSÃO -->
+				<a href="#" data-bs-toggle="modal" data-bs-target="#modalNotasVersao"
+				   class="text-decoration-none fw-bold mt-1 d-inline-block"
+				   style="color: var(--cedro-verde-claro); transition: 0.2s;"
+				   onmouseover="this.style.color='var(--cedro-madeira-claro)'"
+				   onmouseout="this.style.color='var(--cedro-verde-claro)'"
+				   th:if="${ultimaVersao != null}">
+					Versão <span th:text="${ultimaVersao.versao}">1.0.2026</span> <i class="bi bi-info-circle ms-1"></i>
+				</a>
+			</p>
+
+			<a class="btn btn-success btn-sm mt-2" th:href="@{/logout-landing}">Saiba Mais</a>
 		</div>
 
 	</ul>

@@ -18,9 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.math.RoundingMode;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +31,8 @@ public class ProdutoService {
     @Autowired private UnidadeMedidaRepository unidadeRepository;
     @Autowired private ProdutoMapper mapper;
     @Autowired private EmpresaService empresaService;
+    @Autowired private ProdutoMedidaRepository produtoMedidaRepository;
+
 
     // ==================================================
     // LISTAR E BUSCAR
@@ -67,11 +68,9 @@ public class ProdutoService {
         Empresa empresa = empresaService.buscarPorId(idEmpresa);
         entity.setEmpresa(empresa);
 
-        // Seta os relacionamentos do Produto
         entity.setTipoProduto(tipoProdutoRepository.findById(dto.getTipoProdutoId()).orElseThrow());
         entity.setEspecieMadeira(especieRepository.findById(dto.getEspecieMadeiraId()).orElseThrow());
 
-        // Processa as Variações Base (Mães) e Medidas (Filhos)
         if (dto.getVariacoesBase() != null && !dto.getVariacoesBase().isEmpty()) {
             List<ProdutoVariacaoBase> bases = new ArrayList<>();
 
@@ -86,7 +85,6 @@ public class ProdutoService {
                         .orElseThrow(() -> new EntityNotFoundException("Unidade não encontrada."));
                 base.setUnidadeMedida(unidade);
 
-                // Processa as Medidas (Filhos) desta Base
                 List<ProdutoMedida> medidas = new ArrayList<>();
                 List<String> skusGerados = new ArrayList<>();
 
@@ -95,25 +93,23 @@ public class ProdutoService {
                         ProdutoMedida medida = new ProdutoMedida();
                         medida.setComprimentoM(medidaDto.getComprimentoM());
                         medida.setPrecoVenda(medidaDto.getPrecoVenda());
-                        medida.setQuantidadeEstoque(medidaDto.getQuantidadeEstoque());
+
+                        // 🔥 PRODUTO NOVO: Aceita o estoque digitado
+                        medida.setQuantidadeEstoque(medidaDto.getQuantidadeEstoque() != null ? medidaDto.getQuantidadeEstoque() : BigDecimal.ZERO);
+
                         medida.setStatus(medidaDto.getStatus() != null ? medidaDto.getStatus() : true);
                         medida.setEmpresa(empresa);
                         medida.setVariacaoBase(base);
 
-                        // Gera o SKU
-                        String skuFinal;
-                        if (medidaDto.getSku() == null || medidaDto.getSku().trim().isBlank()) {
-                            skuFinal = gerarSku(entity, base, medida);
-                        } else {
-                            skuFinal = medidaDto.getSku().trim().toUpperCase();
-                        }
+                        String skuFinal = (medidaDto.getSku() == null || medidaDto.getSku().trim().isBlank())
+                                ? gerarSku(entity, base, medida)
+                                : medidaDto.getSku().trim().toUpperCase();
 
                         if (skusGerados.contains(skuFinal)) {
-                            throw new IllegalArgumentException("O SKU '" + skuFinal + "' está duplicado nos tamanhos informados.");
+                            throw new IllegalArgumentException("O SKU '" + skuFinal + "' está duplicado.");
                         }
                         skusGerados.add(skuFinal);
                         medida.setSku(skuFinal);
-
                         medidas.add(medida);
                     }
                 }
@@ -141,7 +137,6 @@ public class ProdutoService {
         entity.setTipoProduto(tipoProdutoRepository.findById(dto.getTipoProdutoId()).orElseThrow());
         entity.setEspecieMadeira(especieRepository.findById(dto.getEspecieMadeiraId()).orElseThrow());
 
-        // Lógica de Atualização em Árvore
         if (dto.getVariacoesBase() != null) {
             Map<Long, ProdutoVariacaoBase> basesExistentes = entity.getVariacoesBase().stream()
                     .collect(Collectors.toMap(ProdutoVariacaoBase::getId, b -> b));
@@ -162,51 +157,58 @@ public class ProdutoService {
                 base.setEspessuraCm(baseDto.getEspessuraCm());
                 base.setUnidadeMedida(unidadeRepository.findById(baseDto.getUnidadeMedidaId()).orElseThrow());
 
-                // Lógica para as Medidas Filhas
                 Map<Long, ProdutoMedida> medidasExistentes = base.getMedidas().stream()
                         .collect(Collectors.toMap(ProdutoMedida::getId, m -> m));
 
                 List<ProdutoMedida> novasMedidasList = new ArrayList<>();
                 List<String> skusGerados = new ArrayList<>();
 
-                for (ProdutoMedidaDTO medidaDto : baseDto.getMedidas()) {
-                    ProdutoMedida medida;
-                    if (medidaDto.getId() != null && medidasExistentes.containsKey(medidaDto.getId())) {
-                        medida = medidasExistentes.get(medidaDto.getId());
-                    } else {
-                        medida = new ProdutoMedida();
-                        medida.setEmpresa(entity.getEmpresa());
-                        medida.setVariacaoBase(base);
+                if (baseDto.getMedidas() != null) {
+                    for (ProdutoMedidaDTO medidaDto : baseDto.getMedidas()) {
+                        ProdutoMedida medida;
+                        boolean isNovaMedida = false;
+
+                        if (medidaDto.getId() != null && medidasExistentes.containsKey(medidaDto.getId())) {
+                            medida = medidasExistentes.get(medidaDto.getId());
+                        } else {
+                            medida = new ProdutoMedida();
+                            medida.setEmpresa(entity.getEmpresa());
+                            medida.setVariacaoBase(base);
+                            isNovaMedida = true; // Marcamos que é nova
+                        }
+
+                        medida.setComprimentoM(medidaDto.getComprimentoM());
+                        medida.setPrecoVenda(medidaDto.getPrecoVenda());
+                        medida.setStatus(medidaDto.getStatus() != null ? medidaDto.getStatus() : true);
+
+                        // 🔥 AQUI ESTÁ A REGRA DE ESTOQUE:
+                        // Se for uma nova medida, começa com 0. Se for edição de uma existente,
+                        // o objeto já veio do banco com o estoque correto e NÃO alteramos.
+                        if (isNovaMedida) {
+                            medida.setQuantidadeEstoque(BigDecimal.ZERO);
+                        }
+
+                        String skuFinal = (medidaDto.getSku() == null || medidaDto.getSku().trim().isBlank())
+                                ? gerarSku(entity, base, medida)
+                                : medidaDto.getSku().trim().toUpperCase();
+
+                        if (skusGerados.contains(skuFinal)) {
+                            throw new IllegalArgumentException("O SKU '" + skuFinal + "' está duplicado.");
+                        }
+                        skusGerados.add(skuFinal);
+                        medida.setSku(skuFinal);
+
+                        novasMedidasList.add(medida);
                     }
-
-                    medida.setComprimentoM(medidaDto.getComprimentoM());
-                    medida.setPrecoVenda(medidaDto.getPrecoVenda());
-                    medida.setQuantidadeEstoque(medidaDto.getQuantidadeEstoque());
-                    medida.setStatus(medidaDto.getStatus() != null ? medidaDto.getStatus() : true);
-
-                    String skuFinal = (medidaDto.getSku() == null || medidaDto.getSku().trim().isBlank())
-                            ? gerarSku(entity, base, medida)
-                            : medidaDto.getSku().trim().toUpperCase();
-
-                    if (skusGerados.contains(skuFinal)) {
-                        throw new IllegalArgumentException("O SKU '" + skuFinal + "' está duplicado.");
-                    }
-                    skusGerados.add(skuFinal);
-                    medida.setSku(skuFinal);
-
-                    novasMedidasList.add(medida);
                 }
 
-                // Remove as medidas que não estão mais na lista nova
                 base.getMedidas().removeIf(m -> !novasMedidasList.contains(m));
                 for (ProdutoMedida m : novasMedidasList) {
                     if (!base.getMedidas().contains(m)) base.getMedidas().add(m);
                 }
-
                 novasBasesList.add(base);
             }
 
-            // Remove as bases que não estão mais na lista nova
             entity.getVariacoesBase().removeIf(b -> !novasBasesList.contains(b));
             for (ProdutoVariacaoBase b : novasBasesList) {
                 if (!entity.getVariacoesBase().contains(b)) entity.getVariacoesBase().add(b);
@@ -277,4 +279,112 @@ public class ProdutoService {
 
         return String.format("%s-%s-%sX%s-%s", tipo, especie, largura, espessura, comprimento).toUpperCase();
     }
+
+    public Map<String, Map<String, BigDecimal>> obterResumoEstoque(Long idEmpresa) {
+        List<Object[]> resultados = produtoMedidaRepository.somarEstoquePorClassificacaoEUnidade(idEmpresa);
+
+        // Estrutura: { "MADEIRA_SERRADA": { "M3": 150.0, "UN": 50.0 }, "MADEIRA_BRUTA": { ... } }
+        Map<String, Map<String, BigDecimal>> resumo = new HashMap<>();
+
+        // Inicializa as chaves para não dar null no HTML
+        resumo.put("MADEIRA_SERRADA", new HashMap<>());
+        resumo.put("MADEIRA_BRUTA", new HashMap<>());
+
+        for (Object[] row : resultados) {
+            String classificacao = row[0].toString(); // Ex: "MADEIRA_SERRADA"
+            String unidade = row[1].toString();       // Ex: "M3"
+            BigDecimal quantidade = (BigDecimal) row[2];
+
+            resumo.get(classificacao).put(unidade, quantidade);
+        }
+
+        return resumo;
+    }
+
+
+    public Map<String, List<Map<String, Object>>> obterTopProdutosEstoque(Long idEmpresa) {
+        List<Object[]> resultados = produtoMedidaRepository.listarTopProdutosEstoque(idEmpresa);
+
+        List<Map<String, Object>> listaBruta = new ArrayList<>();
+        List<Map<String, Object>> listaSerrada = new ArrayList<>();
+
+        BigDecimal maxBruta = BigDecimal.ZERO;
+        BigDecimal maxSerrada = BigDecimal.ZERO;
+
+        for (Object[] row : resultados) {
+            String tipo = row[0].toString();
+            String especie = row[1].toString();
+            String classificacao = row[2].toString();
+            String unidade = row[3].toString();
+            BigDecimal qtd = (BigDecimal) row[4];
+
+            // Note que aqui nós colocamos os nomes das chaves com Strings ("nome", "quantidade", etc.)
+            Map<String, Object> item = new HashMap<>();
+            item.put("nome", tipo + " de " + especie);
+            item.put("quantidade", qtd);
+            item.put("unidade", unidade);
+
+            if ("MADEIRA_BRUTA".equals(classificacao)) {
+                listaBruta.add(item);
+                if (qtd.compareTo(maxBruta) > 0) maxBruta = qtd;
+            } else if ("MADEIRA_SERRADA".equals(classificacao)) {
+                listaSerrada.add(item);
+                if (qtd.compareTo(maxSerrada) > 0) maxSerrada = qtd;
+            }
+        }
+
+        listaBruta.sort((a, b) -> ((BigDecimal)b.get("quantidade")).compareTo((BigDecimal)a.get("quantidade")));
+        listaSerrada.sort((a, b) -> ((BigDecimal)b.get("quantidade")).compareTo((BigDecimal)a.get("quantidade")));
+
+        if (listaBruta.size() > 5) listaBruta = listaBruta.subList(0, 5);
+        if (listaSerrada.size() > 5) listaSerrada = listaSerrada.subList(0, 5);
+
+        // 🔥 AQUI É ONDE O "null%" ERA GERADO. A chave precisa ser EXATAMENTE "porcentagem".
+        for (Map<String, Object> item : listaBruta) {
+            BigDecimal qtd = (BigDecimal) item.get("quantidade");
+            int porc = maxBruta.compareTo(BigDecimal.ZERO) > 0
+                    ? qtd.multiply(new BigDecimal(100)).divide(maxBruta, 0, RoundingMode.HALF_UP).intValue() : 0;
+            item.put("porcentagem", porc);
+        }
+
+        for (Map<String, Object> item : listaSerrada) {
+            BigDecimal qtd = (BigDecimal) item.get("quantidade");
+            int porc = maxSerrada.compareTo(BigDecimal.ZERO) > 0
+                    ? qtd.multiply(new BigDecimal(100)).divide(maxSerrada, 0, RoundingMode.HALF_UP).intValue() : 0;
+            item.put("porcentagem", porc);
+        }
+
+        Map<String, List<Map<String, Object>>> retorno = new HashMap<>();
+        retorno.put("BRUTA", listaBruta);
+        retorno.put("SERRADA", listaSerrada);
+        return retorno;
+    }
+
+    public List<ProdutoDTO> listarTodosParaSelect(Long idEmpresa) {
+        // Aqui você pode buscar todos os produtos ativos da empresa (sem paginação)
+        // e retornar a lista. Se for muito grande, o ideal é usar um AJAX de autocomplete.
+        return produtoRepository.findAllByEmpresa_IdAndStatusTrue(idEmpresa)
+                .stream().map(mapper::toDTO).collect(Collectors.toList());
+    }
+
+    public Map<String, List<ProdutoMedida>> obterMedidasAgrupadasPorProduto(Long idEmpresa) {
+        List<ProdutoMedida> medidas = produtoMedidaRepository.buscarMedidasParaSelect(idEmpresa);
+
+        // Agrupa pelo nome do Produto (Tipo + Espécie + Largura x Espessura)
+        Map<String, List<ProdutoMedida>> agrupado = new LinkedHashMap<>();
+
+        for (ProdutoMedida m : medidas) {
+            var base = m.getVariacaoBase();
+            var produto = base.getProduto();
+
+            String nomeAgrupamento = produto.getTipoProduto().getNome() + " de " +
+                    produto.getEspecieMadeira().getNome() + " (" +
+                    base.getLarguraCm() + "x" + base.getEspessuraCm() + " cm)";
+
+            agrupado.computeIfAbsent(nomeAgrupamento, k -> new ArrayList<>()).add(m);
+        }
+
+        return agrupado;
+    }
+
 }

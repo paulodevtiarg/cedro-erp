@@ -37,8 +37,44 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
     <div class="spinner-border text-light"></div>
     <p>Carregando...</p>
 </div>
+        <!-- O MODAL DE NOTAS DA VERSÃO (PADRÃO DO SISTEMA) -->
+        <div class="modal fade" id="modalNotasVersao" tabindex="-1" aria-labelledby="modalNotasLabel" aria-hidden="true" th:if="${ultimaVersao != null}">
+            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
 
-       
+                    <!-- Header usando o padrão do sistema -->
+                    <div class="modal-header text-white" style="background-color: var(--sys-primary); border-top-left-radius: 12px; border-top-right-radius: 12px;">
+                        <h5 class="modal-title d-flex align-items-center gap-2" id="modalNotasLabel" style="font-weight: 600;">
+                            <i class="fa-duotone fa-solid fa-rocket"></i>
+                            O que há de novo na versão <span th:text="${ultimaVersao.versao}"></span>
+                        </h5>
+                        <button type="button" class="btn btn-link text-white p-0 m-0 border-0" data-bs-dismiss="modal">
+                            <i class="fa-duotone fa-solid fa-circle-xmark fs-4"></i>
+                        </button>
+                    </div>
+
+                    <!-- Corpo -->
+                    <div class="modal-body" style="background-color: #fff; padding: 1.5rem;">
+                        <p class="text-muted small border-bottom pb-2">
+                            <i class="fa-duotone fa-solid fa-calendar-day me-1"></i>
+                            Lançado em: <strong><span th:text="${#temporals.format(ultimaVersao.dataVersao, 'dd/MM/yyyy HH:mm')}"></span></strong>
+                        </p>
+
+                        <div class="changelog-content" style="white-space: pre-wrap; font-size: 0.95rem; color: #333; line-height: 1.6;"
+                             th:text="${ultimaVersao.notasVersao}">
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="modal-footer" style="background-color: #f8f9fa; border-top: 1px solid #eef0f2; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+                        <button type="button" class="btn btn-primary btn-modern" data-bs-dismiss="modal">  <i class="fa-duotone fa-solid fa-circle-check me-2"></i>
+                            Entendi
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
         <!-- Scripts -->
          <th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
 

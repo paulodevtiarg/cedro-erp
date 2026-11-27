@@ -1,19 +1,21 @@
 package br.com.dpsistemas.cedroerp.configs;
 
 import br.com.dpsistemas.cedroerp.dtos.UsuarioSessaoDTO;
+import br.com.dpsistemas.cedroerp.repositorys.VersaoSistemaRepository;
 import br.com.dpsistemas.cedroerp.services.UsuarioLogadoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
-
-import br.com.dpsistemas.cedroerp.models.Usuario;
-import jakarta.servlet.http.HttpSession;
 
 @ControllerAdvice
 public class GlobalControllerAdvice {
 
     @Autowired
     private UsuarioLogadoService usuarioLogadoService;
+
+    // 🔥 ADICIONE O REPOSITÓRIO DA VERSÃO AQUI
+    @Autowired
+    private VersaoSistemaRepository versaoRepository;
 
     @ModelAttribute("usuarioLogado")
     public UsuarioSessaoDTO usuarioLogado() {
@@ -33,5 +35,11 @@ public class GlobalControllerAdvice {
     @ModelAttribute("podeGerenciarCadastros")
     public boolean podeGerenciarCadastros() {
         return usuarioLogadoService.podeGerenciarCadastros();
+    }
+
+    // 🔥 ADICIONE ESTE MÉTODO AQUI
+    @ModelAttribute("ultimaVersao")
+    public Object getUltimaVersao() {
+        return versaoRepository.findTopByOrderByDataVersaoDesc().orElse(null);
     }
 }
